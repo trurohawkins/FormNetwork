@@ -10,13 +10,22 @@ Action *makeAction(void (*n_fun)(Form*,Action*), void *n_vars) {
 	return newAction;
 }
 
+void nameAction(Action *a, char *name) {
+	a->name = calloc(1, strlen(name));
+	memcpy(a->name, name, strlen(name));
+}
+
+
 void deleteAction(Action *action) {
+	if (action->name) {
+		free(action->name);
+	}
 	free(action->vars);
 	//free(action);//changed because part of list and deleting that list will fre this memory
 }
 
-void defaultAction(Form *a) {
-	printf("I(%i) am acting %i \n", a->id, a->id);
+void defaultAction(Form *f, Action *a) {
+	printf("I(%i) am acting %i \n", f->id, f->id);
 }
 /*
 void setActVar(Action *action, int index, int val) {

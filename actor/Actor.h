@@ -1,3 +1,5 @@
+#ifndef ACTOR
+#define ACTOR
 typedef struct Actor {
 	Form *body;
 	linkedList *actionList;
@@ -12,3 +14,4 @@ void deleteActor(Actor *actor);
 
 #include "ActorList.h"
 //#include "PoopGuy.h"
+#endif

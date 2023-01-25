@@ -155,8 +155,10 @@ Anim *wvChangeBackground(WorldView *wv, Anim *bg) {
 }
 
 void wvDrawBackground(WorldView *wv, float *matrix) {
-	World *w = getWorld();
-	drawSprite(wv->background, matrix, wv->objSX, wv->objSY, (float)w->x/2 -(int)wv->buffX - 0.5f, (float)w->y/2 - (int)wv->buffY - 0.5f);
+	if (wv->background) {
+		World *w = getWorld();
+		drawSprite(wv->background, matrix, wv->objSX, wv->objSY, (float)w->x/2 -(int)wv->buffX - 0.5f, (float)w->y/2 - (int)wv->buffY - 0.5f);
+	}
 }
 
 void followForm(Form *f) {
@@ -202,7 +204,7 @@ void followForms(WorldView *wv) {
 		World *w = getWorld();
 		maxDistance = clamp(maxDistance + 10, 40, max(w->x, w->y) + 1);
 		if (xp * wv->scalePower != wv->centerX || yp * wv->scalePower != wv->centerY || maxDistance != wv->frame) {
-		printf("resizing frame to %f\n", maxDistance);
+		//printf("resizing frame to %f\n", maxDistance);
 		//if (xp != wv->centerX || yp != wv->centerY) {
 			setCenter(wv, xp, yp);
 		//wv->cenDestX = xp;

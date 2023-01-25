@@ -4,7 +4,7 @@ int tMat, rMat, sMat, drawColor;
 GLuint square, line;
 
 void initWorldDrawing() {
-printf("initiating world drawing\n");
+	printf("initiating world drawing\n");
 	GLuint baseShader = getSP(0);
 	if (baseShader != 0) {
 		tMat = glGetUniformLocation(baseShader, "tMat");
@@ -98,6 +98,8 @@ void drawWorld(World *w) {
 								//printf(" %i ", 1);
 								//editTranslations(x, y, 0);
 							} else {
+								//printf("poo\n");
+
 								// check if weve seen form, not for center, incse form's center isn't on screen
  								if (f->anim != NULL) {// && (xp == (int)(floor(f->pos[0])) && yp == (int)(floor(f->pos[1])))) {
 									Anim *a = (Anim*)f->anim;

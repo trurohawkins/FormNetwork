@@ -1,7 +1,7 @@
 #include "poopPlayer.h"
 int maxPoopers = 2;
 PoopGuy **poopers = 0;
-int numPoopers = 2;
+int numPoopers = 1;
 int curPoopers = 0;
 
 PoopGuy *makePoopGuy (int sx, int sy) {
@@ -46,6 +46,7 @@ void initPoopers() {
 }
 
 Form *makePoopPlayer(int pNum) {
+	printf("poo1\n");
 	PoopGuy *pooper = (PoopGuy *)calloc(1, sizeof(PoopGuy));
 	//pooper->speed = 10;
 	//pooper->maxForce = 10;
@@ -230,6 +231,7 @@ void poop(void *pg, float val) {
 	eatPooVar *ep = (eatPooVar*)(p->eatPoop->vars);
 	if (val > 0) {
 		ep->pooping = 1;
+		printf("poo\n");
 	} else {
 		ep->pooping = 0;
 	}

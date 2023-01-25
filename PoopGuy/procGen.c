@@ -1,6 +1,5 @@
-#include <stdio.h>
-#include <math.h>
-//#include "../helper/helper.h"
+//#include <stdio.h>
+//#include <math.h>
 #include "procGen.h"
 
 void arrayToFile(char *txt, int **array)
@@ -12,14 +11,14 @@ void arrayToFile(char *txt, int **array)
 
 	fptr = fopen(txt, "w");
 
-	if (fptr != NULL) {
+	if (fptr != 0) {
 		for (int i = 0; i < sizeX; i++) {
 			fwrite(array[i], sizeof(int), sizeY, fptr);
 
 		}
 		//fwrite(array, sizeof(int), sizeX*sizeY, fptr);
 	}
-		fseek(fptr, 0, SEEK_SET);
+		fseek(fptr, 0, 0);
 		fclose(fptr);
 }
 
@@ -37,12 +36,12 @@ int **fileToArray(char *txt) {
 
 	fptr = fopen(txt, "r");
 
-	if (fptr != NULL) {
+	if (fptr != 0) {
 		for (int i = 0; i < sizeX; i++) {
 			fread(array[i], sizeof(int), sizeY, fptr);
 		}
 		//fread(array, sizeof(int), sizeX*sizeY, fptr);	
-		fseek(fptr, 0, SEEK_SET);
+		fseek(fptr, 0, 0);
 		fclose(fptr);
 	}
 	return array;
@@ -133,7 +132,7 @@ void fillWorld() {
 			if (x == theWorld->x/2 && y == theWorld->y/2) {
 				placeForm(x, y, makeStone(0));
 			} else {
-				TYPE *d = makeDirt(moist);
+				Form *d = makeDirt(moist);
 				placeForm(x, y, d);
 			}
 		}
@@ -147,7 +146,7 @@ void genWorld(int **map) {
 		for(int y = 0; y < theWorld->y; y++) {
 			if ( map[x][y] >= 10 && map[x][y] <= 19) {
 				moist = map[x][y] - 9;
-				TYPE *d = makeDirt(moist);
+				Form *d = makeDirt(moist);
 				placeForm(x, y, d);
 			} 
 		}
@@ -164,7 +163,7 @@ int **worldToMap() {
 		for(int y = 0; y < sizeY; y++) {
 			Cell *cur = theWorld->map[x][y];
 			Form **residents = getCellContents(cur);
-			if (residents != NULL) {
+			if (residents != 0) {
 				Form *guy = checkSolidForm(cur);
 				if (isFormCenter(guy, x, y)) {
 					int val = guy->id;

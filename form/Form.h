@@ -12,6 +12,7 @@ typedef struct Form {
 	float ***body;
 	void *anim;
 	void *stats;
+	void *actor;
 	// float stat; // Used to store moisture
 	// float stat2; // Used to store hydralic conductivity
 } Form;

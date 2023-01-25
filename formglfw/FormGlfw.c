@@ -11,13 +11,14 @@ int frameX = 50;
 int frameY = 50;
 int defaultFrameY = -1;
 int defaultFrameX = -1;
+float bgColor[4];
 
 void initFormGlfw() {
 	srand(time(NULL));
 	initDirections();
 	// 0 means use monitors x and y and start in full screen mode
-	int windowX = 0;//960;
-	int windowY = 0;//640;
+	int windowX = 960;
+	int windowY = 640;
 	initializeGLFW(windowX, windowY);
 	//setAspectRatio(16, 9);
 	//setScreenMax(worldX);
@@ -38,6 +39,35 @@ void initFormGlfw() {
 	Screen *s = getWindow();
 	glfwWindowSizeCallback(s->window, s->width, s->height);
 	glfwUpdateGamepadMappings(gamecontrollerdb);
+	//bgColor = {0, 0 ,0, 0};
+	for (int i = 0; i < 4; i++) {
+		bgColor[i] = 0;
+	}	
+}
+
+void FormLoop(void (game)(void)) {
+	Screen *screen = getWindow();
+	while(!glfwWindowShouldClose(screen->window)) {
+		glfwPollEvents();
+		checkControllerInput();
+		processKeys();
+		/*
+		if(glfwGetKey(screen->window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
+			glfwSetWindowShouldClose(screen->window, 1);
+		}
+		*/
+		glClearColor(bgColor[0], bgColor[1], bgColor[2], bgColor[3]);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		game();
+		glfwSwapBuffers(screen->window);
+	}
+}
+
+void setBackgroundColor(float r, float g, float b, float a) {
+	bgColor[0] = r;
+	bgColor[1] = g;
+	bgColor[2] = b;
+	bgColor[3] = a;
 }
 
 void createWorld(int worldX, int worldY, int frameX, int frameY) {

@@ -1,6 +1,9 @@
 #include "GameLogic.h"
 
 WorldView *cam;
+WorldView *wv;
+World *w;
+
 PoopGuy **poopers;
 int numPlayers = 1;
 bool gridOn = false;
@@ -14,6 +17,23 @@ GOD *god = 0;
 int started = false;
 int fileVal = 0;
 char *fileName = 0;
+
+void menuLogic() {
+		drawActiveMenu();
+		updateMenu();
+		renderTextInput();
+		if (fileVal == 1) {
+			if (strlen(fileName) > 0) {
+				if (loadWorld(fileName)) {
+					started = 2;
+				} else {
+					free(fileName);
+					fileName = (char*)calloc(sizeof(char), 100);
+				}
+			}
+		}
+
+}
 
 int mainMenu() {
 	Screen *screen = getWindow();
@@ -52,12 +72,15 @@ int mainMenu() {
 	//textInput(true);
 
 	setMenuActive(startMenu, true);
+		FormLoop(menuLogic);
+		/*
 	while(started == 0) {
 		glfwPollEvents();
 		checkControllerInput();
 		processKeys();
 		glClearColor(0.1, 0.1, 0.1, 1.0);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
 		drawActiveMenu();
 		updateMenu();
 		renderTextInput();
@@ -73,10 +96,12 @@ int mainMenu() {
 		}
 		glfwSwapBuffers(screen->window);
 	}
+*/
 	fileVal = 0;
 	setMenuActive(startMenu, false);
 	return started;
 }
+
 
 char *getFileName() {
 	return fileName;
@@ -107,17 +132,62 @@ void saveGame() {
 	//arrayToFile("mapSave.txt", x->map);
 }
 
+void pooGame() {
+		if (!paused) {
+			AnimListAnimate();
+			actorListDo();
+			groundWater();
+			if (!godMode && poopers[0] != 0) {
+				//centerOnForm(poopers[0]->me->body);
+				//setCenter(wv, w->x / 2, w->y / 2);
+				followForms(wv);
+				//lerpView(wv);
+				//printf("currently at %f, %f\n", pooper->me->body->pos[0], pooper->me->body->pos[1]);
+				//followForm(poopers[0]->me->body);
+			} else {// if (god == 0) {
+				//setCenter(wv, godPos[0], godPos[1]);
+			}
+			//printf("poopguy index: %i\n",((Anim*)poopers[0]->me->body->anim)->sprite);	
+			//glClearColor(0, 0, 0, 1.0);
+			//glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+			if (debugDraw) {
+				drawWorldDebug(w);
+			} else {
+				drawWorld(w);
+			}
+			if (gridOn) {
+				drawGrid();
+			}
+			//glfwSwapBuffers(screen->window);
+		
+		} else {
+			//glClearColor(0.1, 0.1, 0.1, 1.0);
+			//glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+			drawActiveMenu();
+			updateMenu();
+			renderTextInput();
+			if (fileVal == 1) {
+				if (strlen(fileName) > 0) {
+					writeWorld(fileName);
+					free(fileName);
+					fileName = (char*)calloc(sizeof(char), 100);
+				}
+			}
+		}
+
+}
+
 int defaultFrame = 0;
 
 void gameLoop() {
 	Screen *screen = getWindow();
 	// why?? defaultFrame = screen->frame;
 	cam = getDefaultView();
-	WorldView *wv = getDefaultView();
+	wv = getDefaultView();
 	//printf("screen: %i, %i cam: %i, %i\n", screen->width, screen->height, cam->frameX, cam->frameY);
 	//float xSize = 2.0 / cam->frameX;
 	//float ySize = 2.0 / cam->frameY;
-	World *w = getWorld();
+	w = getWorld();
 	//setCameraSize(mainCam, 1);
 	
 	//makeStoneSquare((w->x/2), (w->y/2) - 40, 10);
@@ -165,7 +235,7 @@ void gameLoop() {
 
 	//glfwUpdateGamepadMappings(gamecontrollerdb);
 	god = makeGodPlayer(w->x * 0.5, w->y * 0.5, 20, 20);//wv->frameX, wv->frameY);
-	Player *nullPlayer = makePlayer(NULL, -1, NULL);
+	Player *nullPlayer = makePlayer(0, -1, 0);
 	addControl(nullPlayer, "K0G", toggleGod);
 	addControl(nullPlayer, "K0!", togglePauseMenu);//S
 	addControl(nullPlayer, "J07", togglePauseMenu);
@@ -173,6 +243,8 @@ void gameLoop() {
 	godPos =  (float*)calloc(2, sizeof(float));
 	godPos[0] = getWorld()->x /2;
 	godPos[1] = getWorld()->y /2;
+	FormLoop(pooGame);
+	/*
 	while(!glfwWindowShouldClose(screen->window)) {
 		glfwPollEvents();
 		checkControllerInput();
@@ -184,14 +256,14 @@ void gameLoop() {
 			AnimListAnimate();
 			actorListDo();
 			groundWater();
-			if (!godMode && poopers[0] != NULL) {
+			if (!godMode && poopers[0] != 0) {
 				//centerOnForm(poopers[0]->me->body);
 				//setCenter(wv, w->x / 2, w->y / 2);
 				followForms(wv);
 				//lerpView(wv);
 				//printf("currently at %f, %f\n", pooper->me->body->pos[0], pooper->me->body->pos[1]);
 				//followForm(poopers[0]->me->body);
-			} else {// if (god == NULL) {
+			} else {// if (god == 0) {
 				//setCenter(wv, godPos[0], godPos[1]);
 			}
 			//printf("poopguy index: %i\n",((Anim*)poopers[0]->me->body->anim)->sprite);	
@@ -223,9 +295,11 @@ void gameLoop() {
 			glfwSwapBuffers(screen->window);
 		}
 	}
+	*/
 	free(godPos);
 	exitGame();
 }
+
 
 void exitMenu() {
 	paused = false;
@@ -275,7 +349,7 @@ void toggleGod(void *, float poo) {
 		if (godMode) {
 		/*
 			//godOff(god);
-			if (poopers[0] != NULL) {
+			if (poopers[0] != 0) {
 				centerOnForm(poopers[0]->me->body);
 			}
 			sizeScreen(defaultFrame);

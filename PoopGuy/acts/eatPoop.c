@@ -43,7 +43,7 @@ void stomachStuff(Form *f, Action *a) {
 				for (int y = 0; y < ep->yBite; y++) {
 					//printf(" %i, %i ", xc-x, yc - y);
 					Form *food = takeForm(xc - x, yc - y);
-					if (food != NULL) {
+					if (food != 0) {
 						addToStack(food, a);
 					}
 				}
@@ -58,12 +58,12 @@ void stomachStuff(Form *f, Action *a) {
 	}
 	if (ep->pooping != 0) {
 		Form *poo = removeFromStack(a);
-		if (poo != NULL) {
+		if (poo != 0) {
 			//printf("pooping\n");
 			int buttDir = (ep->dir + 2) % 4;
 			bool poopGood = true;
-			if (checkSide(f, d[buttDir][0], d[buttDir][1], false) != NULL) {
-				if (checkSide(f, d[ep->dir][0], d[ep->dir][1], true) == NULL) {
+			if (checkSide(f, d[buttDir][0], d[buttDir][1], false) != 0) {
+				if (checkSide(f, d[ep->dir][0], d[ep->dir][1], true) == 0) {
 					removeForm(f);
 					placeForm(f->pos[0] + d[ep->dir][0], f->pos[1] + d[ep->dir][1], f);
 				} else {
@@ -83,7 +83,7 @@ void stomachStuff(Form *f, Action *a) {
 				for (int x = 0; x < ep->xBite; x++) {
 					for (int y = 0; y < ep->yBite; y++) {
 						poo = removeFromStack(a);
-						if (poo != NULL) {
+						if (poo != 0) {
 							placeForm(xc -x, yc - y, poo);
 						}else {
 							x = 100;
@@ -101,7 +101,7 @@ void stomachStuff(Form *f, Action *a) {
 void addToStack(Form *f, Action *a) {
 	eatPooVar *ep = (eatPooVar*)(a->vars);
 	linkedList *cur = ep->stomach;
-	while (cur->data != NULL) {
+	while (cur->data != 0) {
 		formStack *fs = (formStack*)(cur->data);
 		//if (compareForms(f, fs->type) == 1) { //we have a match
 		if (f->id == fs->type) {

@@ -59,7 +59,7 @@ void deleteTerrain() {
 	}
 }
 
-void placeForm(int x, int y, TYPE *form) {
+void placeForm(float x, float y, TYPE *form) {
 	/*
 	int mod[2] = {0,0};
 	if (form->size[0] != 0 && form->size[1] != 0) {
@@ -74,26 +74,29 @@ void placeForm(int x, int y, TYPE *form) {
 	form->pos[0] = x;// + mod[0];
 	form->pos[1] = y;// + mod[1];
 	if (form->size[0] == 0 && form->size[1] == 0) {
-		if (x >= 0 && y >= 0 && x < theWorld->x && y < theWorld->y) {
+		int xp = floor(x);
+		int yp = floor(y);
+		if (xp >= 0 && yp >= 0 && xp < theWorld->x && yp < theWorld->y) {
 			if (solidForm) {
-				Form *f = getSolidForm(theWorld->map[x][y]);
-				if (f != NULL) {
+				Form *f = getSolidForm(theWorld->map[xp][yp]);
+				if (f != NULL && f != form) {
 					deleteForm(f);
 				}
 			}
-			//theWorld->map[x][y] = form;
-			addToCell(theWorld->map[x][y], form);
+			//theWorld->map[xp][yp] = form;
+			addToCell(theWorld->map[xp][yp], form);
 		}
 	} else {
-		//printf("placing\n");
+		//printf("placing for mof size %i, %i\n", form->size[0], form->size[1]);
 		for (int i = 0; i < form->size[0]; i++) {
 			for (int j = 0; j < form->size[1]; j++) {
-				int xp = form->pos[0] + form->body[i][j][0];
-				int yp = form->pos[1] + form->body[i][j][1];
+				int xp = floor(x + form->body[i][j][0]);
+				int yp = floor(y + form->body[i][j][1]);
+				printf("placing form %i, %i\n", xp, yp);
 				if (xp >= 0 && yp >= 0 && xp < theWorld->x && yp < theWorld->y) {
 					if (solidForm) {
 						Form *f = getSolidForm(theWorld->map[xp][yp]);
-						if (f != NULL) {
+						if (f != NULL && f != form) {
 							deleteForm(f);
 						}
 					}
@@ -119,6 +122,87 @@ Form *checkCol(int x, int y) {
 	}
 }
 
+bool checkPosCol(Form *form, int x, int y) {
+	if (form->size[0] == 0 && form->size[1] == 0) {
+		if (x >= 0 && y >= 0 && x < theWorld->x && y < theWorld->y) {
+			if (checkForm(x, y) != 0) {
+				return true;
+			} else {
+				return false;
+			}
+		}	 else {
+			return true;
+		}
+	} else {
+		for (int i = 0; i < form->size[0]; i++) {
+			for (int j = 0; j < form->size[1]; j++) {
+				int xp = x + form->body[i][j][0];
+				int yp = y + form->body[i][j][1];
+				if (xp >= 0 && yp >= 0 && xp < theWorld->x && yp < theWorld->y) {
+					Form *col = checkForm(x, y);
+					if (col) {
+						return true;
+					}
+				} else {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+}
+
+linkedList *checkSolidPos(Form *form, int x, int y) {
+	linkedList *solids = makeList();
+	if (form->size[0] == 0 && form->size[1] == 0) {
+		if (x >= 0 && y >= 0 && x < theWorld->x && y < theWorld->y) {
+			addToList(&solids, checkForm(x, y));
+		}	 else {
+			return 0;
+		}
+	} else {
+		for (int i = 0; i < form->size[0]; i++) {
+			for (int j = 0; j < form->size[1]; j++) {
+				int xp = x + form->body[i][j][0];
+				int yp = y + form->body[i][j][1];
+				if (xp >= 0 && yp >= 0 && xp < theWorld->x && yp < theWorld->y) {
+					addToList(&solids, checkForm(x, y));
+				}
+			}
+		}
+	}
+	return solids;
+}
+
+linkedList *checkPos(Form *form, int x, int y) {
+	if (form->size[0] == 0 && form->size[1] == 0) {
+		if (x >= 0 && y >= 0 && x < theWorld->x && y < theWorld->y) {
+			return theWorld->map[x][y]->within;;
+		}	 else {
+			return 0;
+		}
+	} else {
+		linkedList *within = 0;
+		for (int i = 0; i < form->size[0]; i++) {
+			for (int j = 0; j < form->size[1]; j++) {
+				int xp = x + form->body[i][j][0];
+				int yp = y + form->body[i][j][1];
+				if (xp >= 0 && yp >= 0 && xp < theWorld->x && yp < theWorld->y) {
+					if (within == 0) {
+						within = theWorld->map[x][y]->within;
+					} else {
+						linkedList *cur = within;
+						while (cur->next != 0) {
+							cur = cur->next;
+						}
+						cur->next = theWorld->map[x][y]->within;
+					}
+				}
+			}
+		}
+		return within;
+	}
+}
 
 Form *takeForm(int x, int y) {
 	Form *form = 0;
@@ -145,12 +229,15 @@ Form *removeForm(Form* form) {
 			for (int j = 0; j < form->size[1]; j++) {
 				int xp = form->pos[0] + (form->body[i][j])[0];
 				int yp = form->pos[1] + (form->body[i][j])[1];
+				printf("removing form from %i, %i\n", xp, yp);
 				/*
 				if (xp >= 0 && yp >= 0 && xp < theWorld->x && yp < theWorld->y) {
 					theWorld->map[xp][yp] = 0;
 				}
 				*/
-				takeForm(xp, yp);
+				if (takeForm(xp, yp) == 0) {
+					printf("its not here\n");
+				}
 				//takeForm(form->pos[0], form->pos[1]);
 			}
 		}

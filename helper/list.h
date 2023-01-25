@@ -14,6 +14,7 @@ linkedList *makeList();
 
 void addToList(linkedList **head, void *item);
 void *printList(linkedList **head, char *listName, void (*print)(void*));
+void* findList(linkedList **head, void *item, bool (*cmp)(void*, void*));
 bool cmpList(linkedList **head, void *item, bool (*cmp)(void*, void*));
 void *checkList(linkedList **head, bool (*chk)(void*));
 bool isInList(linkedList **head, void *item);
@@ -23,6 +24,7 @@ void *removeFromList(linkedList **head, void *item);
 void *removeFromListCheck(linkedList **head, bool (*chk)(void*));
 void *removeFromListInt(linkedList **head, int item);
 void **getContents(linkedList **head, int num);
+int countContents(linkedList *head);
 void freeList(linkedList **ll);
 void deleteList(linkedList **ll, void (*deleteFunc)(void*));
 void freeListSaveObj(linkedList **ll);

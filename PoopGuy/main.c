@@ -1,4 +1,6 @@
-#include "../formglfw/FormGlfw.h"
+//#include "../formglfw/FormGlfw.h"
+#include "../FormNetwork.h"
+#include <stdbool.h>
 #include "acts/actList.c"
 #include "poopPlayer.c"
 #include "Eco.c"
@@ -58,8 +60,8 @@ int main(int argc, char **argv) {
 		printf("generating world\n");
 		int **map = genMap(Seedstring);
 		//genRain(map);
-		//genWorld(map);
-		fillWorld();
+		genWorld(map);
+		//fillWorld();
 		//arrayToFile("mapSave.txt", map);
 		freeMap(map);
 		int xPos = (worldX * 0.5);

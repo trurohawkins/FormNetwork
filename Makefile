@@ -15,8 +15,11 @@ SHD = $(GD)shaders/
 TD = $(GD)text/
 HD = helper/
 
-$(GAME)/$GAME): $(GAME)/main.c libFormGlfw.a glad.o
+$(GAME)/$GAME): $(GAME)/main.c libFormGlfw.a glad.o FormNetwork.h
 	gcc -g -o  $(GAME)/$(GAME) $(GAME)/main.c glad.o libFormGlfw.a  $(DEVLIBS)
+
+FormNetwork.h: formglfw/FormGlfw.h libFormGlfw.a
+	gcc -E $(GF)FormGlfw.h > FormNetwork.h
 
 standalone: main.o libFormGlfw.a glad.o
 	gcc -o PoopGuy main.o glad.o libFormGlfw.a $(RELEASELIBS) 
@@ -76,12 +79,13 @@ helper.o: $(HD)helper.c $(HD)helper.h $(HD)list.c $(HD)list.h $(HD)binaryWriter.
 	$(CC) $(HD)helper.c
 
 clean:
-	rm $(GAME) 
+	rm -f $(GAME)/$(GAME)
+	rm -f *.o
+	rm -f vgcore*
 
 fclean:
-	rm *.o 
-	rm *.a
-	rm $(GAME)/$(GAME)
-
-mclean:
-	rm vgcore*
+	rm -f *.o 
+	rm -f *.a
+	rm -f vgcore*
+	rm -f $(GAME)/$(GAME)
+	rm -f FormNetwork.h

@@ -1,8 +1,31 @@
+Action *makeAction(char *name, void (*n_fun)(Actor*), void *n_vars) {
+	Action *newAction = (Action*)calloc(1, sizeof(Action));
+	newAction->name = calloc(strlen(name) + 1, 1);
+	memcpy(newAction->name, name, strlen(name)+1);
+	newAction->active = 1;
+	if (n_fun == 0) {
+		newAction->fun = &defaultAction;
+	} else {
+		newAction->fun = n_fun;
+	}
+	newAction->vars = n_vars;
+	return newAction;
+}
+
+void deleteAction(Action *action) {
+	free(action->name);
+	free(action->vars);
+	//free(action);//changed because part of list and deleting that list will fre this memory
+}
+
+void defaultAction(Form *a) {
+	printf("I(%i) am acting %i \n", a->id, a->id);
+}
+
 Actor *makeActor(Form * f/*, Action *a*/) {
 	Actor *newActor = (Actor*)calloc(1, sizeof(Actor));
 	newActor->body = f;
 	newActor->actionList = makeList();
-	f->actor = newActor;
 	/*
 	if (a != 0) {
 		addToList(newActor->actionList, a);
@@ -16,6 +39,13 @@ void addAction(Actor *actor, Action *action) {
 	addToList(&(actor->actionList), action);
 }
 
+Action *findAction(Actor *actor, char *name) {
+	return cmpList(&actor->actionList, name, cmpNames);
+}
+
+bool cmpNames(void *action1, void * action2) {
+	memcmp((Action*)action1->name, (Action*)action2->name) == 0;
+}
 
 void *removeAction(Actor *actor, Action *action) {
 	return removeFromList(&(actor->actionList), action);

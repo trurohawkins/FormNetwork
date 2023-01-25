@@ -44,8 +44,8 @@ void groundWater(){
 		for (int x = 0; x < theWorld->x; x++) {
 			for (int y = theWorld->y - 1; y >=0; y--){
 				Form *f = checkSolidForm(theWorld->map[x][y]);
-				//if (theWorld[x][y] !=NULL && theWorld[x][y]->id == 10) {
-				if (f !=NULL && f->id == 10) {
+				//if (theWorld[x][y] !=0 && theWorld[x][y]->id == 10) {
+				if (f !=0 && f->id == 10) {
 					eVap(x,y); // sunlight pulls water up
 					gravPull(x,y); // gravity pull water down
 					if (rCtr >= rInt) {
@@ -67,8 +67,8 @@ int chSky(int x, int y) {
 // checks coloumn above worldMap element to see if it's covered or if it's open to the sky	
 	int sky = 1;
 	for (int yi = theWorld->y - 1; yi > y; yi--) {
-		//if (theWorld->map[x][yi] != NULL) {
-		if (checkSolidForm(theWorld->map[x][yi]) != NULL) {
+		//if (theWorld->map[x][yi] != 0) {
+		if (checkSolidForm(theWorld->map[x][yi]) != 0) {
 			sky = 0; //block is covered from sunlight
 			return sky;
 		} 
@@ -77,8 +77,8 @@ int chSky(int x, int y) {
 }
 
 void rain(int x, int y) {
-	//if (theWorld->map[x][y] != NULL) {
-	if (checkSolidForm(theWorld->map[x][y]) != NULL) {
+	//if (theWorld->map[x][y] != 0) {
+	if (checkSolidForm(theWorld->map[x][y]) != 0) {
 		int skyy = chSky(x,y);
 		if (skyy == 1) {
 			//setStat(theWorld->map[x][y], "moisture",  sat);
@@ -97,22 +97,22 @@ void eVap(int x, int y){
 		int depth = 0; // measures depth of water coloumn
 
 		for (int yi = y-1; yi >= 0; yi--) {
-			//if ( theWorld->map[x][yi] != NULL){
-			if ( checkSolidForm(theWorld->map[x][yi]) != NULL){
+			//if ( theWorld->map[x][yi] != 0){
+			if ( checkSolidForm(theWorld->map[x][yi]) != 0){
 				float *stat = getStat(checkSolidForm(theWorld->map[x][yi]), "moisture");
 
-				if ( stat != NULL && *stat > 0.01 ) {
+				if ( stat != 0 && *stat > 0.01 ) {
 					// if block is there and has water increased depth counter
 					depth += 1;
 				}
 			}
 		}
-		if ( checkSolidForm(theWorld->map[x][y - depth]) == NULL){
+		if ( checkSolidForm(theWorld->map[x][y - depth]) == 0){
 			return;
 		}
 
 		float *stat = getStat(checkSolidForm(theWorld->map[x][y-depth]), "moisture");
-		if(stat != NULL){ 
+		if(stat != 0){ 
 			if (*stat >= sTake) { 
 			// ensures no negative values
 				*stat -= sTake;
@@ -129,14 +129,14 @@ void eVap(int x, int y){
 }
 
 void gravPull(int x, int y){
-	if (checkSolidForm(theWorld->map[x][y]) == NULL) {
+	if (checkSolidForm(theWorld->map[x][y]) == 0) {
 		return;
 	}
 
 float *moisture = getStat(checkSolidForm(theWorld->map[x][y]), "moisture");
 float *k = getStat(checkSolidForm(theWorld->map[x][y]), "hydroK");
 
-if ( moisture == NULL || k == NULL){return;}
+if ( moisture == 0 || k == 0){return;}
 
 // if block is at bottom of world, water drops outs into the ether
 	if (y == 0 ){
@@ -147,10 +147,10 @@ if ( moisture == NULL || k == NULL){return;}
 		return;
 	}
 	
-	if (checkSolidForm(theWorld->map[x][y-1]) ==NULL) {return;} 
+	if (checkSolidForm(theWorld->map[x][y-1]) ==0) {return;} 
 
 	float *test = getStat(checkSolidForm(theWorld->map[x][y-1]), "moisture");
-	if (test == NULL)return;
+	if (test == 0)return;
 // if block is above tHoldU and above a block that is above tHoldL
 
 	if ( *moisture > tHoldU && *test >= tHoldL) {

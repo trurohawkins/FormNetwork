@@ -44,6 +44,19 @@ void *indexList(linkedList **head, int index) {
 	return NULL;
 }
 
+void* findList(linkedList **head, void *item, bool (*cmp)(void*, void*)) {
+	linkedList *cur = *head;
+	while (cur != NULL) {
+		if (cur->data != NULL) {
+			if (cmp(cur->data, item) == true) {
+				return cur->data;
+			}
+		}
+		cur = cur->next;
+	}
+	return false;
+}
+
 bool cmpList(linkedList **head, void *item, bool (*cmp)(void*, void*)) {
 	linkedList *cur = *head;
 	while (cur != NULL) {
@@ -191,6 +204,18 @@ void **getContents(linkedList **head, int num) {
 		return NULL;
 	}
 }
+
+int countContents(linkedList *cur) {
+	int count = 0;
+	while (cur != 0) {
+		if (cur->data != 0) {
+			count++;
+		}
+		cur = cur->next;
+	}
+	return count;
+}
+
 
 void freeList(linkedList **ll) {
 	linkedList *cur = *ll;
