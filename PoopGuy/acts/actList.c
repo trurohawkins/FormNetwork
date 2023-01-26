@@ -28,7 +28,7 @@ moveVar *makeMoveVar() {
 }
 
 
-void move(Form *f, Action *a) {
+int move(Form *f, Action *a) {
 	moveVar *mv = (moveVar *)(a->vars);
 	if (!(mv->force[0] == 0 && mv->force[1] == 0)) {
 		//printf("moving %i, %i\n", mv->force[0], mv->force[1]);
@@ -58,6 +58,7 @@ void move(Form *f, Action *a) {
 		}
 	}
 	decelerate(mv);
+	return 0;
 }
 
 void decelerate(moveVar *mv) {

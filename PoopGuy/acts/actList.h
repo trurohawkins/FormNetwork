@@ -13,7 +13,7 @@ typedef struct moveVar {
 
 Action *makeMove();
 moveVar *makeMoveVar();
-void move(Form *f, Action *a);
+int move(Form *f, Action *a);
 void decelerate(moveVar *mv);
 void addForce(void *m, int powX, int powY);
 void setForce(void *m, int x, int y);

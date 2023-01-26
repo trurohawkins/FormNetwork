@@ -15,12 +15,12 @@ Form *makeForm(float r, float g, float b, float wid, float len) {
 	//newForm->invert[0] = false;
 	//newForm->invert[1] = false;
 	if ((int)wid % 2 == 0) {
-		newForm->pMod[0] = -0.5;
+		newForm->pMod[0] = 1;//-0.5;
 	} else {
 		newForm->pMod[0] = 0;
 	}
 	if ((int)len % 2 == 0) {
-		newForm->pMod[1] = -0.5;
+		newForm->pMod[1] = 1;//-0.5;
 	} else {
 		newForm->pMod[1] = 0;
 	}
@@ -28,21 +28,27 @@ Form *makeForm(float r, float g, float b, float wid, float len) {
 	//float len = l;
 	if (wid != 0 && len != 0) {
 		//printf("form with body\n");
-		newForm->body = (float***) calloc(wid, sizeof(float**));
+		newForm->body = (int***) calloc(wid, sizeof(int**));
 		for (int i = 0; i < wid; i++) {
-			newForm->body[i] = (float**) calloc(len, sizeof(float*));
+			newForm->body[i] = (int**) calloc(len, sizeof(int*));
 		}
+		/*
 		wid -= 1;
 		len -= 1;	
-		for (int x = 0; x <= wid; x++) {
-			for(int y = 0; y <= len; y++) {
-				newForm->body[x][y] = (float*)calloc(2, sizeof(float));
-				newForm->body[x][y][0] = -(wid/2) + x;
-				newForm->body[x][y][1] = -(len/2) + y;
-				float xb = -(wid/2) + x;
-				float yb = -(len/2) + y;
-				//printf("[%i][%i] = %f, %f\n", x, y, newForm->body[x][y][0], newForm->body[x][y][1]);
-				//printf("float val = %f, %f\n", xb, yb);
+		*/
+		printf("len/2: %f, floor(len/2): %f", len/2, -floor(len/2));
+		int l = -floor(len/2);
+		int w = -floor(wid/2);
+		for (int x = 0; x < wid; x++) {
+			for(int y = 0; y < len; y++) {
+				newForm->body[x][y] = (int*)calloc(2, sizeof(int));
+				newForm->body[x][y][0] = w + newForm->pMod[0] + x;
+				newForm->body[x][y][1] = l + newForm->pMod[1] + y;
+				int xb = (-wid/2) + x;
+				int yb = (-len/2) + y;
+				//printf("-len/2 = %i, len =%i\n", l, len);
+				//printf("[%i][%i] = %i, %i\n", x, y, newForm->body[x][y][0], newForm->body[x][y][1]);
+				//printf("val = %i, %i\n", xb, yb);
 			}
 		}
 	} else {
@@ -65,9 +71,10 @@ Form *checkSide(Form *f, int xd, int yd, bool collide) {
 	if (xd != 0) {
 		int col = 0;
 		if (xd > 0) {
-			col = (f->size[0]+f->pMod[0])/2 + 1;
+			col = (f->size[0]/*+f->pMod[0]*/)/2 + 1;
+			//printf("\nCOL: %i\n\n", col);
 		} else if (xd < 0) {
-			col = -((f->size[0]-f->pMod[0])/2 + 1);
+			col = -((f->size[0]/*-f->pMod[0]*/)/2 + 1);
 		}
 		int hei = f->size[1];//(f->size[1]-f->pMod[1])/2;
 		//printf("hei: %i - from %f\n", hei, f->size[1] + f->pMod[1]);
@@ -91,9 +98,9 @@ Form *checkSide(Form *f, int xd, int yd, bool collide) {
 	if (yd != 0) {
 		int row = 0;
 		if (yd > 0) {
-			row = (f->size[1]+f->pMod[1])/2 + 1;
+			row = (f->size[1]/*+f->pMod[1]*/)/2 + 1;
 		} else if (yd < 0) {
-			row = -((f->size[1]-f->pMod[1])/2 + 1);
+			row = -((f->size[1]/*-f->pMod[1]*/)/2 + 1);
 		}
 		int wid = f->size[0];///2;
 		//printf("checking side, Im at %f, %f\n", f->pos[0], f->pos[1]);
@@ -132,7 +139,9 @@ void deleteForm(void *form) {
 
 
 bool compareForms(Form *f1, Form *f2) {
-	return f1 == f2;
+	if (f1 == 0 || f2 == 0) {
+		return f1 == f2;
+	}
 	if (f1->color[0] == f2->color[0] && f1->color[1] == f2->color[1] && f1->color[2] == f2->color[2]) {
 		return 1;
 	} else {

@@ -11,7 +11,7 @@ Action *makeJump(moveVar *mv, Action *n_grav) {
 	return a;
 }
 
-void startJump(Form *f, Action *a) {
+int startJump(Form *f, Action *a) {
 	jumpVar *jv = (jumpVar*)a->vars;
 		if (jv->jumpCount < jv->jumpMax) {
 			jv->jpGoal = jv->maxJP;
@@ -21,9 +21,10 @@ void startJump(Form *f, Action *a) {
 			a->active = 1;
 			jv->jumpCount++;
 		}
+	return 0;
 }
 
-void jump(Form *f, Action *a) {
+int jump(Form *f, Action *a) {
 	jumpVar *jv = (jumpVar*)a->vars;
 	int dir = 0;
 	if(jv->curJP != jv->jpGoal) {
@@ -44,4 +45,5 @@ void jump(Form *f, Action *a) {
 	if (dir != 0) {
 		addForce(jv->move, 0, dir * jv->jumpPow);
 	}
+	return 0;
 }

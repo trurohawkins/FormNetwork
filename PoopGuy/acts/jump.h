@@ -10,5 +10,5 @@ typedef struct jumpVar {
 } jumpVar;
 
 Action *makeJump(moveVar *mv, Action *n_grav);
-void startJump(Form *f, Action*);
-void jump(Form *f, Action* a);
+int startJump(Form *f, Action*);
+int jump(Form *f, Action* a);

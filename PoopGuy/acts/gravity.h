@@ -7,4 +7,4 @@ typedef struct gravVar {
 
 Action *makeGravity();
 void setFriction(Action *a, int n_fric);
-void gravity(Form *f, Action *a);
+int gravity(Form *f, Action *a);

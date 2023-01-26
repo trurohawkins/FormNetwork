@@ -8,4 +8,4 @@ typedef struct controlVar {
 
 Action *makeControl();
 void setControlsMove(void *c, moveVar *move);
-void control(Form *f, Action *a);
+int control(Form *f, Action *a);

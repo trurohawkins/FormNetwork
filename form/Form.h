@@ -9,7 +9,7 @@ typedef struct Form {
 	int size[2];
 	//int roto;
 	//bool invert[2];
-	float ***body;
+	int ***body;
 	void *anim;
 	void *stats;
 	void *actor;

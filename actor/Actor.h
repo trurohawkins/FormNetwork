@@ -7,6 +7,7 @@ typedef struct Actor {
 
 Actor *makeActor(Form * f/*, Action *a*/);
 void addAction(Actor *actor, Action *action);
+Action *findAction(char *name, Actor *actor);
 void *removeAction(Actor *actor, Action *action);
 void deleteMyAction(Actor *actor, Action *action);
 void doActions(Actor *actor);

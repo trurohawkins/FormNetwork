@@ -17,7 +17,7 @@ void setFriction(Action *a, int n_fric) {
 	((gravVar*)a->vars)->friction = n_fric;
 }
 
-void gravity(Form *f, Action *a) {
+int gravity(Form *f, Action *a) {
 	gravVar *gv = (gravVar*)a->vars;
 	moveVar *mv = gv->move;
 	int ns = 1;

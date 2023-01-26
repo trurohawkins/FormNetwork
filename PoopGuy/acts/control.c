@@ -14,7 +14,7 @@ void setControlsMove(void *c, moveVar *mv) {
 	cv->move = mv;
 }
 
-void control(Form *f, Action *a) {
+int control(Form *f, Action *a) {
 	controlVar *cv = (controlVar*)(a->vars);
 	int moveX = cv->moveRight - cv->moveLeft; 
 	if (cv->moveRight == 1) {
@@ -46,4 +46,5 @@ void control(Form *f, Action *a) {
 		// no input reset last input character. Turning based on last inp, want to change direction w/o moving{
 		//cv->pooper->lastInp = 0;
 	}
+	return 0;
 }

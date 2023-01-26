@@ -114,10 +114,10 @@ void camRight(void *v, float f) {
 int counter = 0;
 int speedInterval = 5;
 //
-void moveGodView(Form * v, Action *a) {
+int moveGodView(Form * v, Action *a) {
 	if (counter < speedInterval) {
 		counter++;
-		return;
+		return 0;
 	} else {
 		counter = 0;
 	}
@@ -154,7 +154,7 @@ void moveGodView(Form * v, Action *a) {
 		//setCenter(god->cam, god->pos[0], god->pos[1]);
 	}
 	if (!god->p->active){// || (god->zoom[0] && god->zoom[1])) {
-		return;
+		return 0;
 	}
 	if (god->zoom[0]) {
 		
@@ -184,6 +184,7 @@ void moveGodView(Form * v, Action *a) {
 		godSetFrame(god);
 	}
 	godSetFrame(god);
+	return 0;
 }
 
 void godOff(GOD *god) {

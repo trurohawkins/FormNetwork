@@ -16,6 +16,19 @@ void addAction(Actor *actor, Action *action) {
 	addToList(&(actor->actionList), action);
 }
 
+Action *findAction(char *name, Actor *actor) {
+	linkedList *a = actor->actionList;
+	int len = strlen(name);
+	while (a != 0) {
+		Action *act = a->data;
+		if (act->name) {
+			if (memcmp(act->name, name, len) == 0) {
+				return act;
+			}
+		}
+		a = a->next;
+	}
+}
 
 void *removeAction(Actor *actor, Action *action) {
 	return removeFromList(&(actor->actionList), action);

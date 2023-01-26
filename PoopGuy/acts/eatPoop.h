@@ -19,6 +19,6 @@ typedef struct eatPooVar {
 Action *makeStomach(Form *f, float biteX, float biteY);
 
 void changeDir(eatPooVar *ep, Form* f, int dir);
-void stomachStuff(Form *f, Action *a);
-void addToStack(Form *f, Action *a);
+int stomachStuff(Form *f, Action *a);
+int addToStack(Form *f, Action *a);
 Form *removeFromStack();

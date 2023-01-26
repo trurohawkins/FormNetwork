@@ -1,4 +1,4 @@
-Action *makeAction(void (*n_fun)(Form*,Action*), void *n_vars) {
+Action *makeAction(int (*n_fun)(Form*,Action*), void *n_vars) {
 	Action *newAction = (Action*)calloc(1, sizeof(Action));
 	newAction->active = 1;
 	if (n_fun == 0) {
@@ -24,7 +24,7 @@ void deleteAction(Action *action) {
 	//free(action);//changed because part of list and deleting that list will fre this memory
 }
 
-void defaultAction(Form *f, Action *a) {
+int defaultAction(Form *f, Action *a) {
 	printf("I(%i) am acting %i \n", f->id, f->id);
 }
 /*

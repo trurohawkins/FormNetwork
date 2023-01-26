@@ -25,7 +25,7 @@ void changeDir(eatPooVar *ep, Form* f, int dir) {
 	}
 }
 
-void stomachStuff(Form *f, Action *a) {
+int stomachStuff(Form *f, Action *a) {
 	eatPooVar *ep = (eatPooVar*)(a->vars);
 	int **d = getDirs();
 	int xc;
@@ -96,9 +96,10 @@ void stomachStuff(Form *f, Action *a) {
 			}
 		}
 	}
+	return 0;
 }
 
-void addToStack(Form *f, Action *a) {
+int addToStack(Form *f, Action *a) {
 	eatPooVar *ep = (eatPooVar*)(a->vars);
 	linkedList *cur = ep->stomach;
 	while (cur->data != 0) {
@@ -126,6 +127,7 @@ void addToStack(Form *f, Action *a) {
 			deleteForm(f);
 		}
 	}
+	return 0;
 }
 
 Form *removeFromStack(Action *a) {

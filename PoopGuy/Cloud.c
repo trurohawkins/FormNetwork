@@ -31,7 +31,7 @@ Actor *makeCloud(int x, int y, int speed) {
 }
 
 
-void cloudHover(Form *c, Action *a) {
+int cloudHover(Form *c, Action *a) {
 	cloudVar *cv = (cloudVar*)(a->vars);
 	/*
 	if (cv->moveCounter > cv->moveInterval) {
@@ -61,4 +61,5 @@ void cloudHover(Form *c, Action *a) {
 	} else {
 		c->pos[0] += step;
 	}
+	return 0;
 }

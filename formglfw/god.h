@@ -24,7 +24,7 @@ void camUp(void *, float);
 void camLeft(void *, float);
 void camDown(void *, float);
 void camRight(void *, float);
-void moveGodView(Form *v, Action *a);
+int moveGodView(Form *v, Action *a);
 void godOff(GOD *god);
 void godOn(GOD *g);
 void godSetFrame(GOD* g);

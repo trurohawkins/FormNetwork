@@ -7,5 +7,5 @@ typedef struct cloudVar {
 } cloudVar;
 
 Actor *makeCloud(int x, int y, int speed);
-void cloudHover(Form *c, Action *a);
+int cloudHover(Form *c, Action *a);
 #endif
