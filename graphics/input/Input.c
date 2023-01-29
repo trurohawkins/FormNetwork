@@ -29,31 +29,34 @@ linkedList *getCurInput() {
 }
 
 void takeKeys(GLFWwindow *window, int key, int scancode, int action, int mods) {
-	processMenuKeys(key, action); //for concurrent menus and gameplay. See mousebuttons
-	inpReceived *ir = (inpReceived*)malloc(sizeof(inpReceived));
-	char *keyString = (char *)malloc(4 * sizeof(char));
-	keyString[0] = 'K';
-	keyString[1] = 48;//add player info later
-	if (key == 256) { //escape key
-		key = '!';
-	} else if (key ==264) {
-		key = '_';
-	} else if (key == 265) {
-		key = '^';
-	} else if (key == 262) {
-		key = '>';
-	} else if (key ==263) {
-		key = '<';
+	if (action != GLFW_REPEAT) {
+		printf("KEY PRESS %i\n", action);
+		processMenuKeys(key, action); //for concurrent menus and gameplay. See mousebuttons
+		inpReceived *ir = (inpReceived*)malloc(sizeof(inpReceived));
+		char *keyString = (char *)malloc(4 * sizeof(char));
+		keyString[0] = 'K';
+		keyString[1] = 48;//add player info later
+		if (key == 256) { //escape key
+			key = '!';
+		} else if (key ==264) {
+			key = '_';
+		} else if (key == 265) {
+			key = '^';
+		} else if (key == 262) {
+			key = '>';
+		} else if (key ==263) {
+			key = '<';
+		}
+		keyString[2] = key;
+		/*
+		printf("pressed %i \n", key);
+		printf("pressed %c \n", key);
+		*/
+		keyString[3] = '\0';
+		ir->input = keyString;
+		ir->val = action;
+		addToList(&curInput, ir);
 	}
-	keyString[2] = key;
-	/*
-	printf("pressed %i \n", key);
-	printf("pressed %c \n", key);
-	*/
-	keyString[3] = '\0';
-	ir->input = keyString;
-	ir->val = action;
-	addToList(&curInput, ir);
 }
 
 void takeMouseButt(GLFWwindow *window, int button, int action, int mods) {

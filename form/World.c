@@ -116,7 +116,6 @@ Form *checkCol(int x, int y) {
 		return checkForm(x,y);//SolidForm(theWorld->map[x][y]);
 	} else {
 		if (inert == 0) {
-			printf("inert\n");
 			makeInert();
 		}	
 		return inert;
@@ -201,6 +200,8 @@ linkedList *checkSolidSide(Form *f, float xp, float yp, int xd, int yd) {
 				if (!compareForms(check, f)) {
 					if (!solids) {
 						solids = makeList();
+					} else if (isInList(&solids, check)) {
+						continue;
 					}
 					addToList(&solids, check);
 				}
@@ -221,6 +222,8 @@ linkedList *checkSolidSide(Form *f, float xp, float yp, int xd, int yd) {
 				if (!compareForms(check, f)) {
 					if (!solids) {
 						solids = makeList();
+					} else if (isInList(&solids, check)) {
+						continue;
 					}
 					addToList(&solids, check);
 				}
@@ -266,7 +269,6 @@ bool checkColSide(Form *f, float xp, float yp, int xd, int yd) {
 				}
 			}
 		}
-		printf("\n");
 	}
 	return false;
 }
