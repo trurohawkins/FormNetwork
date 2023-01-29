@@ -11,6 +11,7 @@ void addActor(Actor *a) {
 void removeActor(Actor *a) {
 	removeFromList(&ActorList, a);
 }
+
 void deleteActorList() {
 	linkedList *cur = ActorList;
 	while (cur != NULL) {

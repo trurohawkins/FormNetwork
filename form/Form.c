@@ -14,15 +14,17 @@ Form *makeForm(float r, float g, float b, float wid, float len) {
 	//newForm->roto = 0;
 	//newForm->invert[0] = false;
 	//newForm->invert[1] = false;
+	int eModX = 0;
 	if ((int)wid % 2 == 0) {
-		newForm->pMod[0] = 1;//-0.5;
+		eModX = 1;//-0.5;
 	} else {
-		newForm->pMod[0] = 0;
+		//newForm->eMod[0] = 0;
 	}
+	int eModY = 0;
 	if ((int)len % 2 == 0) {
-		newForm->pMod[1] = 1;//-0.5;
+		eModY = 1;//-0.5;
 	} else {
-		newForm->pMod[1] = 0;
+		//newForm->eMod[1] = 0;
 	}
 	//float wid = w;
 	//float len = l;
@@ -42,8 +44,8 @@ Form *makeForm(float r, float g, float b, float wid, float len) {
 		for (int x = 0; x < wid; x++) {
 			for(int y = 0; y < len; y++) {
 				newForm->body[x][y] = (int*)calloc(2, sizeof(int));
-				newForm->body[x][y][0] = w + newForm->pMod[0] + x;
-				newForm->body[x][y][1] = l + newForm->pMod[1] + y;
+				newForm->body[x][y][0] = w + eModX + x;
+				newForm->body[x][y][1] = l + eModY + y;
 				int xb = (-wid/2) + x;
 				int yb = (-len/2) + y;
 				//printf("-len/2 = %i, len =%i\n", l, len);
@@ -60,9 +62,9 @@ Form *makeForm(float r, float g, float b, float wid, float len) {
 
 int getEdge(Form *f, int side, int d) {
 	if (d > 0) {
-		return f->pos[side]+(int)(f->size[side]+f->pMod[side])/2 + 1;
+		return f->pos[side]+(int)(f->size[side]/*+f->eMod[side]*/)/2 + 1;
 	} else {
-		return f->pos[side]-(int)(((f->size[side]-f->pMod[side])/2 + 1)); 
+		return f->pos[side]-(int)(((f->size[side]/*-f->eMod[side]*/)/2 + 1)); 
 	}
 }
 
@@ -71,13 +73,13 @@ Form *checkSide(Form *f, int xd, int yd, bool collide) {
 	if (xd != 0) {
 		int col = 0;
 		if (xd > 0) {
-			col = (f->size[0]/*+f->pMod[0]*/)/2 + 1;
+			col = (f->size[0]/*+f->eMod[0]*/)/2 + 1;
 			//printf("\nCOL: %i\n\n", col);
 		} else if (xd < 0) {
-			col = -((f->size[0]/*-f->pMod[0]*/)/2 + 1);
+			col = -((f->size[0]/*-f->eMod[0]*/)/2 + 1);
 		}
-		int hei = f->size[1];//(f->size[1]-f->pMod[1])/2;
-		//printf("hei: %i - from %f\n", hei, f->size[1] + f->pMod[1]);
+		int hei = f->size[1];//(f->size[1]-f->eMod[1])/2;
+		//printf("hei: %i - from %f\n", hei, f->size[1] + f->eMod[1]);
 		if (collide) {
 			//printf("checking side, Im at %f, %f\n", f->pos[0], f->pos[1]);
 		}
@@ -98,9 +100,9 @@ Form *checkSide(Form *f, int xd, int yd, bool collide) {
 	if (yd != 0) {
 		int row = 0;
 		if (yd > 0) {
-			row = (f->size[1]/*+f->pMod[1]*/)/2 + 1;
+			row = (f->size[1]/*+f->eMod[1]*/)/2 + 1;
 		} else if (yd < 0) {
-			row = -((f->size[1]/*-f->pMod[1]*/)/2 + 1);
+			row = -((f->size[1]/*-f->eMod[1]*/)/2 + 1);
 		}
 		int wid = f->size[0];///2;
 		//printf("checking side, Im at %f, %f\n", f->pos[0], f->pos[1]);
@@ -118,6 +120,11 @@ Form *checkSide(Form *f, int xd, int yd, bool collide) {
 
 void deleteForm(void *form) {
 	Form *f = (Form*)form;
+	if (f->actor) {
+		Actor *a = f->actor;
+		a->body = 0;
+		deleteActor(a);
+	}
 	//removeForm(f);
 //	printf("form: %i\n", f->id);
 	if (f->size[0] != 0 && f->size[1] != 0) {

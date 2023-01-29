@@ -59,8 +59,8 @@ void drawWorld(World *w) {
 						//if (residents != NULL) {
 						Form *f = residents[i];
 						if (f != NULL) {
-							float xfp = f->pos[0] - (int)curView->buffX;// - curView->offsetX;//x + frame[0];
-							float yfp = f->pos[1] - (int)curView->buffY;// - curView->offsetY;
+							float xfp = (f->pos[0] + f->pMod[0]) - (int)curView->buffX;// - curView->offsetX;//x + frame[0];
+							float yfp = (f->pos[1] + f->pMod[1]) - (int)curView->buffY;// - curView->offsetY;
 							float *tile = getStat(f, "tile");
 							//printf("- %i -\n", f->id);
 							if (tile != NULL) {

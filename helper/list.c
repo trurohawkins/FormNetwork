@@ -129,6 +129,7 @@ void *printList(linkedList **head, char *listName, void (*print)(void*)) {
 void *removeFromList(linkedList **head, void *item) {
 	void *data = 0;
 	if ((*head)->data == item) {
+		printf("deleting head\n");
 		linkedList *oh = *head;
 		(*head) = (*head)->next;
 		data = oh->data;
@@ -139,6 +140,9 @@ void *removeFromList(linkedList **head, void *item) {
 		while (tmp != 0) {
 			if (tmp->data == item) {
 				pre->next = tmp->next;
+				if (pre->next == 0) {
+					printf("deleting end of list\n");
+				}	
 				data = tmp->data;
 				free(tmp);
 				tmp = pre->next;
