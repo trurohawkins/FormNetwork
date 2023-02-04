@@ -4,8 +4,8 @@ typedef struct WorldView {
 	float frameX;
 	float frameY;
 	float frame;
-	int centerX;
-	int centerY;
+	float centerX;
+	float centerY;
 	int scalePower;
 	//int defaultFrameX;
 	//int defaultFrameY;

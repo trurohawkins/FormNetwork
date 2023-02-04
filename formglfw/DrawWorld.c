@@ -46,7 +46,7 @@ void drawWorld(World *w) {
 	linkedList *tileList = makeList();
 	glUseProgram(tileShader);
 	int tileSeen = 0;
-	//printf("\n\n");
+	//printf("draw %i, %i\n", curView->buffX, curView->buffY);
 	for (int x = 0; x < ceil(curView->frameX) + 0 && x < w->x; x++) {
 		for (int y = 0; y < ceil(curView->frameY) && y < w->y; y++) {
 			int xp = x + curView->buffX;
@@ -59,8 +59,6 @@ void drawWorld(World *w) {
 						//if (residents != NULL) {
 						Form *f = residents[i];
 						if (f != NULL) {
-							float xfp = (f->pos[0] + f->pMod[0]) - (int)curView->buffX;// - curView->offsetX;//x + frame[0];
-							float yfp = (f->pos[1] + f->pMod[1]) - (int)curView->buffY;// - curView->offsetY;
 							float *tile = getStat(f, "tile");
 							//printf("- %i -\n", f->id);
 							if (tile != NULL) {
@@ -73,6 +71,7 @@ void drawWorld(World *w) {
 										setTileSetID(t, f->id);
 									}
 									if (!isInListInt(&tileList, *ts)) {
+										//printf("new tile seen\n");
 										tileSeen++;
 										addToList(&tileList, ts);
 										clearData(t->trans, false);
@@ -83,6 +82,8 @@ void drawWorld(World *w) {
 										free(ts);
 									}
 									editData(t->trans, x, y, 1, 1);
+									//printf("tile %i, %i\n", x, y);
+
 								} else {
 									free(ts);
 								}
@@ -98,6 +99,8 @@ void drawWorld(World *w) {
 								//printf(" %i ", 1);
 								//editTranslations(x, y, 0);
 							} else {
+								float xfp = (f->pos[0] + f->pMod[0]) - (int)curView->buffX;// - curView->offsetX;//x + frame[0];
+								float yfp = (f->pos[1] + f->pMod[1]) - (int)curView->buffY;// - curView->offsetY;
 								//printf("poo\n");
 
 								// check if weve seen form, not for center, incse form's center isn't on screen
@@ -163,7 +166,19 @@ void tileCell(TileSet *t, float remainder, int x, int y) {
 	DrawScreen *rot = t->rot;
 	World *w = getWorld();
 	Screen *s = getWindow();
-	int id = getFormID(x, y);
+	int *ids = getFormID(x, y);
+	int id = -1;
+	int c = 0;
+	while (ids[c] != -1) {
+		if (ids[c] == t->typeID) {
+			id = ids[c];
+			break;
+		} else {
+			c++;
+		}
+	}
+	free(ids);
+
 	if (id == t->typeID) {
 		int mostOpen = -1;
 		int start = 0;
@@ -173,7 +188,8 @@ void tileCell(TileSet *t, float remainder, int x, int y) {
 			start = (start + i) % 4;
 			for (int j = 0; j < 4; j++) {
 				int cur = (start + j) % 4;
-				if (getFormID(x + d[cur][0], y + d[cur][1]) != t->typeID) {
+				//if (getFormID(x + d[cur][0], y + d[cur][1]) != t->typeID) {
+				if (!checkFormID(x + d[cur][0], y + d[cur][1], t->typeID)) {
 					openSides++;
 				} else {
 					break;
@@ -187,26 +203,33 @@ void tileCell(TileSet *t, float remainder, int x, int y) {
 
 		if (mostOpen == 1) {
 			int oppoSide = (startSide + 2) % 4;
-			if (getFormID(x + d[oppoSide][0], y + d[oppoSide][1]) != t->typeID) {
+			//if (getFormID(x + d[oppoSide][0], y + d[oppoSide][1]) != t->typeID) {
+			if (!checkFormID(x + d[oppoSide][0], y + d[oppoSide][1], t->typeID)) {
 				mostOpen = 5;
 			} else {
 				int **d8 = getDir8();
 				int nextCorn = ((startSide*2) + 3) % 8;
 				int preCorn = ((startSide*2) + 5) % 8;
-				float nc = getFormID(x + d8[nextCorn][0], y + d8[nextCorn][1]);
-				float pc = getFormID(x + d8[preCorn][0], y + d8[preCorn][1]);
-				if (nc != t->typeID && pc != t->typeID) {
+				//float nc = getFormID(x + d8[nextCorn][0], y + d8[nextCorn][1]);
+				bool nc = checkFormID(x + d8[nextCorn][0], y + d8[nextCorn][1], t->typeID);
+				//float pc = getFormID(x + d8[preCorn][0], y + d8[preCorn][1]);
+				bool pc = checkFormID(x + d8[preCorn][0], y + d8[preCorn][1], t->typeID);
+				//if (nc != t->typeID && pc != t->typeID) {
+				if (!nc && !pc) {
 					mostOpen = 13;
-				} else if (nc != t->typeID){ 
+				//} else if (nc != t->typeID){ 
+				} else if (!nc){ 
 					mostOpen = 11;
-				} else if (pc != t->typeID) {
+				//} else if (pc != t->typeID) {
+				} else if (!pc) {
 					mostOpen = 12; 
 				}
 			}
 		} else if (mostOpen == 2) {
 				int **d8 = getDir8();
 				int oppoCorn = ((startSide*2) + 5) % 8;
-				if (getFormID(x + d8[oppoCorn][0], y + d8[oppoCorn][1]) != t->typeID) {
+				//if (getFormID(x + d8[oppoCorn][0], y + d8[oppoCorn][1]) != t->typeID) {
+				if (!checkFormID(x + d8[oppoCorn][0], y + d8[oppoCorn][1], t->typeID)) {
 					mostOpen = 14;
 				}
 		} else if (mostOpen == 0) {
@@ -220,7 +243,8 @@ void tileCell(TileSet *t, float remainder, int x, int y) {
 				start = (s + (i * 2)) % 8;
 				for (int j = 0; j < 4; j++) {
 					int cur = (start + (j * 2)) % 8;
-					if (getFormID(x + d8[cur][0], y + d8[cur][1]) != t->typeID) {
+					//if (getFormID(x + d8[cur][0], y + d8[cur][1]) != t->typeID) {
+					if (!checkFormID(x + d8[cur][0], y + d8[cur][1], t->typeID)) {
 						corners++;
 					} else {
 						break;
@@ -328,7 +352,18 @@ void drawWorldDebug(World *w) {
 			int xp = x + curView->buffX;// frame[0];//(cx-fx);
 			int yp = y + curView->buffY;//frame[1];//(cy-fy);
 			if (xp >= 0 && xp < w->x && yp >= 0 && yp < w->y) {
-				Form *f = checkSolidForm(w->map[xp][yp]);
+				//Form *f = checkSolidForm(w->map[xp][yp]);
+				Form *f = 0;//checkSolidForm(w->map[xp][yp]);
+				linkedList *forms = checkSolidForm(w->map[xp][yp]);
+				linkedList *fo = forms;
+				while (forms) {
+					if (forms->data) {
+						f = forms->data;
+						break;
+					}
+					forms = forms->next;
+				}
+				freeListSaveObj(&fo);
 				if (f != NULL) {
 					mat[7] = (startY + curView->objSY) + (y * curView->objSY);	
 					glUniformMatrix4fv(tMat, 1, GL_TRUE, mat);

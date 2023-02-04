@@ -75,6 +75,23 @@ int **getDirs() {
 	return dirs;
 }
 
+int *getDir4(int dir) {
+	if (dir > -1 && dir < 4) {
+		return dirs[dir];
+	}
+	return dirs[0];
+}
+
+int xyToDir4(int *xy) {
+	for (int i = 0; i < 4; i++) {
+		if (xy[0] == dirs[i][0] && xy[1] == dirs[i][1]) {
+			return i;
+		}
+	}
+	printf("(%i, %i), did not mmatch a cardinal direction", xy[0], xy[1]);
+}
+
+
 int **getDir8() {
 	return dir8;
 }
@@ -136,6 +153,16 @@ float min(float a, float b) {
 }
 
 int sign(int num) {
+	if (num > 0) {
+		return 1;
+	} else if (num < 0) {
+		return -1;
+	} else {
+		return 0;
+	}
+}
+
+int signF(float num) {
 	if (num > 0) {
 		return 1;
 	} else if (num < 0) {
@@ -226,6 +253,7 @@ int decPlace(int d) {
 	}
 	return num;
 }
+
 float intToFrac(int i, int pow) {
 	int num = (i / pow) * pow;//pow(10, decPlace(i));
 	//printf("%i\n", num);

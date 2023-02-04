@@ -7,6 +7,7 @@ int tileCount = 0;
 GLuint tileVAO = 0;
 
 void initTileSets() {
+	printf("initializing tile seets\n");
 	TileSets = makeList();
 	tileVAO = makeSpriteVao(1, 1);
 }
@@ -18,10 +19,10 @@ TileSet *makeTileSet(Anim *a, int xd, int yd, int mx, int my) {
 	GLuint tileShader = getSP(2);
 	glUseProgram(tileShader);
 	//printf("diemnsions recieved %i, %i\n", xd, yd);
-	ts->color = makeDrawScreen(xd, yd, mx, my, 1, 4, true);
-	ts->trans = makeDrawScreen(xd, yd, mx, my, 3, 3, false);
-	ts->rot = makeDrawScreen(xd, yd, mx, my, 4, 4, true);
-	ts->texture = makeDrawScreen(xd, yd, mx, my, 5, 2, true);
+	ts->color = makeDrawScreen(xd, yd, mx, my, 1, 4, true, 1);
+	ts->trans = makeDrawScreen(xd, yd, mx, my, 3, 3, false, 0);
+	ts->rot = makeDrawScreen(xd, yd, mx, my, 4, 4, true, 0);
+	ts->texture = makeDrawScreen(xd, yd, mx, my, 5, 2, true, 0);
 	addTileSet(ts);
 	return ts;
 }
@@ -43,17 +44,22 @@ TileSet *getTile(int index) {
 	if (ts == NULL) {
 		printf("no good NULL tilesset\n");
 	}
+	return ts;
 }
 
 int getTileCount() {
 	return tileCount;
 }
 
-DrawScreen *makeDrawScreen(int dimensionX ,int dimensionY, int maxDimensionX ,int maxDimensionY, int location, int stride, bool base) {
+DrawScreen *makeDrawScreen(int dimensionX ,int dimensionY, int maxDimensionX ,int maxDimensionY, int location, int stride, bool base, float defaultVal) {
 	DrawScreen *ds = (DrawScreen*)calloc(sizeof(DrawScreen), 1);
 	ds->maxX = maxDimensionX;
 	ds->maxY = maxDimensionY;
+	//printf("maxDs: %i, %i\n", maxDimensionX, maxDimensionY);
 	ds->data = (float*)calloc(sizeof(float), (maxDimensionX) * (maxDimensionY) * stride);
+	for (int i = 0; i < maxDimensionX * maxDimensionY * stride; i++) {
+		ds->data[i] = defaultVal;
+	}
 	ds->stride = stride;
 	ds->location = location;
 
@@ -64,6 +70,7 @@ DrawScreen *makeDrawScreen(int dimensionX ,int dimensionY, int maxDimensionX ,in
 
 void sizeDrawScreen(DrawScreen *ds, int newSizeX, int newSizeY, bool base) {
 	if (newSizeX > 0 && newSizeY > 0) {// && newSizeX <= ds->maxX && newSizeY <= ds->maxY) {
+		//printf("SIZING DRAWSCREN %i - %i\n", newSizeX, newSizeY);
 		ds->dimensionX = newSizeX;
 		ds->dimensionY = newSizeY;
 		initializeData(ds, base);
@@ -109,7 +116,6 @@ void setScreenVBO(DrawScreen *ds) {
 
 
 void resizeTileSet(TileSet *t, int newSizeX, int newSizeY) {
-	//printf("resizing tile set %i\n", bufferX);
 	sizeDrawScreen(t->trans, newSizeX, newSizeY, false);
 	sizeDrawScreen(t->rot, newSizeX, newSizeY, true);
 	sizeDrawScreen(t->color, newSizeX, newSizeY, true);

@@ -25,7 +25,7 @@ void addToCell(Cell* c, Form *f) {
 		*/
 		//if (f->size[0] != 0 && f->size[1] != 0) {
 		if (checkFormIsSolid(f)) {
-			c->solid = true;
+			c->solid++;
 		}
 	} else {
 		printf("tried to add NULL form to Cell ");
@@ -33,36 +33,54 @@ void addToCell(Cell* c, Form *f) {
 	}
 }
 
-void removeFromCell(Cell *c, Form *f) {
+Form *removeFromCell(Cell *c, Form *f) {
 	void *fv = (void *)f;
 	void *v = removeFromList(&(c->within), fv);
 	if (v != NULL) {
 		c->count--;
 	}
+	return v;
 }
 
-Form *getSolidForm(Cell* c) {
-	Form *f = 0;
+linkedList *getSolidForm(Cell* c) {
+	linkedList *solids = 0;
 	if (c->within != 0) {
+		Form *f = 0;
 		//printCell(c);
-		f = removeFromListCheck(&(c->within), checkFormIsSolid);	
-		if (f != NULL) {
-			//printCell(c);
-			c->count--;
-			c->solid = false;
-		}
+		do {
+			f = removeFromListCheck(&(c->within), checkFormIsSolid);	
+			if (f != NULL) {
+				addToList(&solids, f);
+				//printCell(c);
+				c->count--;
+				c->solid--;
+			}
+		} while (c->solid > 0);
 	}
-	return f;
+	return solids;
 }
 
-Form *checkSolidForm(Cell* c) {
+linkedList *checkSolidForm(Cell* c) {
 	//printf("check cell for solid 
+	linkedList *cur = c->within;
+	linkedList *solids = 0;
+	while (cur) {
+		if (cur->data) {
+			if (checkFormIsSolid(cur->data)) {
+				addToList(&solids, cur->data);
+			}
+		}
+		cur = cur->next;
+	}
+	/*
 	Form *f = 0;
 	//if (c->solid) {
 	if (c->within != 0) {
 		f = (Form*)checkList(&(c->within), checkFormIsSolid);	
 	}
 	return f;
+	*/
+	return solids;
 }
 
 Form **getCellContents(Cell *c) {

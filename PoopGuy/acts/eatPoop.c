@@ -41,11 +41,16 @@ int stomachStuff(Form *f, Action *a) {
 			}
 			for (int x = 0; x < ep->xBite; x++) {
 				for (int y = 0; y < ep->yBite; y++) {
-					//printf(" %i, %i ", xc-x, yc - y);
-					Form *food = takeForm(xc - x, yc - y);
-					if (food != 0) {
-						addToStack(food, a);
+					printf(" eating %i, %i ", xc-x, yc - y);
+					linkedList *food = takeForm(xc - x, yc - y);
+					linkedList *f = food;
+					while (food) {
+						if (food->data != 0) {
+							addToStack(food->data, a);
+						}
+						food = food->next;
 					}
+					freeListSaveObj(&f);
 				}
 			}
 			//printf("\n");
@@ -62,12 +67,12 @@ int stomachStuff(Form *f, Action *a) {
 			//printf("pooping\n");
 			int buttDir = (ep->dir + 2) % 4;
 			bool poopGood = true;
-			if (checkSide(f, d[buttDir][0], d[buttDir][1], false) != 0) {
-				if (checkSide(f, d[ep->dir][0], d[ep->dir][1], true) == 0) {
+			if (checkColSide(f, f->pos[0], f->pos[1], d[buttDir][0], d[buttDir][1]) != 0) {
+				if (checkColSide(f, f->pos[0], f->pos[1], d[ep->dir][0], d[ep->dir][1]) == 0) {
 					removeForm(f);
 					placeForm(f->pos[0] + d[ep->dir][0], f->pos[1] + d[ep->dir][1], f);
 				} else {
-					Form *block =checkSide(f, d[ep->dir][0], d[ep->dir][1], false);
+					//Form *block = checkSide(f, d[ep->dir][0], d[ep->dir][1], false);
 					poopGood = false;
 				}
 			}

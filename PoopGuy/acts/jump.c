@@ -37,7 +37,8 @@ int jump(Form *f, Action *a) {
 		jv->grav->active = 1;
 		//if (checkCol(f->pos[0], f->pos[1]-1) != 0 ||checkCol(f->pos[0]+1, f->pos[1]) != 0 
 		//		|| checkCol(f->pos[0]-1, f->pos[1]) != 0 ) {
-		if (checkSide(f, 0, -1, false) != 0 || checkSide(f, 1, 0, false) != 0 || checkSide(f, -1, 0, false)) {
+		//if (checkSide(f, 0, -1, false) != 0 || checkSide(f, 1, 0, false) != 0 || checkSide(f, -1, 0, false)) {
+		if (checkColSide(f, f->pos[0], f->pos[1], 0, -1) != 0 || checkColSide(f, f->pos[0], f->pos[1], 1, 0) != 0 || checkColSide(f, f->pos[0], f->pos[1], -1, 0)) {
 			a->active = 0;
 			jv->jumpCount = 0;
 		}

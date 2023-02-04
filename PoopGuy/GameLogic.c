@@ -184,9 +184,6 @@ void gameLoop() {
 	// why?? defaultFrame = screen->frame;
 	cam = getDefaultView();
 	wv = getDefaultView();
-	//printf("screen: %i, %i cam: %i, %i\n", screen->width, screen->height, cam->frameX, cam->frameY);
-	//float xSize = 2.0 / cam->frameX;
-	//float ySize = 2.0 / cam->frameY;
 	w = getWorld();
 	//setCameraSize(mainCam, 1);
 	
@@ -226,11 +223,11 @@ void gameLoop() {
 	Anim *dirt = makeAnimSheet("resources/dirtTileSheet.png", 1, 15, 5);
 	GLuint sv = makeSpriteVao(1,1);
 	animAddVao(dirt, sv);
+	TileSet *dirtTiles = makeTileSet(dirt, wv->frameX, wv->frameY, w->x, w->y);
 
 	Anim *stone = makeAnimSheet("resources/rockSheet.png", 1, 15, 1);
 	GLuint ss = makeSpriteVao(1,1);
 	animAddVao(stone, ss);
-	TileSet *dirtTiles = makeTileSet(dirt, wv->frameX, wv->frameY, w->x, w->y);
 	TileSet *stoneTiles = makeTileSet(stone, wv->frameX, wv->frameY, w->x, w->y);
 
 	//glfwUpdateGamepadMappings(gamecontrollerdb);

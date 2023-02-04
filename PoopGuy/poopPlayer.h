@@ -14,7 +14,7 @@ typedef struct PoopGuy {
 	Player *player;
 } PoopGuy;
 
-PoopGuy* makePoopGuy(int sx, int sy);
+//PoopGuy* makePoopGuy(int sx, int sy);
 void deletePoopGuy(void *poop);
 void initPoopers();
 Form *makePoopPlayer (int pNum);

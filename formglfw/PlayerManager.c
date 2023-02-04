@@ -6,8 +6,28 @@ void makePlayerManager() {
 	PM->playerList = makeList();
 }
 
-void addPlayer(Player *p) {
+Player *checkPlayer(int num) {
+	linkedList *cur = PM->playerList;
+	while (cur != 0) {
+		Player *p = cur->data;
+		if (p) {
+			if (p->num == num) {
+				return p;
+			}
+		}
+		cur = cur->next;
+	}
+	return 0;
+}
+	
+Player *addPlayer(Player *p) {
+	Player *already = findList(&(PM->playerList), p, cmpPlayer);
+	if (already) {
+		printf("we already have a player %i\n", already->num);
+		return already;
+	} 
 	addToList(&(PM->playerList), p);
+	return 0;
 }
 
 void removePlayer(Player *p) {
@@ -26,7 +46,7 @@ void processKeys() {
 				if(curPlayer->data != NULL) {
 					Player *p = (Player*)(curPlayer->data);
 
-					if(p->active) { 
+					if(p->active && p->self) { 
 						linkedList *con = p->controls;
 						while (con != NULL) {
 							InpMap *tmp = (InpMap*)con->data;

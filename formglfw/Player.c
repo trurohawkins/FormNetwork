@@ -8,7 +8,8 @@ Player *makePlayer(void *character, int num, void (*deleteFunc)(void*)) {
 	p->controls = makeList();
 	p->delFunc = deleteFunc;
 	p->active = true;
-	addPlayer(p);
+
+	//Player *a = addPlayer(p);
 	return p;
 }
 
@@ -36,3 +37,8 @@ void freePlayer(Player *p) {
 	}
 	free(p);
 }
+
+bool cmpPlayer(void *p1, void *p2) {
+	return ((Player*)p1)->num == ((Player*)p2)->num;
+}
+

@@ -164,7 +164,26 @@ int **worldToMap() {
 			Cell *cur = theWorld->map[x][y];
 			Form **residents = getCellContents(cur);
 			if (residents != 0) {
-				Form *guy = checkSolidForm(cur);
+				//Form *guy = checkSolidForm(cur);
+				Form *guy = 0;
+				linkedList *guys = checkSolidForm(cur);
+				linkedList *g = guys;
+				while (guys) {
+					if (guys->data) {
+						if (isFormCenter(guys->data, x, y)) {
+							int val = guy->id;
+							if (guy->id == 10) {
+								int mod = *(getStat(guy, "moisture")) * 10;
+								val = clamp(val + mod, 10, 19);
+							}
+							map[x][y] = val;
+							break;
+						}
+					}
+					guys = guys->next;
+				}
+				freeListSaveObj(&g);
+				/*Form *guy = checkSolidForm(cur);
 				if (isFormCenter(guy, x, y)) {
 					int val = guy->id;
 					if (guy->id == 10) {
@@ -173,6 +192,7 @@ int **worldToMap() {
 					}
 					map[x][y] = val;
 				}
+				*/
 			}
 		}
 	}

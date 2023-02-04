@@ -3,11 +3,12 @@
 typedef struct Actor {
 	Form *body;
 	linkedList *actionList;
+	bool deleteMe;
 } Actor;
 
 Actor *makeActor(Form * f/*, Action *a*/);
 void addAction(Actor *actor, Action *action);
-Action *findAction(char *name, Actor *actor);
+Action *findAction(Actor *actor, char *name);
 void *removeAction(Actor *actor, Action *action);
 void deleteMyAction(Actor *actor, Action *action);
 void doActions(Actor *actor);

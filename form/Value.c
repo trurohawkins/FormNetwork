@@ -35,6 +35,22 @@ float *getStat(Form *f, char *stat) {
 	return NULL;
 }
 
+float *getStatCell(Cell *c, char *stat) {
+	float *s = 0;
+	linkedList *forms = checkSolidForm(c);//, "moisture");
+	linkedList *fo = forms;
+	while (forms) {
+		if (forms->data) {
+			s = getStat(forms->data, stat);
+			break;
+		}
+		forms = forms->next;
+	}
+	freeListSaveObj(&fo);
+	return s;
+}
+
+
 void setStat(Form *f, char *stat, float val) {
 	if (f != NULL) {
 		linkedList *cur = (linkedList*)(f->stats);

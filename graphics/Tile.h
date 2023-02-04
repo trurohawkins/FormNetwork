@@ -31,7 +31,7 @@ void setTileVBO(TileSet *ts);
 int addTileSet(TileSet *ts);
 TileSet *getTile(int index);
 int getTileCount();
-DrawScreen *makeDrawScreen(int dimensionX, int dimensionY, int maxDimensionX, int maxDimensionY, int location, int stride, bool base);
+DrawScreen *makeDrawScreen(int dimensionX, int dimensionY, int maxDimensionX, int maxDimensionY, int location, int stride, bool base, float defaultVal);
 void initializeData(DrawScreen *ds, bool base);
 void setScreenVBO(DrawScreen *ds);
 void sizeDrawScreen(DrawScreen *ds, int newSizeX, int newSizeY, bool base);

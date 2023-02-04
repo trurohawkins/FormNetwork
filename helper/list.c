@@ -6,10 +6,9 @@ linkedList *makeList() {
 	return nl;
 }
 
+//NOTE: add fuynction add to list with checks for doubles
 void addToList(linkedList **head, void *item) {
-	//printf("adding to list");
 	if ((*head) == 0) {
-		//printf("adding and making new list\n");
 		(*head) = makeList();
 		(*head)->data = item;
 	} else {
@@ -21,7 +20,7 @@ void addToList(linkedList **head, void *item) {
 			}
 			tmp = tmp->next;
 		}
-	tmp->data = item;
+		tmp->data = item;
 	}
 }
 
@@ -129,7 +128,6 @@ void *printList(linkedList **head, char *listName, void (*print)(void*)) {
 void *removeFromList(linkedList **head, void *item) {
 	void *data = 0;
 	if ((*head)->data == item) {
-		printf("deleting head\n");
 		linkedList *oh = *head;
 		(*head) = (*head)->next;
 		data = oh->data;
@@ -140,9 +138,6 @@ void *removeFromList(linkedList **head, void *item) {
 		while (tmp != 0) {
 			if (tmp->data == item) {
 				pre->next = tmp->next;
-				if (pre->next == 0) {
-					printf("deleting end of list\n");
-				}	
 				data = tmp->data;
 				free(tmp);
 				tmp = pre->next;
@@ -157,29 +152,30 @@ void *removeFromList(linkedList **head, void *item) {
 
 void *removeFromListCheck(linkedList **head, bool (*chk)(void*)) {
 	void *data = 0;
-	if ((head) != NULL) {
-	if ((*head)->data != NULL) {
-		if (chk((*head)->data)) {
-			linkedList *oh = *head;
-			(*head) = (*head)->next;
-			data = oh->data;
-			free(oh);
-		} else {
-			linkedList *tmp = (*head)->next;
-			linkedList *pre = *head;
-			while (tmp != 0) {
-				if (chk(tmp->data)) {
-					pre->next = tmp->next;
-					data = tmp->data;
-					free(tmp);
-					tmp = pre->next;
-				} else {
-					tmp = tmp->next;
+	if ((*head) != NULL) {
+		if ((*head)->data != NULL) {
+			if (chk((*head)->data)) {
+				linkedList *oh = *head;
+				(*head) = (*head)->next;
+				data = oh->data;
+				free(oh);
+			} else {
+				linkedList *tmp = (*head)->next;
+				linkedList *pre = *head;
+				while (tmp != 0) {
+					if (chk(tmp->data)) {
+						pre->next = tmp->next;
+						data = tmp->data;
+						free(tmp);
+						return data;
+						tmp = pre->next;
+					} else {
+						tmp = tmp->next;
+					}
+					pre = pre->next;
 				}
-				pre = pre->next;
 			}
 		}
-	}
 	}
 	return data;
 }

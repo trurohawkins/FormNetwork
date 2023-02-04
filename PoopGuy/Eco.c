@@ -43,15 +43,22 @@ void groundWater(){
 	if (wCtr >= wInt) {
 		for (int x = 0; x < theWorld->x; x++) {
 			for (int y = theWorld->y - 1; y >=0; y--){
-				Form *f = checkSolidForm(theWorld->map[x][y]);
-				//if (theWorld[x][y] !=0 && theWorld[x][y]->id == 10) {
-				if (f !=0 && f->id == 10) {
-					eVap(x,y); // sunlight pulls water up
-					gravPull(x,y); // gravity pull water down
-					if (rCtr >= rInt) {
-						rain(x,y);
+				linkedList *forms = checkSolidForm(theWorld->map[x][y]);
+				linkedList *fo = forms;
+				while (forms) {
+					if (forms->data) {
+						//if (theWorld[x][y] !=0 && theWorld[x][y]->id == 10) {
+						if (((Form*)forms->data)->id == 10) {
+							eVap(x,y); // sunlight pulls water up
+							gravPull(x,y); // gravity pull water down
+							if (rCtr >= rInt) {
+								rain(x,y);
+							}
+						}
 					}
-				} 
+					forms = forms->next;
+				}
+				freeListSaveObj(&fo);
 			}
 		}
 		// printf("---------------------------------------------------------------------- \n");
@@ -82,7 +89,16 @@ void rain(int x, int y) {
 		int skyy = chSky(x,y);
 		if (skyy == 1) {
 			//setStat(theWorld->map[x][y], "moisture",  sat);
-			setStat(checkSolidForm(theWorld->map[x][y]), "moisture",  sat);
+			//setStat(checkSolidForm(theWorld->map[x][y]), "moisture",  sat);
+			linkedList *forms = checkSolidForm(theWorld->map[x][y]);
+			linkedList *fo = forms;
+			while (forms) {
+				if (forms->data) {
+					setStat(forms->data, "moisture",  sat);
+				}
+				forms = forms->next;
+			}
+			freeListSaveObj(&fo);
 			// fills surface blocks to max moisture value
 		}
 	}
@@ -99,19 +115,20 @@ void eVap(int x, int y){
 		for (int yi = y-1; yi >= 0; yi--) {
 			//if ( theWorld->map[x][yi] != 0){
 			if ( checkSolidForm(theWorld->map[x][yi]) != 0){
-				float *stat = getStat(checkSolidForm(theWorld->map[x][yi]), "moisture");
-
+				//float *stat = getStat(checkSolidForm(theWorld->map[x][yi]), "moisture");
+				float *stat = getStatCell(theWorld->map[x][yi], "moisture");
 				if ( stat != 0 && *stat > 0.01 ) {
 					// if block is there and has water increased depth counter
 					depth += 1;
 				}
 			}
 		}
-		if ( checkSolidForm(theWorld->map[x][y - depth]) == 0){
+		if (checkSolidForm(theWorld->map[x][y - depth]) == 0){
 			return;
 		}
-
-		float *stat = getStat(checkSolidForm(theWorld->map[x][y-depth]), "moisture");
+	
+		//float *stat = getStat(checkSolidForm(theWorld->map[x][y-depth]), "moisture");
+		float *stat = getStatCell(theWorld->map[x][y-depth], "moisture");
 		if(stat != 0){ 
 			if (*stat >= sTake) { 
 			// ensures no negative values
@@ -133,10 +150,12 @@ void gravPull(int x, int y){
 		return;
 	}
 
-float *moisture = getStat(checkSolidForm(theWorld->map[x][y]), "moisture");
-float *k = getStat(checkSolidForm(theWorld->map[x][y]), "hydroK");
+	//float *moisture = getStat(checkSolidForm(theWorld->map[x][y]), "moisture");
+	//float *k = getStat(checkSolidForm(theWorld->map[x][y]), "hydroK");
+	float *moisture = getStatCell(theWorld->map[x][y], "moisture");
+	float *k = getStatCell(theWorld->map[x][y], "hydroK");
 
-if ( moisture == 0 || k == 0){return;}
+	if ( moisture == 0 || k == 0){return;}
 
 // if block is at bottom of world, water drops outs into the ether
 	if (y == 0 ){
@@ -149,14 +168,17 @@ if ( moisture == 0 || k == 0){return;}
 	
 	if (checkSolidForm(theWorld->map[x][y-1]) ==0) {return;} 
 
-	float *test = getStat(checkSolidForm(theWorld->map[x][y-1]), "moisture");
+	//float *test = getStat(checkSolidForm(theWorld->map[x][y-1]), "moisture");
+	float *test = getStatCell(theWorld->map[x][y-1], "moisture");
 	if (test == 0)return;
 // if block is above tHoldU and above a block that is above tHoldL
 
 	if ( *moisture > tHoldU && *test >= tHoldL) {
 
-	float *moisture2 = getStat(checkSolidForm(theWorld->map[x][y-1]), "moisture");
-	float *k2 = getStat(checkSolidForm(theWorld->map[x][y-1]), "hydroK");
+	//float *moisture2 = getStat(checkSolidForm(theWorld->map[x][y-1]), "moisture");
+	//float *k2 = getStat(checkSolidForm(theWorld->map[x][y-1]), "hydroK");
+	float *moisture2 = getStatCell(theWorld->map[x][y-1], "moisture");
+	float *k2 = getStatCell(theWorld->map[x][y-1], "hydroK");
 		// so ugly....
 		// checks that block has enought moisture to pass on, so abobe upper threshold
 		// checks if there is a block below it

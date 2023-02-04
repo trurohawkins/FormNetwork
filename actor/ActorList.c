@@ -1,4 +1,4 @@
-linkedList *ActorList;
+linkedList *ActorList = 0;
 
 void makeActorList() {
 	ActorList = makeList();
@@ -22,12 +22,66 @@ void deleteActorList() {
 	}
 	freeList(&ActorList);
 }
+
+bool checkDeleteActor(void *actor) {
+	return ((Actor *)actor)->deleteMe;
+}
+
 void actorListDo() {
 	linkedList *cur = ActorList;
+	linkedList *pre = cur;
+	int count = 0;
+	/*
+	if (ActorList) { 
+		if (ActorList->data) {
+			Actor *a = ActorList->data;
+			if(a->deleteMe) {
+				linkedList *oh = ActorList;
+				ActorList = ActorList->next;
+				freeActor(a);
+				free(oh);
+			}
+		}
+	}
+	*/
 	while (cur != NULL) {
 		if (cur->data != NULL) {
-			doActions((Actor*)cur->data);
+			Actor *a = cur->data;
+			doActions(a);
+			if (a->deleteMe) {
+				linkedList *tmp = cur;
+				deleteActor(a);
+				cur->data = 0;
+				if (pre == cur) {
+					ActorList = cur->next;
+				} else {
+					pre->next = cur->next;
+				}
+				cur = cur->next;
+				free(tmp);
+				if (cur == 0) {
+					free(ActorList);
+					ActorList = 0;//makeList();
+					break;
+				}
+				count++;
+				continue;
+			}
+			count++;
+		}
+		if (pre != cur) {
+			pre = cur;
 		}
 		cur = cur->next;
 	}
+	/*
+	Actor *a = 0;
+	do {
+		a = removeFromListCheck(&ActorList, checkDeleteActor);
+		if (a) {
+			deleteActor(a);
+		}
+	} while (a);
+	*/
 }
+

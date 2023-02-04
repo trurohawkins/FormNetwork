@@ -30,7 +30,6 @@ linkedList *getCurInput() {
 
 void takeKeys(GLFWwindow *window, int key, int scancode, int action, int mods) {
 	if (action != GLFW_REPEAT) {
-		printf("KEY PRESS %i\n", action);
 		processMenuKeys(key, action); //for concurrent menus and gameplay. See mousebuttons
 		inpReceived *ir = (inpReceived*)malloc(sizeof(inpReceived));
 		char *keyString = (char *)malloc(4 * sizeof(char));

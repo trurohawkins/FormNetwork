@@ -1,8 +1,10 @@
 Actor *makeActor(Form * f/*, Action *a*/) {
 	Actor *newActor = (Actor*)calloc(1, sizeof(Actor));
-	newActor->body = f;
 	newActor->actionList = makeList();
-	f->actor = newActor;
+	if (f) {
+		newActor->body = f;
+		f->actor = newActor;
+	}
 	/*
 	if (a != 0) {
 		addToList(newActor->actionList, a);
@@ -16,7 +18,7 @@ void addAction(Actor *actor, Action *action) {
 	addToList(&(actor->actionList), action);
 }
 
-Action *findAction(char *name, Actor *actor) {
+Action *findAction(Actor *actor, char *name) {
 	linkedList *a = actor->actionList;
 	int len = strlen(name);
 	while (a != 0) {
@@ -67,7 +69,7 @@ void deleteActor(Actor *actor) {
 			deleteForm(actor->body);
 		}
 	}
-	removeActor(actor);
+	//removeActor(actor);
 	freeActionList(actor);
 	//free(actor);
 }

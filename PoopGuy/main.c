@@ -67,7 +67,19 @@ int main(int argc, char **argv) {
 		int xPos = (worldX * 0.5);
 		int yPos = worldY / 2;
 		for (int i = 0; i < getNumPoopers(); i++) {
-			placeForm(xPos + (i*4),  yPos, makePoopPlayer(i));
+			Form *pp = makePoopPlayer(i);
+			int xp = xPos + i * 4;
+			linkedList *res = checkSolidPos(pp, xp, yPos);
+			linkedList *r = res;
+			while (res) {
+				if (res->data) {
+					removeForm(res->data);
+					deleteForm(res->data);
+				}
+				res = res->next;
+			}
+			freeListSaveObj(&r);
+			placeForm(xp,  yPos, pp);//makePoopPlayer(i));
 			//poopers[i] = makePoopPlayer(xPos + (i*4), 1, i);
 		}
 		//printArray(map, worldX, worldY);

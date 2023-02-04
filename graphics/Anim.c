@@ -51,7 +51,7 @@ Anim *makeAnim(char **sheet, int spriteNum, bool generated, int rows, int cols) 
 	a->frameY = 1.0/rows;
 	a->frame = 0;
 	a->sprite = 0;
-	a->speed = 5;
+	a->speed = 6;
 	a->spriteNum = rows;
 	for (int i = 0; i < a->spriteNum; i++) {
 		float cy = ((a->spriteNum-1) - i) * a->frameY + 1;

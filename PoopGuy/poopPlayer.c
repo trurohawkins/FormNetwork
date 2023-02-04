@@ -1,9 +1,8 @@
 #include "poopPlayer.h"
-int maxPoopers = 2;
 PoopGuy **poopers = 0;
 int numPoopers = 1;
 int curPoopers = 0;
-
+/*
 PoopGuy *makePoopGuy (int sx, int sy) {
 	PoopGuy *pooper = (PoopGuy *)calloc(1, sizeof(PoopGuy));
 	pooper->speed = 10;
@@ -12,6 +11,7 @@ PoopGuy *makePoopGuy (int sx, int sy) {
 	pooper->me->body->id = 69;
 	addStat(pooper->me->body, "anim", 0);
 	pooper->move = makeMove();
+	((moveVar*)pooper->move->vars)->speed = 1;
 	Action *grav = makeGravity(pooper->move->vars);
 	pooper->jump = makeJump(pooper->move->vars, grav);
 	pooper->eatPoop = makeStomach(pooper->me->body, sx, sy);
@@ -27,6 +27,7 @@ PoopGuy *makePoopGuy (int sx, int sy) {
 	//pg = pooper;
 	return pooper;
 }
+*/
 /*
 PoopGuy *getPoopGuy() {
 	return pg;
@@ -42,15 +43,15 @@ void deletePoopGuy(void *poop) {
 
 
 void initPoopers() {
-	poopers = (PoopGuy**)calloc(maxPoopers, sizeof(PoopGuy));
+	poopers = (PoopGuy**)calloc(2, sizeof(PoopGuy));
 }
 
 Form *makePoopPlayer(int pNum) {
-	printf("poo1\n");
 	PoopGuy *pooper = (PoopGuy *)calloc(1, sizeof(PoopGuy));
 	//pooper->speed = 10;
 	//pooper->maxForce = 10;
-	pooper->me = makeActor(makeForm(0.2, 1, 0.2, 3, 3));
+	int size = 3;
+	pooper->me = makeActor(makeForm(0.2, 1, 0.2, size, size));
 	pooper->me->body->id = pNum;
 	addStat(pooper->me->body, "anim", 0);
 	pooper->move = makeMove();
@@ -59,7 +60,7 @@ Form *makePoopPlayer(int pNum) {
 	mv->maxForce = 10;
 	Action *grav = makeGravity(pooper->move->vars);
 	pooper->jump = makeJump(pooper->move->vars, grav);
-	pooper->eatPoop = makeStomach(pooper->me->body, 3, 3);
+	pooper->eatPoop = makeStomach(pooper->me->body, size, size);
 	pooper->control = makeControl();
 	setControlsMove(pooper->control->vars, pooper->move->vars);
 	addAction(pooper->me, pooper->move);
@@ -96,7 +97,7 @@ Form *makePoopPlayer(int pNum) {
 	}
 	free(sprites);
 	//Anim *poo = makeAnim("resources/Heart2.png", 1, 1, tc, ts);
-	setScale(poo, 4, 4);
+	setScale(poo, size + 1, size + 1);
 	addSprite(poo, 0, 1);
 	for (int i = 1; i < 4; i++) {
 		addSprite(poo, i, 6);
@@ -107,6 +108,7 @@ Form *makePoopPlayer(int pNum) {
 	setAnim(pooper->me->body, poo);
 
 	Player *p = makePlayer(pooper, pNum, deletePoopGuy);
+	addPlayer(p);
 	pooper->player = p;
 	//key mouse ocntrols
 	if (p->num == 0) {
@@ -160,6 +162,7 @@ void up(void *pg, float val) {
 }
 
 void left(void *pg, float val) {
+	printf("left %f\n", val);
 	PoopGuy *p = (PoopGuy*)pg;	
 	controlVar *cv = (controlVar*)p->control->vars;
 	eatPooVar *ep = (eatPooVar*)(p->eatPoop->vars);
@@ -231,7 +234,6 @@ void poop(void *pg, float val) {
 	eatPooVar *ep = (eatPooVar*)(p->eatPoop->vars);
 	if (val > 0) {
 		ep->pooping = 1;
-		printf("poo\n");
 	} else {
 		ep->pooping = 0;
 	}

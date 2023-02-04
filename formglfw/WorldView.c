@@ -9,8 +9,9 @@ WorldView *makeWorldView(int scale) {
 	wv->frameX = 0;
 	wv->frameY = 0;
 	wv->scalePower = scale;
+	printf("scalepower: %i\n", scale);
 	wv->zoomSpeed = 0.2;
-	wv->moveSpeed = 0.2;
+	wv->moveSpeed = 18;
 	/*
 	wv->defaultFrameX = 0;
 	wv->defaultFrameY = 0;
@@ -20,7 +21,7 @@ WorldView *makeWorldView(int scale) {
 }
 
 void initWorldView(int x, int y) {
-	printf("initializibng w0orld view\n");
+	printf("initializibng world view\n");
 	defaultView = makeWorldView(100);
 	/*
 	defaultView->defaultFrameX = defaultView->frameX = x;	
@@ -40,7 +41,6 @@ void resizeScreen() {
 }
 
 void setFrame(WorldView *wv, float frame) {
-	//printf("setting frame: %f\n", frame);
 	Screen *s = getWindow();
 	World *w = getWorld();
 	wv->frame = frame;
@@ -169,7 +169,13 @@ void followForm(Form *f) {
 }
 
 void unFollowForm(Form *f) {
-	removeFromList(&follow, f);
+	if (!follow) {
+		printf("we are not following anything\n");
+		return;
+	}
+	if (f != 0) {
+		removeFromList(&follow, f);
+	}
 }
 
 void followForms(WorldView *wv) {
@@ -182,8 +188,8 @@ void followForms(WorldView *wv) {
 		while (head) {
 			Form *f = (Form*)head->data;
 			if (f) {
-				xp += f->pos[0];
-				yp += f->pos[1];
+				xp += f->pos[0] + f->pMod[0];
+				yp += f->pos[1] + f->pMod[1];
 				count++;
 				linkedList *sub = follow;
 				while (sub) {
@@ -202,13 +208,15 @@ void followForms(WorldView *wv) {
 		xp /= count;
 		yp /= count;
 		World *w = getWorld();
-		maxDistance = clamp(maxDistance + 10, 40, max(w->x, w->y) + 1);
+		maxDistance = clamp(maxDistance + 10, wv->frame, max(w->x, w->y) + 1);
+
 		if (xp * wv->scalePower != wv->centerX || yp * wv->scalePower != wv->centerY || maxDistance != wv->frame) {
 		//printf("resizing frame to %f\n", maxDistance);
 		//if (xp != wv->centerX || yp != wv->centerY) {
 			setCenter(wv, xp, yp);
-		//wv->cenDestX = xp;
-		//wv->cenDestY = yp;
+			//printf("%f, %f\n", xp *wv->scalePower, yp * wv->scalePower);
+		//wv->cenDestX = xp * wv->scalePower;
+		//wv->cenDestY = yp * wv->scalePower;
 		//}
 		//if (maxDistance != wv->frame) {
 			setFrame(wv, maxDistance);
@@ -232,7 +240,7 @@ void lerpView(WorldView *wv) {
 	if (wv->frame == wv->frameDest && wv->centerX == wv->cenDestX && wv->centerY == wv->cenDestY) {// && wv->frameY == wv->frameDestY) {
 		return;
 	}
-	printf("lerping from %f to %f\n", wv->centerX, wv->cenDestX);
+	//printf("lerping from %f,%f to %f, %f\n", wv->centerX, wv->centerY, wv->cenDestX, wv->cenDestY);
 	if (wv->frame != wv->frameDest) {
 		int dir = sign(wv->frameDest - wv->frame);
 		if (dir > 0) {

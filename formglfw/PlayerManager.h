@@ -5,7 +5,8 @@ typedef struct PlayerManager {
 } PlayerManager;
 
 void makePlayerManager();
-void addPlayer(Player *p);
+Player *checkPlayer(int num);
+Player *addPlayer(Player *p);
 void removePlayer(Player *p);
 void processKeys();
 void freePlayerManager();

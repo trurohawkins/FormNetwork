@@ -30,13 +30,15 @@ int control(Form *f, Action *a) {
 	if (moveX != 0 && (cv->mrCount > 3 || cv->mlCount > 3)) {
 		//moveVar *mv = (moveVar*)(cv->pooper->move->vars);
 		if (abs(cv->move->force[0] + (cv->move->speed * moveX)) <= cv->move->maxForce) {
+			printf("%i, %i\n", cv->move->speed * moveX, cv->move->maxForce);
 			addForce(cv->move, cv->move->speed * moveX, 0);
 		}
 		//taking steps up smll walls
-		if (checkSide(f, moveX, 0, false) != 0) {
+		if (checkColSide(f, f->pos[0], f->pos[1], moveX, 0) != 0) {
 			int xCol = getEdge(f, 0, moveX);
 			int yCol = getEdge(f, 1, -1) + 2;
-			if (checkSide(f, 0, 1, false) == 0 && checkCol(xCol, yCol) == 0) {
+			//if (checkSide(f, 0, 1, false) == 0 && checkCol(xCol, yCol) == 0) {
+			if (checkColSide(f, f->pos[0], f->pos[1], 0, 1) == 0 && checkCol(f, xCol, yCol) == 0) {
 				//printf("going up to %f, %f\n", f->pos[0], f->pos[1]);
 				removeForm(f);
 				placeForm(f->pos[0], f->pos[1] + 1, f);
