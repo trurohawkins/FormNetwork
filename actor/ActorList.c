@@ -53,13 +53,15 @@ void actorListDo() {
 				deleteActor(a);
 				cur->data = 0;
 				if (pre == cur) {
+					printf("head deleting\n");
 					ActorList = cur->next;
 				} else {
 					pre->next = cur->next;
 				}
 				cur = cur->next;
 				free(tmp);
-				if (cur == 0) {
+				if (cur == 0 && count == 0) {
+					printf("deleting actorlist\n");
 					free(ActorList);
 					ActorList = 0;//makeList();
 					break;

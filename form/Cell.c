@@ -61,7 +61,6 @@ linkedList *getSolidForm(Cell* c) {
 }
 
 linkedList *checkSolidForm(Cell* c) {
-	//printf("check cell for solid 
 	linkedList *cur = c->within;
 	linkedList *solids = 0;
 	while (cur) {

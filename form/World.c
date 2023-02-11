@@ -137,7 +137,10 @@ linkedList *checkCol(Form *f, int x, int y) {
 	} else {
 		if (inert == 0) {
 			makeInert();
-		}	
+		}
+		inert->pos[0] = x;
+		inert->pos[1] = y;
+		//printf("making inert (%i,%i)\n");
 		addToList(&solids, inert);
 	}
 	return solids;
@@ -179,7 +182,7 @@ bool checkColliderPos(Collider *c, int x, int y) {
 bool checkPosCol(Form *form, int x, int y) {
 	if (form->size[0] == 0 && form->size[1] == 0) {
 		if (x >= 0 && y >= 0 && x < theWorld->x && y < theWorld->y) {
-			if (checkForm(x, y) != 0) {
+			if (checkCol(form, x, y) != 0) {
 				return true;
 			} else {
 				return false;
@@ -193,7 +196,8 @@ bool checkPosCol(Form *form, int x, int y) {
 				int xp = x + form->body[i][j][0];
 				int yp = y + form->body[i][j][1];
 				if (xp >= 0 && yp >= 0 && xp < theWorld->x && yp < theWorld->y) {
-					if (checkForm(x, y)) {
+					//printf("checking %i, %i\n",xp ,yp);
+					if (checkCol(form, xp, yp)) {
 						return true;
 					}
 				} else {
@@ -328,6 +332,9 @@ linkedList *checkSolidSide(Form *f, float xp, float yp, int xd, int yd) {
 			side = 2;
 		}
 		for (int i = 0; i < f->size[0]; i++) {
+			int xc = xp + f->sides[side][i*2];
+			int yc = yp + f->sides[side][i*2+1];
+			//printf("checksdie ycheck %i, %i\n", xc, yc);
 			//linkedList *check = checkCol(f, xp + f->sides[side][i*2], yp + f->sides[side][i*2+1]);//floor(xp) + col, (floor(yp) - f->size[1]/2) + i);
 			checkColAddList(&solids, f, xp + f->sides[side][i*2], yp + f->sides[side][i*2+1]);//floor(xp) + col, (floor(yp) - f->size[1]/2) + i);
 			/*
@@ -364,6 +371,7 @@ bool checkColSide(Form *f, float xp, float yp, int xd, int yd) {
 			linkedList *c = check;
 			while (check) {
 				if (check->data) {
+					//printf("checking item %f\n", ((Form*)check->data)->id);
 					if (!compareForms(check->data, f)) {
 						return true;
 					}
@@ -513,8 +521,10 @@ Form *removeForm(Form* form) {
 					theWorld->map[xp][yp] = 0;
 				}
 				*/
-				if (!removeFromCell(theWorld->map[xp][yp], form)) {
-					printf("its not here\n");
+				if (xp >= 0 && yp >= 0 && xp < theWorld->x && yp < theWorld->y) {
+					if (!removeFromCell(theWorld->map[xp][yp], form)) {
+						printf("its not here\n");
+					}
 				}
 				/*
 				if (takeForm(xp, yp) == 0) {

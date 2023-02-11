@@ -25,7 +25,7 @@ void deleteAction(Action *action) {
 }
 
 int defaultAction(Form *f, Action *a) {
-	printf("I(%i) am acting %i \n", f->id, f->id);
+	//printf("I(%i) am acting %i \n", f->id, f->id);
 }
 /*
 void setActVar(Action *action, int index, int val) {
