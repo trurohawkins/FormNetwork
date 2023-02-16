@@ -199,7 +199,7 @@ return hit;
  */
 
 void deleteForm(void *form) {
-	printf("deleting form\n");
+	//printf("deleting form\n");
 	Form *f = (Form*)form;
 	if (f->actor) {
 		Actor *a = f->actor;
@@ -252,6 +252,8 @@ bool compareForms(Form *f1, Form *f2) {
 	 */
 	bool checkFormIsSolid(void *form) {
 		Form *f = (Form*)form;
+
+		//printf("formm: %p (%i, %i)\n", form, f->size[0], f->size[1]);
 		if (f->size[0] != 0 || f->size[1] != 0) {
 			return true;
 		} else {

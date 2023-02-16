@@ -47,7 +47,9 @@ void actorListDo() {
 	while (cur != NULL) {
 		if (cur->data != NULL) {
 			Actor *a = cur->data;
-			doActions(a);
+			if (a->active) {
+				doActions(a);
+			}
 			if (a->deleteMe) {
 				linkedList *tmp = cur;
 				deleteActor(a);

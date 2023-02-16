@@ -82,6 +82,13 @@ int *getDir4(int dir) {
 	return dirs[0];
 }
 
+int *getDir8(int dir) {
+		if (dir > -1 && dir < 8) {
+			return dir8[dir];
+		}
+		return dir8[0];
+}
+
 int xyToDir4(int *xy) {
 	for (int i = 0; i < 4; i++) {
 		if (xy[0] == dirs[i][0] && xy[1] == dirs[i][1]) {
@@ -92,7 +99,7 @@ int xyToDir4(int *xy) {
 }
 
 
-int **getDir8() {
+int **getDirs8() {
 	return dir8;
 }
 

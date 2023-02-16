@@ -38,6 +38,9 @@ Form *removeFromCell(Cell *c, Form *f) {
 	void *v = removeFromList(&(c->within), fv);
 	if (v != NULL) {
 		c->count--;
+		if (checkFormIsSolid(f)) {
+			c->solid--;
+		}
 	}
 	return v;
 }
@@ -55,6 +58,7 @@ linkedList *getSolidForm(Cell* c) {
 				c->count--;
 				c->solid--;
 			}
+			//printf("new counnt %i\n", c->solid);
 		} while (c->solid > 0);
 	}
 	return solids;

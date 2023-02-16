@@ -1,5 +1,6 @@
 Actor *makeActor(Form * f/*, Action *a*/) {
 	Actor *newActor = (Actor*)calloc(1, sizeof(Actor));
+	newActor->active = true;
 	newActor->actionList = makeList();
 	if (f) {
 		newActor->body = f;

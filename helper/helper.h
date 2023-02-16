@@ -12,8 +12,9 @@
 void initDirections();
 void freeDirections();
 int **getDirs();
-int **getDir8();
+int **getDirs8();
 float getAngle(int dir);
+int *getDir8(int dir);
 int *getDir4(int dir);
 int xyToDir4(int *xy);
 int convertInvert(bool inv);

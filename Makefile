@@ -2,7 +2,7 @@ GAME = PoopGuy
 CC = gcc -c -g
 LC = gcc -c -g 
 WC = x86_64-w64-mingw32-gcc -c -g
-RELEASELIBS = -l:libglfw3.a -lm -ldl -lpthread -l:libfreetype.a -l:libcglm.a
+RELEASELIBS = -l:libglfw3.a -ldl -lpthread -l:libfreetype.a -l:libcglm.a -lm  
 DEVLIBS = -lglfw -lGL -lm -ldl -lfreetype -lcglm
 GLW = -lglfw3 -lopengl32 -lgdi32 
 GF = formglfw/
@@ -21,11 +21,11 @@ $(GAME)/$GAME): $(GAME)/main.c libFormGlfw.a glad.o FormNetwork.h
 FormNetwork.h: formglfw/FormGlfw.h libFormGlfw.a
 	gcc -E $(GF)FormGlfw.h > FormNetwork.h
 
-standalone: main.o libFormGlfw.a glad.o
-	gcc -o PoopGuy main.o glad.o libFormGlfw.a $(RELEASELIBS) 
+standalone: $(GAME)/main.c libFormGlfw.a glad.o FormNetwork.h
+	gcc -o $(GAME)/$(GAME) $(GAME)/main.c glad.o libFormGlfw.a $(RELEASELIBS) 
 
-windows: setWindows main.o libFormGlfw.a glad.o
-	x86_64-w64-mingw32-gcc -o PoopGuy -static main.o glad.o libFormGlfw.a $(GLW)
+windows: setWindows $(GAME)/main.c libFormGlfw.a glad.o FormNetwork.h
+	x86_64-w64-mingw32-gcc -o $(GAME)/$(GAME) -static glad.o libFormGlfw.a $(GLW)
 
 setWindows:
 	$(eval CC := $(WC))

@@ -184,6 +184,7 @@ void gameLoop() {
 	// why?? defaultFrame = screen->frame;
 	cam = getDefaultView();
 	wv = getDefaultView();
+	setFrame(wv, 70);
 	w = getWorld();
 	//setCameraSize(mainCam, 1);
 	

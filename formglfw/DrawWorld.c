@@ -207,7 +207,7 @@ void tileCell(TileSet *t, float remainder, int x, int y) {
 			if (!checkFormID(x + d[oppoSide][0], y + d[oppoSide][1], t->typeID)) {
 				mostOpen = 5;
 			} else {
-				int **d8 = getDir8();
+				int **d8 = getDirs8();
 				int nextCorn = ((startSide*2) + 3) % 8;
 				int preCorn = ((startSide*2) + 5) % 8;
 				//float nc = getFormID(x + d8[nextCorn][0], y + d8[nextCorn][1]);
@@ -226,14 +226,14 @@ void tileCell(TileSet *t, float remainder, int x, int y) {
 				}
 			}
 		} else if (mostOpen == 2) {
-				int **d8 = getDir8();
+				int **d8 = getDirs8();
 				int oppoCorn = ((startSide*2) + 5) % 8;
 				//if (getFormID(x + d8[oppoCorn][0], y + d8[oppoCorn][1]) != t->typeID) {
 				if (!checkFormID(x + d8[oppoCorn][0], y + d8[oppoCorn][1], t->typeID)) {
 					mostOpen = 14;
 				}
 		} else if (mostOpen == 0) {
-			int **d8 = getDir8();
+			int **d8 = getDirs8();
 			int check = 0;
 			int mostCorn = -1;
 			start = 7;

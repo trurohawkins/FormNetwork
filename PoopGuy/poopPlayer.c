@@ -162,7 +162,7 @@ void up(void *pg, float val) {
 }
 
 void left(void *pg, float val) {
-	printf("left %f\n", val);
+	//printf("left %f\n", val);
 	PoopGuy *p = (PoopGuy*)pg;	
 	controlVar *cv = (controlVar*)p->control->vars;
 	eatPooVar *ep = (eatPooVar*)(p->eatPoop->vars);

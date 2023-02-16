@@ -32,6 +32,7 @@ int stomachStuff(Form *f, Action *a) {
 	int yc;
 	if (ep->eating != 0) {
 		if (ep->biteCounter > ep->biteInterval) {
+			//printf(":bite counter reached\n");
 			if (ep->dir % 2 == 0) {
 				xc = (f->pos[0] - (1-f->pMod[0]) + ((f->size[0]/2)+1));
 				yc = getEdge(f, 1, d[ep->dir][1]);
@@ -41,10 +42,11 @@ int stomachStuff(Form *f, Action *a) {
 			}
 			for (int x = 0; x < ep->xBite; x++) {
 				for (int y = 0; y < ep->yBite; y++) {
-					printf(" eating %i, %i ", xc-x, yc - y);
+					//printf(" eating %i, %i \n", xc-x, yc - y);
 					linkedList *food = takeForm(xc - x, yc - y);
 					linkedList *f = food;
 					while (food) {
+						//printf("adding food\n");
 						if (food->data != 0) {
 							addToStack(food->data, a);
 						}
@@ -53,7 +55,7 @@ int stomachStuff(Form *f, Action *a) {
 					freeListSaveObj(&f);
 				}
 			}
-			//printf("\n");
+			//printf("done\n");
 			ep->biteCounter = 0;
 		} else {
 			ep->biteCounter++;
@@ -89,6 +91,7 @@ int stomachStuff(Form *f, Action *a) {
 					for (int y = 0; y < ep->yBite; y++) {
 						poo = removeFromStack(a);
 						if (poo != 0) {
+							//printf("iss poop solid? %i\n", checkFormIsSolid(poo)); 
 							placeForm(xc -x, yc - y, poo);
 						}else {
 							x = 100;

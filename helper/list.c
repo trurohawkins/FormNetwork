@@ -155,6 +155,7 @@ void *removeFromListCheck(linkedList **head, bool (*chk)(void*)) {
 	if ((*head) != NULL) {
 		if ((*head)->data != NULL) {
 			if (chk((*head)->data)) {
+				//printf("removed head\n");
 				linkedList *oh = *head;
 				(*head) = (*head)->next;
 				data = oh->data;

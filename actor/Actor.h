@@ -4,6 +4,7 @@ typedef struct Actor {
 	Form *body;
 	linkedList *actionList;
 	bool deleteMe;
+	bool active;
 } Actor;
 
 Actor *makeActor(Form * f/*, Action *a*/);
