@@ -9,6 +9,7 @@ GLuint tileShaderProgram;
 GLuint textShaderProgram;
 void (*camFunc)(void) = 0;
 GLFWmonitor *cur;
+GLFWwindow *window;
 
 int initializeGLFW(int windowX, int windowY) {
 	if (!glfwInit()) {
@@ -35,7 +36,7 @@ int initializeGLFW(int windowX, int windowY) {
 	} else {
 		mon = NULL;
 	}
-	GLFWwindow *window = glfwCreateWindow(windowX, windowY, "poop", mon, NULL);
+	window = glfwCreateWindow(windowX, windowY, "poop", mon, NULL);
 
 	if (window == NULL) {
 		fprintf(stderr, "ERROR: could not open window with GLFW3\n");
@@ -74,6 +75,12 @@ int initializeGLFW(int windowX, int windowY) {
 	//textShaderProgram = makeShaderProgramFile("graphics/shaders/textVS.glsl", "graphics/shaders/textFS.glsl");
 	textShaderProgram = makeShaderProgram(textVS, textFS);
 	//initCamera();
+}
+
+void endGlfw() {
+	freeTileSets();
+	glfwDestroyWindow(window);
+	glfwTerminate();
 }
 
 

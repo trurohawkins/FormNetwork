@@ -13,7 +13,7 @@ Action *findAction(Actor *actor, char *name);
 void *removeAction(Actor *actor, Action *action);
 void deleteMyAction(Actor *actor, Action *action);
 void doActions(Actor *actor);
-void deleteActor(Actor *actor);
+void deleteActor(void *actor);
 
 #include "ActorList.h"
 //#include "PoopGuy.h"

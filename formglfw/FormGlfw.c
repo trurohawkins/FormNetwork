@@ -12,6 +12,7 @@ int frameY = 50;
 int defaultFrameY = -1;
 int defaultFrameX = -1;
 float bgColor[4];
+bool running = true;
 
 void initFormGlfw() {
 	srand(time(NULL));
@@ -47,7 +48,7 @@ void initFormGlfw() {
 
 void FormLoop(void (game)(void)) {
 	Screen *screen = getWindow();
-	while(!glfwWindowShouldClose(screen->window)) {
+	while(!glfwWindowShouldClose(screen->window) && running) {
 		glfwPollEvents();
 		checkControllerInput();
 		processKeys();
@@ -61,6 +62,10 @@ void FormLoop(void (game)(void)) {
 		game();
 		glfwSwapBuffers(screen->window);
 	}
+}
+
+void stopLoop() {
+	running =  false;
 }
 
 void setBackgroundColor(float r, float g, float b, float a) {
@@ -91,5 +96,5 @@ void exitGame() {
 	freeJoyList();
 	freeInput();
 	freeRecipes();
-	glfwTerminate();
+	endGlfw();
 }

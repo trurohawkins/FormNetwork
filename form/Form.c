@@ -138,6 +138,27 @@ Collider *getCollider(Form *f) {
 	return c;
 }
 
+void freeCollider(Collider *c) {
+	if (c->size[0] != 0 && c->size[1] != 0) {
+		for (int x = 0; x < c->size[0]; x++) {
+			for(int y = 0; y < c->size[1]; y++) {
+				free(c->body[x][y]);
+			}
+		}
+		for (int i = 0; i < c->size[0]; i++) {
+			free(c->body[i]);
+		}
+	}
+	free(c->body);
+	if (c->sides) {
+		for (int i = 0; i < 4; i++) {
+			free(c->sides[i]);
+		}
+		free(c->sides);
+	}
+	free(c);
+}
+
 int getEdge(Form *f, int side, int d) {
 	if (d > 0) {
 		return f->pos[side]+(int)(f->size[side]/*+f->eMod[side]*/)/2 + 1;
@@ -218,6 +239,12 @@ void deleteForm(void *form) {
 		for (int i = 0; i < f->size[0]; i++) {
 			free(f->body[i]);
 		}
+	}
+	if (f->sides) {
+		for (int i = 0; i < 4; i++) {
+			free(f->sides[i]);
+		}
+		free(f->sides);
 	}
 	if (f->stats != NULL) {
 		deleteList((linkedList**)&f->stats, freeValue);

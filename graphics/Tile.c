@@ -12,6 +12,10 @@ void initTileSets() {
 	tileVAO = makeSpriteVao(1, 1);
 }
 
+void freeTileSets() {
+	deleteList(&TileSets, freeTileSet);
+}
+
 TileSet *makeTileSet(Anim *a, int xd, int yd, int mx, int my) {
 	TileSet *ts = (TileSet*)calloc(sizeof(TileSet), 1);
 	ts->set = a;
@@ -25,6 +29,16 @@ TileSet *makeTileSet(Anim *a, int xd, int yd, int mx, int my) {
 	ts->texture = makeDrawScreen(xd, yd, mx, my, 5, 2, true, 0);
 	addTileSet(ts);
 	return ts;
+}
+
+void freeTileSet(void *ts) {
+	TileSet *t = ts;
+	freeDrawScreen(t->color);
+	freeDrawScreen(t->trans);
+	freeDrawScreen(t->rot);
+	freeDrawScreen(t->texture);
+	freeAnim(t->set);
+	free(t);
 }
 
 void setTileVBO(TileSet *ts) {
@@ -66,6 +80,11 @@ DrawScreen *makeDrawScreen(int dimensionX ,int dimensionY, int maxDimensionX ,in
 	sizeDrawScreen(ds, dimensionX, dimensionY, base);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	return ds;
+}
+
+void freeDrawScreen(DrawScreen *ds) {
+	free(ds->data);
+	free(ds);
 }
 
 void sizeDrawScreen(DrawScreen *ds, int newSizeX, int newSizeY, bool base) {

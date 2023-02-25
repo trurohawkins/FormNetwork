@@ -27,6 +27,7 @@ typedef struct Screen {
 #include "../helper/helper.h"
 
 int initializeGLFW(int windowX, int windowY);
+void endGlfw();
 void glfwWindowSizeCallback(GLFWwindow *window, int width, int height);
 void sizeScreen(int newFrame);
 void setOrtho(float scale);

@@ -23,7 +23,7 @@ Player *checkPlayer(int num) {
 Player *addPlayer(Player *p) {
 	Player *already = findList(&(PM->playerList), p, cmpPlayer);
 	if (already) {
-		printf("we already have a player %i\n", already->num);
+		//printf("we already have a player %i\n", already->num);
 		return already;
 	} 
 	addToList(&(PM->playerList), p);

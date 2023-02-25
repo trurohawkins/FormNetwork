@@ -13,6 +13,7 @@ void removeActor(Actor *a) {
 }
 
 void deleteActorList() {
+	/*
 	linkedList *cur = ActorList;
 	while (cur != NULL) {
 		if (cur->data != NULL) {
@@ -20,7 +21,8 @@ void deleteActorList() {
 		}
 		cur = cur->next;
 	}
-	freeList(&ActorList);
+	*/
+	deleteList(&ActorList, deleteActor);
 }
 
 bool checkDeleteActor(void *actor) {
@@ -52,10 +54,11 @@ void actorListDo() {
 			}
 			if (a->deleteMe) {
 				linkedList *tmp = cur;
+				//printf("deleting actor\n");
 				deleteActor(a);
 				cur->data = 0;
 				if (pre == cur) {
-					printf("head deleting\n");
+					//printf("head deleting\n");
 					ActorList = cur->next;
 				} else {
 					pre->next = cur->next;
@@ -63,7 +66,7 @@ void actorListDo() {
 				cur = cur->next;
 				free(tmp);
 				if (cur == 0 && count == 0) {
-					printf("deleting actorlist\n");
+					//printf("deleting actorlist\n");
 					free(ActorList);
 					ActorList = 0;//makeList();
 					break;

@@ -24,6 +24,7 @@ bool checkPosCol(Form *f, int x, int y);
 bool checkColSide(Form *f, float xp, float yp, int xd, int yd);
 bool checkColliderPos(Collider *c, int x, int y);
 linkedList *checkPos(Form *f, int x, int y);
+linkedList *checkSide(Form *form, float xp, float yp, int xd, int yd);
 linkedList *checkSolidPos(Form *f, int x, int y);
 linkedList *checkSolidSide(Form *f, float x, float y, int xd, int yd);
 bool checkSideForVal(Form *f, float xp, float yp, int xd, int yd, char *val);

@@ -37,7 +37,9 @@ WorldView *getDefaultView() {
 }
 //applying new screen ratio to frame data
 void resizeScreen() {
-	setFrame(defaultView, defaultView->frame);
+	if (defaultView) {
+		setFrame(defaultView, defaultView->frame);
+	}
 }
 
 void setFrame(WorldView *wv, float frame) {
@@ -141,6 +143,8 @@ void wvMakeBackground(WorldView *wv, char *image) {
 	World *w = getWorld();
 	char **sprites = makeSheet(image, 1);
 	Anim *bg = makeAnim(sprites, 1, false, 1, 1);//makeAnimSheet(image, 1, 1, 1);
+	free(*sprites);
+	free(sprites);
 	setScale(bg, w->x, w->y);//scaleX, scaleY);
 	animAddVao(bg, makeSpriteVao(1, 1));
 	wv->background = bg;

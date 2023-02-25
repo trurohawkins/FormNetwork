@@ -31,7 +31,7 @@ Form *makeForm(float r, float g, float b, float wid, float len);
 int ***makeBody(int wid, int len);
 int **calcSides(int wid, int len);
 Collider *makeCollider (int wid, int len);
-
+void freeCollider(Collider *c);
 void changeCollider(Form *f, Collider *c);
 Collider *getCollider(Form *f);
 //Form *checkSide(Form *f, int xd, int yd, bool collide);

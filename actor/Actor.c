@@ -62,7 +62,9 @@ void freeActionList(Actor *actor) {
 
 }
 
-void deleteActor(Actor *actor) {
+void deleteActor(void *a) {
+	Actor *actor = a;
+
 	if (actor->body != NULL) {
 		if (checkFormIsSolid(actor->body)) {
 			//if form is not solid(it has a body larger than 1 Cell), then its easier if the actor takes care of it, t oprevent cyclical calls involving removing the different parts when deleting world
@@ -72,7 +74,7 @@ void deleteActor(Actor *actor) {
 	}
 	//removeActor(actor);
 	freeActionList(actor);
-	//free(actor);
+	free(actor);
 }
 #include "ActorList.c"
 //#include "PoopGuy.c"

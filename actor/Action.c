@@ -15,12 +15,16 @@ void nameAction(Action *a, char *name) {
 	memcpy(a->name, name, strlen(name));
 }
 
+void addDynVar(Action* a, void *ptr) {
+	addToList(&a->dynVars, ptr);
+}
 
 void deleteAction(Action *action) {
 	if (action->name) {
 		free(action->name);
 	}
 	free(action->vars);
+	freeList(&action->dynVars);
 	//free(action);//changed because part of list and deleting that list will fre this memory
 }
 

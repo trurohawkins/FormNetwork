@@ -24,6 +24,9 @@ World *getWorld() {
 }
 
 void deleteWorld() {
+	if (!theWorld) {
+		return;
+	}
 	for (int i = 0; i < theWorld->x ; i += 1) {
 		for (int j = 0; j < theWorld->y; j++) {
 			/*
@@ -182,7 +185,9 @@ bool checkColliderPos(Collider *c, int x, int y) {
 bool checkPosCol(Form *form, int x, int y) {
 	if (form->size[0] == 0 && form->size[1] == 0) {
 		if (x >= 0 && y >= 0 && x < theWorld->x && y < theWorld->y) {
-			if (checkCol(form, x, y) != 0) {
+			linkedList *c = checkCol(form, x, y);
+			if (c) {
+				freeListSaveObj(&c);
 				return true;
 			} else {
 				return false;
@@ -197,9 +202,13 @@ bool checkPosCol(Form *form, int x, int y) {
 				int yp = y + form->body[i][j][1];
 				if (xp >= 0 && yp >= 0 && xp < theWorld->x && yp < theWorld->y) {
 					//printf("checking %i, %i\n",xp ,yp);
-					if (checkCol(form, xp, yp)) {
+					linkedList *c = checkCol(form, xp, yp);
+					//if (checkCol(form, xp, yp)) {
+					if (c) {
+						freeListSaveObj(&c);
 						return true;
 					}
+					freeListSaveObj(&c);
 				} else {
 					return true;
 				}
@@ -373,6 +382,7 @@ bool checkColSide(Form *f, float xp, float yp, int xd, int yd) {
 				if (check->data) {
 					//printf("checking item %f\n", ((Form*)check->data)->id);
 					if (!compareForms(check->data, f)) {
+						freeListSaveObj(&c);
 						return true;
 					}
 				}
@@ -392,6 +402,7 @@ bool checkColSide(Form *f, float xp, float yp, int xd, int yd) {
 			while (check) {
 				if (check->data) {
 					if (!compareForms(check->data, f)) {
+						freeListSaveObj(&c);
 						return true;
 					}
 				}
@@ -473,20 +484,73 @@ linkedList *checkPos(Form *form, int x, int y) {
 				int xp = x + form->body[i][j][0];
 				int yp = y + form->body[i][j][1];
 				if (xp >= 0 && yp >= 0 && xp < theWorld->x && yp < theWorld->y) {
-					if (within == 0) {
-						within = theWorld->map[x][y]->within;
-					} else {
-						linkedList *cur = within;
-						while (cur->next != 0) {
-							cur = cur->next;
+					if (theWorld->map[xp][yp]->within) {
+						linkedList *w = theWorld->map[xp][yp]->within;
+						while (w) {
+							Form *f = w->data;
+							if (f) {
+								if (!compareForms(form, f)) {
+									addToList(&within, f);
+								}
+							}
+							w = w->next;
 						}
-						cur->next = theWorld->map[x][y]->within;
 					}
 				}
 			}
 		}
 		return within;
 	}
+}
+
+linkedList *checkSide(Form *form, float xp, float yp, int xd, int yd) {
+	linkedList *within = 0;
+	if (xd != 0) {
+		int side = 3;
+		if (xd < 0) {
+			side = 1;
+		}
+		for (int i = 0; i < form->size[1]; i++) {
+			int xc = xp + form->sides[side][i*2];
+			int yc = yp + form->sides[side][i*2+1];
+			if (xc >= 0 && yc >= 0 && yc < theWorld->y && xc < theWorld->x) {
+				linkedList *forms = theWorld->map[xc][yc]->within;
+				while (forms) {
+					Form *f = forms->data;
+					if (f) {
+						if (!compareForms(form, f)) {
+							addToList(&within, f);
+						}
+					}
+					forms = forms->next;
+				}
+			}
+		}
+	}
+
+	if (yd != 0) {
+		int side = 0;
+		if (yd < 0) {
+			side = 2;
+		}
+		for (int i = 0; i < form->size[0]; i++) {
+			int xc = xp + form->sides[side][i*2];
+			int yc = yp + form->sides[side][i*2+1];
+			if (xc >= 0 && yc >= 0 && yc < theWorld->y && xc < theWorld->x) {
+				linkedList *forms = theWorld->map[xc][yc]->within;
+				while (forms) {	
+					Form *f = forms->data;
+					if (f) {
+						if (!compareForms(form, f)) {
+							addToList(&within, f);
+						}
+					}
+					forms = forms->next;
+				}
+			}
+		}
+	}
+	return within;
 }
 
 linkedList *takeForm(int x, int y) {
@@ -510,7 +574,7 @@ Form *removeForm(Form* form) {
 		//takeForm(form->pos[0], form->pos[1]);
 			removeFromCell(theWorld->map[x][y], form);
 		}
-	} else {
+	} else if (form->pos[0] > 0 && form->pos[1] > 0) {
 		for (int i = 0; i < form->size[0]; i++) {
 			for (int j = 0; j < form->size[1]; j++) {
 				int xp = floor(form->pos[0]) + (form->body[i][j])[0];
@@ -571,7 +635,7 @@ bool checkFormID(int x, int y, int id) {
 			Form **forms = getCellContents(c);//theWorld->map[x][y]);
 			if (forms) {
 				int count = theWorld->map[x][y]->count;
-				int *ids = calloc(count + 1, sizeof(int));
+				//int *ids = calloc(count + 1, sizeof(int));
 				for (int i = 0; i < count; i++) {
 					if (forms[i]->id == id) {
 						check = true;

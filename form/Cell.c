@@ -34,15 +34,20 @@ void addToCell(Cell* c, Form *f) {
 }
 
 Form *removeFromCell(Cell *c, Form *f) {
+	if (!c->within) {
+		return 0;
+	}
 	void *fv = (void *)f;
-	void *v = removeFromList(&(c->within), fv);
-	if (v != NULL) {
-		c->count--;
-		if (checkFormIsSolid(f)) {
-			c->solid--;
+	if (fv) {
+		void *v = removeFromList(&(c->within), fv);
+		if (v != NULL) {
+			c->count--;
+			if (checkFormIsSolid(f)) {
+				c->solid--;
+			}
 		}
 	}
-	return v;
+	return fv;
 }
 
 linkedList *getSolidForm(Cell* c) {
