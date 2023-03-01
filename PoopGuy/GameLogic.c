@@ -186,6 +186,8 @@ void gameLoop() {
 	wv = getDefaultView();
 	setFrame(wv, 70);
 	w = getWorld();
+	processAudioFile("resources/SchoolBoyLoop.wav");
+	processAudioFile("resources/SchoolBoyLoop.wav");
 	//setCameraSize(mainCam, 1);
 	
 	//makeStoneSquare((w->x/2), (w->y/2) - 40, 10);

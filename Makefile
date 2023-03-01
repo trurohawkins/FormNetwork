@@ -3,7 +3,7 @@ CC = gcc -c -g
 LC = gcc -c -g 
 WC = x86_64-w64-mingw32-gcc -c -g
 RELEASELIBS = -l:libglfw3.a -ldl -lpthread -l:libfreetype.a -l:libcglm.a -lm  
-DEVLIBS = -lglfw -lGL -lm -ldl -lfreetype -lcglm
+DEVLIBS = -lglfw -lGL -lm -ldl -lfreetype -lcglm -lsndfile -lportaudio
 GLW = -lglfw3 -lopengl32 -lgdi32 
 GF = formglfw/
 FD = form/
@@ -14,6 +14,7 @@ ID = $(GD)input/
 SHD = $(GD)shaders/
 TD = $(GD)text/
 HD = helper/
+AU = audio/
 
 $(GAME)/$GAME): $(GAME)/main.c libFormGlfw.a glad.o FormNetwork.h
 	gcc -g -o  $(GAME)/$(GAME) $(GAME)/main.c glad.o libFormGlfw.a  $(DEVLIBS)
@@ -33,8 +34,8 @@ setWindows:
 main.o: main.c
 	$(CC) -Wextra -Wall main.c -lcglm
 
-libFormGlfw.a: FormGlfw.o Form.o helper.o glfwMain.o Shaders.o Input.o Anim.o Text.o Camera.o
-	ar rs libFormGlfw.a FormGlfw.o Form.o helper.o glfwMain.o Shaders.o Input.o Anim.o Text.o Camera.o
+libFormGlfw.a: FormGlfw.o Form.o helper.o glfwMain.o Shaders.o Input.o Anim.o Text.o Camera.o Sound.o
+	ar rs libFormGlfw.a FormGlfw.o Form.o helper.o glfwMain.o Shaders.o Input.o Anim.o Text.o Camera.o Sound.o
 
 FormGlfw.o: $(GF)FormGlfw.c $(GF)FormGlfw.h $(GF)Player.c $(GF)Player.h  $(GF)PlayerManager.h $(GF)PlayerManager.c  $(GF)DrawWorld.c $(GF)DrawWorld.h $(GF)WorldView.c $(GF)WorldView.h $(GF)god.h $(GF)god.c
 	$(CC) $(GF)FormGlfw.c
@@ -44,6 +45,9 @@ libform.a: Form.o helper.o
 
 Form.o:  $(FD)Form.c $(FD)Form.h $(FD)World.c $(FD)World.h $(AD)Action.c $(AD)Action.h $(AD)Actor.c $(AD)Actor.h   $(AD)ActorList.h $(AD)ActorList.c $(FD)Value.h $(FD)Value.c $(FD)Cell.c $(FD)Cell.h
 	$(CC) $(FD)Form.c 
+
+Sound.o: $(AU)Sound.h $(AU)Sound.c
+	$(CC) $(AU)Sound.c
 
 libglfw.a: glfwMain.o Shaders.o Input.o Anim.o Text.o Camera.o
 	ar rs libglfw.a glfwMain.o Shaders.o Input.o Anim.o Text.o Camera.o

@@ -126,6 +126,9 @@ void *printList(linkedList **head, char *listName, void (*print)(void*)) {
 }
 
 void *removeFromList(linkedList **head, void *item) {
+	if (*head == 0) {
+		return 0;
+	}
 	void *data = 0;
 	if ((*head)->data == item) {
 		linkedList *oh = *head;

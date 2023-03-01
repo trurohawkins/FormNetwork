@@ -3,6 +3,7 @@
 #include "../form/Form.h"
 #include "../helper/helper.h"
 #include "../graphics/glfwMain.h"
+#include "../audio/Sound.h"
 #include "Player.h"
 #include "WorldView.h"
 #include "god.h"

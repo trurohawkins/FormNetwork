@@ -29,6 +29,7 @@ void initFormGlfw() {
 	initText();
 	initTexInts();
 	initInput();
+	initAudio();
 	makeTextureManager();
 	initUILists();
 	makePlayerManager();
@@ -60,6 +61,7 @@ void FormLoop(void (game)(void)) {
 		glClearColor(bgColor[0], bgColor[1], bgColor[2], bgColor[3]);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		game();
+		cleanUpPlayedAudio();
 		glfwSwapBuffers(screen->window);
 	}
 }
@@ -96,5 +98,6 @@ void exitGame() {
 	freeJoyList();
 	freeInput();
 	freeRecipes();
+	endAudio();
 	endGlfw();
 }
