@@ -29,7 +29,7 @@ void initFormGlfw() {
 	initText();
 	initTexInts();
 	initInput();
-	initAudio();
+	//initAudio();
 	makeTextureManager();
 	initUILists();
 	makePlayerManager();

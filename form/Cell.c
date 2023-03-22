@@ -24,7 +24,8 @@ void addToCell(Cell* c, Form *f) {
 		}
 		*/
 		//if (f->size[0] != 0 && f->size[1] != 0) {
-		if (checkFormIsSolid(f)) {
+		//if (checkFormIsSolid(f)) {
+		if (f->solid) {
 			c->solid++;
 		}
 	} else {
@@ -42,12 +43,18 @@ Form *removeFromCell(Cell *c, Form *f) {
 		void *v = removeFromList(&(c->within), fv);
 		if (v != NULL) {
 			c->count--;
-			if (checkFormIsSolid(f)) {
+			//if (checkFormIsSolid(f)) {
+			if (f->solid) {
 				c->solid--;
 			}
 		}
 	}
 	return fv;
+}
+
+bool checkSolid(void *form) {
+	Form *f = form;
+	return f->solid;
 }
 
 linkedList *getSolidForm(Cell* c) {
@@ -56,7 +63,7 @@ linkedList *getSolidForm(Cell* c) {
 		Form *f = 0;
 		//printCell(c);
 		do {
-			f = removeFromListCheck(&(c->within), checkFormIsSolid);	
+			f = removeFromListCheck(&(c->within), checkSolid);	
 			if (f != NULL) {
 				addToList(&solids, f);
 				//printCell(c);
@@ -73,9 +80,11 @@ linkedList *checkSolidForm(Cell* c) {
 	linkedList *cur = c->within;
 	linkedList *solids = 0;
 	while (cur) {
-		if (cur->data) {
-			if (checkFormIsSolid(cur->data)) {
-				addToList(&solids, cur->data);
+		Form *f = cur->data;
+		if (f) {
+			//if (checkFormIsSolid(cur->data)) {
+			if (f->solid) {
+				addToList(&solids, f);
 			}
 		}
 		cur = cur->next;
@@ -92,7 +101,7 @@ linkedList *checkSolidForm(Cell* c) {
 }
 
 Form **getCellContents(Cell *c) {
-	if (c->count == 0 || c->within == NULL) {
+	if (c->count == 0 && c->within == NULL) {
 		return NULL;
 	}
 	Form **content = (Form**)calloc(sizeof(Form*), c->count);
@@ -166,9 +175,25 @@ void printCell(Cell *c) {
 	}
 }
 
+void removeDeleteForm(void *f) {
+	Form *form = f;
+	removeForm(form);
+	deleteForm(form);
+}
+
 void freeCell(Cell *c) {
 	if (c->within != 0) {
-		deleteList(&(c->within), deleteForm);
+		if (c->count > 0) {
+			Form **forms = getCellContents(c);
+			int count = c->count;
+			for (int i = 0; i < count; i++) {
+				removeForm(forms[i]);
+				deleteForm(forms[i]);
+			}
+		}
+		//linkedList *cur = c->within;
+		freeList(&c->within);
+		//deleteList(&(c->within), removeDeleteForm);
 	}
 	free(c);
 }

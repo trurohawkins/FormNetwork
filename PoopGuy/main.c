@@ -32,6 +32,7 @@ int main(int argc, char **argv) {
 	}
 	\*/
 	initFormGlfw();
+	initAudio();
 	int worldY = 100;
 	int worldX = 100; 
 	initRecipes(3, 10);
@@ -69,7 +70,7 @@ int main(int argc, char **argv) {
 		for (int i = 0; i < getNumPoopers(); i++) {
 			Form *pp = makePoopPlayer(i);
 			int xp = xPos + i * 4;
-			linkedList *res = checkSolidPos(pp, xp, yPos);
+			linkedList *res = checkPos(pp, xp, yPos, true);
 			linkedList *r = res;
 			while (res) {
 				if (res->data) {

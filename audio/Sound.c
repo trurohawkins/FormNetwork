@@ -1,6 +1,6 @@
 #include "Sound.h"
 
-AudioManager *aMan;
+AudioManager *aMan = 0;
 
 int initAudio() {
 	PaStreamParameters outputParameters;
@@ -254,13 +254,15 @@ void endAudio() {
 }
 
 void freeAudioManager() {
-	if (aMan->stream) {
-		Pa_StopStream(aMan->stream);
-		Pa_CloseStream(aMan->stream);
+	if (aMan) {
+		if (aMan->stream) {
+			Pa_StopStream(aMan->stream);
+			Pa_CloseStream(aMan->stream);
+		}
+		free(aMan->volumes);
+		freeListSaveObj(&aMan->mix);
+		deleteList(&aMan->sounds, freeSound);
+		//free(aMan->stream);
+		free(aMan);
 	}
-	free(aMan->volumes);
-	freeListSaveObj(&aMan->mix);
-	deleteList(&aMan->sounds, freeSound);
-	//free(aMan->stream);
-	free(aMan);
 }

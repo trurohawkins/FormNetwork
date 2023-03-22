@@ -12,14 +12,16 @@ Form *makeForm(float r, float g, float b, float wid, float len) {
 	newForm->size[1] = len;
 	newForm->anim = 0;
 	newForm->colMatrix = 0;
+	newForm->solid = true;
 	//newForm->roto = 0;
 	//newForm->invert[0] = false;
 	//newForm->invert[1] = false;
 	//float wid = w;
 	//float len = l;
 	if (wid != 0 && len != 0) {
-		newForm->body = makeBody(wid, len);
-		newForm->sides = calcSides(wid, len);
+		newForm->body = squareBody(wid, len);
+		newForm->bLen = wid * len;
+		newForm->sides = squareSides(wid, len);
 	} else {
 		//printf("no body on this form\n");
 		newForm->body = 0;
@@ -27,7 +29,7 @@ Form *makeForm(float r, float g, float b, float wid, float len) {
 	return newForm;
 }
 
-int ***makeBody(int wid, int len) {
+int *squareBody(int wid, int len) {
 	int eModX = 0;
 	if ((int)wid % 2 == 0) {
 		eModX = 1;//-0.5;
@@ -40,23 +42,29 @@ int ***makeBody(int wid, int len) {
 	} else {
 		//newForm->eMod[1] = 0;
 	}
+	/*
 	int*** body = (int***) calloc(wid, sizeof(int**));
 	for (int i = 0; i < wid; i++) {
 		body[i] = (int**) calloc(len, sizeof(int*));
 	}
+	*/
+	int *body = (int *)calloc(wid * len * 2, sizeof(int));
 	int l = -floor(len/2);
 	int w = -floor(wid/2);
+	int count = 0;
 	for (int x = 0; x < wid; x++) {
 		for(int y = 0; y < len; y++) {
-			body[x][y] = (int*)calloc(2, sizeof(int));
-			body[x][y][0] = w + eModX + x;
-			body[x][y][1] = l + eModY + y;
+			body[count++] = w + eModX + x;
+			body[count++] = l + eModY + y;
+			//body[x][y] = (int*)calloc(2, sizeof(int));
+			//body[x][y][0] = w + eModX + x;
+			//body[x][y][1] = l + eModY + y;
 		}
 	}
 	return body;
 
 }
-int **calcSides(int wid, int len) {
+int **squareSides(int wid, int len) {
 	int eModX = 0;
 	if ((int)wid % 2 == 0) {
 		eModX = 1;//-0.5;
@@ -113,12 +121,13 @@ int **calcSides(int wid, int len) {
 	return sides;
 }
 
-Collider *makeCollider (int wid, int len) {
+Collider *squareCollider (int wid, int len) {
 	Collider *c = calloc(1, sizeof(Collider));
 	c->size[0] = wid;
 	c->size[1] = len;
-	c->sides = calcSides(wid, len);
-	c->body = makeBody(wid, len);
+	c->sides = squareSides(wid, len);
+	c->body = squareBody(wid, len);
+	c->bLen = wid * len;
 	return c;
 }
 
@@ -140,6 +149,7 @@ Collider *getCollider(Form *f) {
 
 void freeCollider(Collider *c) {
 	if (c->size[0] != 0 && c->size[1] != 0) {
+		/*
 		for (int x = 0; x < c->size[0]; x++) {
 			for(int y = 0; y < c->size[1]; y++) {
 				free(c->body[x][y]);
@@ -148,6 +158,10 @@ void freeCollider(Collider *c) {
 		for (int i = 0; i < c->size[0]; i++) {
 			free(c->body[i]);
 		}
+		for (int i = 0; i < c->size[0] * c->size[1] * 2; i++) {
+			free(c->body[i]);
+		}
+		*/
 	}
 	free(c->body);
 	if (c->sides) {
@@ -229,8 +243,10 @@ void deleteForm(void *form) {
 		a->deleteMe = true;
 	}
 	//removeForm(f);
+	
 	//	printf("form: %i\n", f->id);
 	if (f->size[0] != 0 && f->size[1] != 0) {
+		/*
 		for (int x = 0; x < f->size[0]; x++) {
 			for(int y = 0; y < f->size[1]; y++) {
 				free(f->body[x][y]);
@@ -239,6 +255,7 @@ void deleteForm(void *form) {
 		for (int i = 0; i < f->size[0]; i++) {
 			free(f->body[i]);
 		}
+		*/
 	}
 	if (f->sides) {
 		for (int i = 0; i < 4; i++) {
@@ -277,6 +294,7 @@ bool compareForms(Form *f1, Form *f2) {
 		 f->invert[axis] = flipped;
 		 }
 	 */
+	 /*
 	bool checkFormIsSolid(void *form) {
 		Form *f = (Form*)form;
 
@@ -287,7 +305,7 @@ bool compareForms(Form *f1, Form *f2) {
 			return false;
 		}
 	}
-
+*/
 	bool isFormCenter(Form *f, int x, int y) {
 		//if (f->size[0] <= 1 && f->size[1] <= 1) {
 		if ((int)floor(f->pos[0]) == x && (int)floor(f->pos[1] == y)) {

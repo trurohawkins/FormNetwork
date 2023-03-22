@@ -354,8 +354,8 @@ void drawWorldDebug(World *w) {
 			if (xp >= 0 && xp < w->x && yp >= 0 && yp < w->y) {
 				//Form *f = checkSolidForm(w->map[xp][yp]);
 				Form *f = 0;//checkSolidForm(w->map[xp][yp]);
-				linkedList *forms = checkSolidForm(w->map[xp][yp]);
-				linkedList *fo = forms;
+				linkedList *forms = w->map[xp][yp]->within;//checkSolidForm(w->map[xp][yp]);
+			//	linkedList *fo = forms;
 				while (forms) {
 					if (forms->data) {
 						f = forms->data;
@@ -363,7 +363,7 @@ void drawWorldDebug(World *w) {
 					}
 					forms = forms->next;
 				}
-				freeListSaveObj(&fo);
+				//freeListSaveObj(&fo);
 				if (f != NULL) {
 					mat[7] = (startY + curView->objSY) + (y * curView->objSY);	
 					glUniformMatrix4fv(tMat, 1, GL_TRUE, mat);

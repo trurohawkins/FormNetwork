@@ -38,7 +38,7 @@ int control(Form *f, Action *a) {
 			int xCol = getEdge(f, 0, moveX);
 			int yCol = getEdge(f, 1, -1) + 2;
 			//if (checkSide(f, 0, 1, false) == 0 && checkCol(xCol, yCol) == 0) {
-			if (checkColSide(f, f->pos[0], f->pos[1], 0, 1) == 0 && checkCol(f, xCol, yCol) == 0) {
+			if (checkColSide(f, f->pos[0], f->pos[1], 0, 1) == 0 && checkCol(f, xCol, yCol, true) == 0) {
 				//printf("going up to %f, %f\n", f->pos[0], f->pos[1]);
 				removeForm(f);
 				placeForm(f->pos[0], f->pos[1] + 1, f);

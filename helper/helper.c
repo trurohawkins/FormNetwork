@@ -95,7 +95,7 @@ int xyToDir4(int *xy) {
 			return i;
 		}
 	}
-	printf("(%i, %i), did not mmatch a cardinal direction", xy[0], xy[1]);
+	printf("(%i, %i), did not mmatch a cardinal direction\n", xy[0], xy[1]);
 }
 
 

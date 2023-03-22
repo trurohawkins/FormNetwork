@@ -18,19 +18,19 @@ void deleteWorld();
 void deleteTerrain();
 void placeForm(float x, float y, Form *form);
 //returns null terminated list
+linkedList *checkForm(int x, int y, bool solid);
+linkedList *checkCol(Form *f, int x, int y, bool solid);
+void checkColAddList(linkedList **list, Form *f, int x, int y, bool solid);
 int* getFormID(int x, int y);
 bool checkFormID(int x, int y, int id);
+
 bool checkPosCol(Form *f, int x, int y);
 bool checkColSide(Form *f, float xp, float yp, int xd, int yd);
 bool checkColliderPos(Collider *c, int x, int y);
-linkedList *checkPos(Form *f, int x, int y);
-linkedList *checkSide(Form *form, float xp, float yp, int xd, int yd);
-linkedList *checkSolidPos(Form *f, int x, int y);
-linkedList *checkSolidSide(Form *f, float x, float y, int xd, int yd);
+linkedList *checkPos(Form *f, int x, int y, bool solid);
+linkedList *checkSide(Form *form, float xp, float yp, int xd, int yd, bool solid);
+linkedList *checkSideI(Form *form, float xp, float yp, int dir, bool solid);
 bool checkSideForVal(Form *f, float xp, float yp, int xd, int yd, char *val);
-linkedList *checkForm(int x, int y);
-linkedList *checkCol(Form *f, int x, int y);
-void checkColAddList(linkedList **list, Form *f, int x, int y);
 linkedList *takeForm(int x, int y);
 Form *removeForm(Form *f);
 void freeWorld();

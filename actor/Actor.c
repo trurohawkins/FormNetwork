@@ -20,17 +20,37 @@ void addAction(Actor *actor, Action *action) {
 }
 
 Action *findAction(Actor *actor, char *name) {
-	linkedList *a = actor->actionList;
-	int len = strlen(name);
-	while (a != 0) {
-		Action *act = a->data;
-		if (act->name) {
-			if (memcmp(act->name, name, len) == 0) {
-				return act;
+	if (actor) {
+		linkedList *a = actor->actionList;
+		int len = strlen(name);
+		while (a != 0) {
+			Action *act = a->data;
+			if (act->name) {
+				if (memcmp(act->name, name, len) == 0) {
+					return act;
+				}
 			}
+			a = a->next;
 		}
-		a = a->next;
 	}
+	return 0;
+}
+
+void *findActVars(Actor *actor, char *name) {
+	if (actor) {
+		linkedList *a = actor->actionList;
+		int len = strlen(name);
+		while (a != 0) {
+			Action *act = a->data;
+			if (act->name) {
+				if (memcmp(act->name, name, len) == 0) {
+					return act->vars;
+				}
+			}
+			a = a->next;
+		}
+	}
+	return 0;
 }
 
 void *removeAction(Actor *actor, Action *action) {
@@ -66,11 +86,14 @@ void deleteActor(void *a) {
 	Actor *actor = a;
 
 	if (actor->body != NULL) {
-		if (checkFormIsSolid(actor->body)) {
+		//if (checkFormIsSolid(actor->body)) {
+
 			//if form is not solid(it has a body larger than 1 Cell), then its easier if the actor takes care of it, t oprevent cyclical calls involving removing the different parts when deleting world
-			removeForm(actor->body);
-			deleteForm(actor->body);
-		}
+			//Form *tmp = actor->body;
+			actor->body->actor = 0;
+			//removeForm(tmp);
+			//deleteForm(tmp);
+		//}
 	}
 	//removeActor(actor);
 	freeActionList(actor);

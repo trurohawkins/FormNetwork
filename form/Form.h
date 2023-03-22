@@ -7,15 +7,18 @@ typedef struct Form {
 	float pMod[2];
 	float color[3];
 	int size[2];
+	
 	int **sides;
 	//int roto;
 	//bool invert[2];
-	int ***body;
+	int *body;
+	int bLen; //body length
 	void *anim;
 	void *stats;
 	void *actor;
-	//null terminated
+	//neg terminated
 	int *colMatrix;
+	bool solid;
 	// float stat; // Used to store moisture
 	// float stat2; // Used to store hydralic conductivity
 } Form;
@@ -24,13 +27,14 @@ typedef struct Form {
 typedef struct Collider {
 	int size[2];
 	int **sides;
-	int ***body;
+	int *body;
+	int bLen;
 } Collider;
 
 Form *makeForm(float r, float g, float b, float wid, float len);
-int ***makeBody(int wid, int len);
-int **calcSides(int wid, int len);
-Collider *makeCollider (int wid, int len);
+int *squareBody(int wid, int len);
+int **squareSides(int wid, int len);
+Collider *squareCollider (int wid, int len);
 void freeCollider(Collider *c);
 void changeCollider(Form *f, Collider *c);
 Collider *getCollider(Form *f);
@@ -40,7 +44,7 @@ void deleteForm(void *form);
 void makeInert();
 void printForm(void *f);
 bool compareForms(Form *f1, Form *f2);
-bool checkFormIsSolid(void *form);
+//bool checkFormIsSolid(void *form);
 bool isFormCenter(Form *f, int x, int y);
 //if num != 0, will calloc a new array and copy in
 int* addNoCol(Form *a, int *id, int num);

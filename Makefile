@@ -2,9 +2,9 @@ GAME = PoopGuy
 CC = gcc -c -g
 LC = gcc -c -g 
 WC = x86_64-w64-mingw32-gcc -c -g
-RELEASELIBS = -l:libglfw3.a -ldl -lpthread -l:libfreetype.a -l:libcglm.a -lm  
+RELEASELIBS = -l:libglfw3.a -l:libdl.a -l:libpthread.a -l:libfreetype.a -l:libcglm.a -lm -l:libsndfile.a -l:libportaudio.a -ljack -lasound -logg -lvorbisenc -lvorbis -lopus -lFLAC -lmpg123 -lmp3lame
 DEVLIBS = -lglfw -lGL -lm -ldl -lfreetype -lcglm -lsndfile -lportaudio
-GLW = -lglfw3 -lopengl32 -lgdi32 
+GLW = -lglfw3 -lopengl32 -lgdi32 -lfreetype -lsndfile -lportaudio
 GF = formglfw/
 FD = form/
 AD = actor/
@@ -26,7 +26,7 @@ standalone: $(GAME)/main.c libFormGlfw.a glad.o FormNetwork.h
 	gcc -o $(GAME)/$(GAME) $(GAME)/main.c glad.o libFormGlfw.a $(RELEASELIBS) 
 
 windows: setWindows $(GAME)/main.c libFormGlfw.a glad.o FormNetwork.h
-	x86_64-w64-mingw32-gcc -o $(GAME)/$(GAME) -static glad.o libFormGlfw.a $(GLW)
+	x86_64-w64-mingw32-gcc -o $(GAME)/$(GAME) $(GAME)/main.c -static glad.o libFormGlfw.a $(GLW)
 
 setWindows:
 	$(eval CC := $(WC))

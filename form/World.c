@@ -73,7 +73,7 @@ void placeForm(float x, float y, TYPE *form) {
 		}
 	}
 	*/
-	bool solidForm = checkFormIsSolid(form);
+	//bool solidForm = checkFormIsSolid(form);
 	//printf("placing form at %f, %f\n", x, y);
 	form->pos[0] = x;// + mod[0];
 	form->pos[1] = y;// + mod[1];
@@ -81,102 +81,143 @@ void placeForm(float x, float y, TYPE *form) {
 		int xp = floor(x);
 		int yp = floor(y);
 		if (xp >= 0 && yp >= 0 && xp < theWorld->x && yp < theWorld->y) {
+			/*
 			if (solidForm) {
-				/*
 				Form *f = getSolidForm(theWorld->map[xp][yp]);
 				if (f != NULL && f != form) {
 					//deleteForm(f);
 				}
-				*/
 			}
+			*/
 			//theWorld->map[xp][yp] = form;
 			addToCell(theWorld->map[xp][yp], form);
 		}
 	} else {
 		//printf("placing for mof size %i, %i\n", form->size[0], form->size[1]);
+		/*
 		for (int i = 0; i < form->size[0]; i++) {
 			for (int j = 0; j < form->size[1]; j++) {
 				int xp = floor(x) + form->body[i][j][0];
 				int yp = floor(y) + form->body[i][j][1];
 				if (xp >= 0 && yp >= 0 && xp < theWorld->x && yp < theWorld->y) {
+					// commeneted
 					if (solidForm) {
-						/*	
 						Form *f = getSolidForm(theWorld->map[xp][yp]);
 						if (f != NULL && f != form) {
 							//deleteForm(f);
 						}
-						*/
 					}
+					//
 					addToCell(theWorld->map[xp][yp],form);
 				}
+			}
+		}
+		*/
+		for (int i = 0; i < form->bLen * 2; i+=2) {
+			int xp = floor(x) + form->body[i];
+			int yp = floor(y) + form->body[i+1];
+			if (xp >= 0 && yp >= 0 && xp < theWorld->x && yp < theWorld->y) {
+				addToCell(theWorld->map[xp][yp],form);
 			}
 		}
 	}
 }
 
-linkedList *checkForm(int x, int y) {
-	return checkSolidForm(theWorld->map[x][y]);
-}
-
-linkedList *checkCol(Form *f, int x, int y) {
-	linkedList *solids = 0;
+linkedList *checkForm(int x, int y, bool solid) {
 	if (x >= 0 && y >= 0 && x < theWorld->x && y < theWorld->y) {
-			linkedList *check = checkForm(x, y);
-			linkedList *c = check;
-			while (check) {
-				if (check->data) {
-					bool cc = canCollide(f, check->data);
-					//printf("can collide w/ %i? %i\n", ((Form*)check->data)->id, cc);
-					if (!compareForms(check->data, f) && canCollide(f, check->data)) {
-						if (!solids) {
-							solids = makeList();
-						}
-						addToList(&solids, check->data);
-					}
-				}
-				check = check->next;
-			}
-			freeListSaveObj(&c);
+		if (solid) {
+			return checkSolidForm(theWorld->map[x][y]);
+		} else {
+			return theWorld->map[x][y]->within;
+		}
 	} else {
+		linkedList *c = makeList();
+		//printf("returning inert\n");
 		if (inert == 0) {
 			makeInert();
 		}
 		inert->pos[0] = x;
 		inert->pos[1] = y;
-		//printf("making inert (%i,%i)\n");
-		addToList(&solids, inert);
+		addToList(&c, inert);
+		return c;
 	}
-	return solids;
 }
 
-void checkColAddList(linkedList **list, Form *f, int x, int y) {
-	linkedList *check = checkCol(f, x, y);
+linkedList *checkCol(Form *f, int x, int y, bool solid) {
+	linkedList *content = 0;
+	linkedList *check = checkForm(x, y, solid);
 	linkedList *c = check;
+	bool gotInert = false;
 	while (check) {
-		if (check->data) {
-			if (!isInList(list, check->data)) {
-				addToList(list, check->data);
-			} else {
-				break;
+		if (check->data) {	
+			Form *chk = check->data;
+			bool cc = canCollide(f, check->data);
+			if (chk->id == 420) {
+				gotInert = true;	
+			}
+			if (!compareForms(chk, f) && canCollide(f, chk)) {
+				if (!content) {
+					content = makeList();
+				}
+				addToList(&content, check->data);
 			}
 		}
 		check = check->next;
 	}
-	freeListSaveObj(&c);
+	if (c && (solid || gotInert)) {
+		freeListSaveObj(&c);
+	}
+	return content;
+}
+
+void checkColAddList(linkedList **list, Form *f, int x, int y, bool solid) {
+	linkedList *check = checkCol(f, x, y, solid);
+	linkedList *c = check;
+	bool gotInert = false;
+	while (check) {
+		if (check->data) {
+			Form *poo = check->data;
+			if  (poo->id == 420) {
+				gotInert = true;
+			}
+			if (!isInList(list, check->data)) {
+				addToList(list, check->data);
+			} else {
+				//break;
+			}
+		}
+		check = check->next;
+	}
+	if (c && (solid || gotInert)) {
+		freeListSaveObj(&c);
+	}
 }
 
 bool checkColliderPos(Collider *c, int x, int y) {
+	/*
 	for (int i = 0; i < c->size[0]; i++) {
 		for (int j = 0; j < c->size[1]; j++) {
 			int xp = x + c->body[i][j][0];
 			int yp = y + c->body[i][j][1];
 			if (xp >= 0 && yp >= 0 && xp < theWorld->x && yp < theWorld->y) {
-				if (checkForm(xp, yp)) {
+				if (checkForm(xp, yp, true)) {
 					return true;
 				}
 			} else {
 				return true;
 			}
+		}
+	}
+	*/
+	for (int i = 0; i < c->bLen * 2; i += 2) {
+		int xp = x + c->body[i];//[i][j][0];
+		int yp = y + c->body[i+1];;//[j][1];
+		if (xp >= 0 && yp >= 0 && xp < theWorld->x && yp < theWorld->y) {
+			if (checkForm(xp, yp, true)) {
+				return true;
+			}
+		} else {
+			return true;
 		}
 	}
 	return false;
@@ -185,7 +226,7 @@ bool checkColliderPos(Collider *c, int x, int y) {
 bool checkPosCol(Form *form, int x, int y) {
 	if (form->size[0] == 0 && form->size[1] == 0) {
 		if (x >= 0 && y >= 0 && x < theWorld->x && y < theWorld->y) {
-			linkedList *c = checkCol(form, x, y);
+			linkedList *c = checkCol(form, x, y, true);
 			if (c) {
 				freeListSaveObj(&c);
 				return true;
@@ -196,14 +237,13 @@ bool checkPosCol(Form *form, int x, int y) {
 			return true;
 		}
 	} else {
+		/*
 		for (int i = 0; i < form->size[0]; i++) {
 			for (int j = 0; j < form->size[1]; j++) {
 				int xp = x + form->body[i][j][0];
 				int yp = y + form->body[i][j][1];
 				if (xp >= 0 && yp >= 0 && xp < theWorld->x && yp < theWorld->y) {
-					//printf("checking %i, %i\n",xp ,yp);
-					linkedList *c = checkCol(form, xp, yp);
-					//if (checkCol(form, xp, yp)) {
+					linkedList *c = checkCol(form, xp, yp, true);
 					if (c) {
 						freeListSaveObj(&c);
 						return true;
@@ -214,21 +254,37 @@ bool checkPosCol(Form *form, int x, int y) {
 				}
 			}
 		}
+		*/
+		for (int i = 0; i < form->bLen * 2; i+= 2) {
+			int xp = x + form->body[i];//[j][0];
+			int yp = y + form->body[i+1];//[j][1];
+			if (xp >= 0 && yp >= 0 && xp < theWorld->x && yp < theWorld->y) {
+				linkedList *c = checkCol(form, xp, yp, true);
+				if (c) {
+					freeListSaveObj(&c);
+					return true;
+				}
+				freeListSaveObj(&c);
+			} else {
+				return true;
+			}
+		}
 		return false;
 	}
 }
 
-linkedList *checkSolidPos(Form *form, int x, int y) {
+linkedList *checkPos(Form *form, int x, int y, bool solid) {
 	linkedList *solids = 0;//makeList();
 	if (form->size[0] == 0 && form->size[1] == 0) {
-		return checkCol(form, x, y);
+		return checkCol(form, x, y, true);
 	} else {
+		/*
 		for (int i = 0; i < form->size[0]; i++) {
 			for (int j = 0; j < form->size[1]; j++) {
 				int xp = x + form->body[i][j][0];
 				int yp = y + form->body[i][j][1];
-				checkColAddList(&solids, form, xp, yp);
-				/*
+				checkColAddList(&solids, form, xp, yp, solid);
+				// commeneted
 				linkedList *check = checkCol(form, xp, yp);
 				linkedList *c = check;
 				while (check) {
@@ -242,100 +298,50 @@ linkedList *checkSolidPos(Form *form, int x, int y) {
 					check = check->next;
 				}
 				freeListSaveObj(&c);
-				*/
+				//
 			}
+		}
+		*/
+		for (int i = 0; i < form->bLen * 2; i += 2) {
+			int xp = x + form->body[i];//[j][0];
+			int yp = y + form->body[i+1];//[j][1];
+			checkColAddList(&solids, form, xp, yp, solid);
 		}
 	}
 	return solids;
 }
 
-linkedList *checkSolidSide(Form *f, float xp, float yp, int xd, int yd) {
+linkedList *checkSideI(Form *f, float xp, float yp, int dir, bool solid) {
+	linkedList *content = 0;
+	int size = 0;
+	if (dir % 2 == 1) {
+		size = 1;
+	}
+	if (dir == 1) {
+		//printf("pos: %f, %f\n", xp ,yp);
+	}
+	for (int i = 0; i < f->size[size]; i++) {
+		int xc = xp + f->sides[dir][i*2];
+		int yc = yp + f->sides[dir][i*2+1];
+		if (dir == 1) {
+			//printf("checking %i, %i\n", xc, yc);
+		}
+		checkColAddList(&content, f, xp + f->sides[dir][i*2], yp + f->sides[dir][i*2+1], solid);//floor(xp) + col, (floor(yp) - f->size[1]/2) + i);	
+	}
+	return content;
+}
+
+linkedList *checkSide(Form *f, float xp, float yp, int xd, int yd, bool solid) {
 	linkedList *solids = 0;//makeList();
 	if (xd != 0) {
-		/*
-		printf("checking x side from pos %f, %f\n", xp, yp);
-		int col = 0;
-		if (xd > 0) {
-			col = (f->size[0])/2 + 1;
-		} else if (xd < 0) {
-			col = -((f->size[0]-1)/2 + 1);
-		}
-		int hei = f->size[1];//(f->size[1]-f->pMod[1])/2;
-		printf("checking ");
-		for (int i = 0; i < hei; i++) {
-			int xc = floor(xp) + col;
-			int yc = (floor(yp) - f->size[1]/2) + i;
-			printf(" (%i, %i) ", xc, yc);
-			Form *check = checkCol(floor(xp) + col, (floor(yp) - f->size[1]/2) + i);
-			if (check) {
-				if (!compareForms(check, f)) {
-					if (!solids) {
-						solids = makeList();
-					} else if (isInList(&solids, check)) {
-						continue;
-					}
-					addToList(&solids, check);
-				}
-			}
-		}
-		printf("\n");
-		*/
 		int side = 3;
 		if (xd < 0) {
 			side = 1;
 		}
+		solids = checkSideI(f, xp, yp, side, solid);
 		//printf("checking side %i\n", side);
-		for (int i = 0; i < f->size[1]; i++) {
-			int xc = xp + f->sides[side][i*2];
-			int yc = yp + f->sides[side][i*2+1];
-			//printf("checking (%i, %i)\n", xc, yc);
-			//linkedList *check = checkCol(f, xp + f->sides[side][i*2], yp + f->sides[side][i*2+1]);//floor(xp) + col, (floor(yp) - f->size[1]/2) + i);	
-			checkColAddList(&solids, f, xp + f->sides[side][i*2], yp + f->sides[side][i*2+1]);//floor(xp) + col, (floor(yp) - f->size[1]/2) + i);	
-			/*
-			linkedList *c = check;
-			while (check) {
-				if (check->data) {
-					if (!isInList(&solids, check)) {
-						addToList(&solids, check->data);
-					} else {
-						break;
-					}
-				}
-				check = check->next;
-			}
-			freeListSaveObj(&c);
-			*/
-		}
 	}
 	if (yd != 0) {
-		/*
-		printf("checking y side from pos  %f, %f\n", xp, yp);
-		int row = 0;
-		if (yd > 0) {
-			row = (f->size[1]+f->pMod[1])/2 + 1;
-		} else if (yd < 0) {
-			row = -((f->size[1]-f->pMod[1])/2 + 1);
-		}
-		int wid = f->size[0];///2;
-		printf(" checking ");
-		for (int i = 0; i < wid; i++) {
-			int xc = (floor(xp) - f->size[0]/2) + 1 + i;
-			int yc = floor(yp) + row;
-			printf(" (%i, %i) ", xc, yc);
-			Form *check = checkCol(xc, yc);
-			if (check) {
-				if (!compareForms(check, f)) {
-					if (!solids) {
-						solids = makeList();
-					} else if (isInList(&solids, check)) {
-						continue;
-					}
-					addToList(&solids, check);
-				}
-			}
-		}
-		printf("\n");
-		*/
 		int side = 0;
 		if (yd < 0) {
 			side = 2;
@@ -345,7 +351,7 @@ linkedList *checkSolidSide(Form *f, float xp, float yp, int xd, int yd) {
 			int yc = yp + f->sides[side][i*2+1];
 			//printf("checksdie ycheck %i, %i\n", xc, yc);
 			//linkedList *check = checkCol(f, xp + f->sides[side][i*2], yp + f->sides[side][i*2+1]);//floor(xp) + col, (floor(yp) - f->size[1]/2) + i);
-			checkColAddList(&solids, f, xp + f->sides[side][i*2], yp + f->sides[side][i*2+1]);//floor(xp) + col, (floor(yp) - f->size[1]/2) + i);
+			checkColAddList(&solids, f, xp + f->sides[side][i*2], yp + f->sides[side][i*2+1], solid);//floor(xp) + col, (floor(yp) - f->size[1]/2) + i);
 			/*
 			linkedList *c = check;
 			while (check) {
@@ -376,12 +382,14 @@ bool checkColSide(Form *f, float xp, float yp, int xd, int yd) {
 			int xc = xp + f->sides[side][i*2];
 			int yc = yp + f->sides[side][i*2+1];
 			//printf("(%i, %i)\n", xc, yc);
-			linkedList *check = checkCol(f, xp + f->sides[side][i*2],yp + f->sides[side][i*2+1]);//floor(xp) + col, (floor(yp) - f->size[1]/2) + i);
+			linkedList *check = checkCol(f, xp + f->sides[side][i*2],yp + f->sides[side][i*2+1], true);
 			linkedList *c = check;
 			while (check) {
 				if (check->data) {
 					//printf("checking item %f\n", ((Form*)check->data)->id);
 					if (!compareForms(check->data, f)) {
+						//Form *poo = check->data;
+						//printf("x checked and got %i\n", poo->id);
 						freeListSaveObj(&c);
 						return true;
 					}
@@ -397,11 +405,15 @@ bool checkColSide(Form *f, float xp, float yp, int xd, int yd) {
 			side = 2;
 		}
 		for (int i = 0; i < f->size[0]; i++) {
-			linkedList *check = checkCol(f, xp + f->sides[side][i*2], yp + f->sides[side][i*2+1]);//floor(xp) + col, (floor(yp) - f->size[1]/2) + i);
+			linkedList *check = checkCol(f, xp + f->sides[side][i*2], yp + f->sides[side][i*2+1], true);//floor(xp) + col, (floor(yp) - f->size[1]/2) + i);
 			linkedList *c = check;
 			while (check) {
 				if (check->data) {
 					if (!compareForms(check->data, f)) {
+						if (f->id == 69) {
+							Form *poo = check->data;
+							//printf("y on side %i checked and got %i\n", side, poo->id);
+						}
 						freeListSaveObj(&c);
 						return true;
 					}
@@ -469,90 +481,6 @@ bool checkSideForVal(Form *f, float xp, float yp, int xd, int yd, char *stat) {
 	return false;
 }
 
-
-linkedList *checkPos(Form *form, int x, int y) {
-	if (form->size[0] == 0 && form->size[1] == 0) {
-		if (x >= 0 && y >= 0 && x < theWorld->x && y < theWorld->y) {
-			return theWorld->map[x][y]->within;;
-		}	 else {
-			return 0;
-		}
-	} else {
-		linkedList *within = 0;
-		for (int i = 0; i < form->size[0]; i++) {
-			for (int j = 0; j < form->size[1]; j++) {
-				int xp = x + form->body[i][j][0];
-				int yp = y + form->body[i][j][1];
-				if (xp >= 0 && yp >= 0 && xp < theWorld->x && yp < theWorld->y) {
-					if (theWorld->map[xp][yp]->within) {
-						linkedList *w = theWorld->map[xp][yp]->within;
-						while (w) {
-							Form *f = w->data;
-							if (f) {
-								if (!compareForms(form, f)) {
-									addToList(&within, f);
-								}
-							}
-							w = w->next;
-						}
-					}
-				}
-			}
-		}
-		return within;
-	}
-}
-
-linkedList *checkSide(Form *form, float xp, float yp, int xd, int yd) {
-	linkedList *within = 0;
-	if (xd != 0) {
-		int side = 3;
-		if (xd < 0) {
-			side = 1;
-		}
-		for (int i = 0; i < form->size[1]; i++) {
-			int xc = xp + form->sides[side][i*2];
-			int yc = yp + form->sides[side][i*2+1];
-			if (xc >= 0 && yc >= 0 && yc < theWorld->y && xc < theWorld->x) {
-				linkedList *forms = theWorld->map[xc][yc]->within;
-				while (forms) {
-					Form *f = forms->data;
-					if (f) {
-						if (!compareForms(form, f)) {
-							addToList(&within, f);
-						}
-					}
-					forms = forms->next;
-				}
-			}
-		}
-	}
-
-	if (yd != 0) {
-		int side = 0;
-		if (yd < 0) {
-			side = 2;
-		}
-		for (int i = 0; i < form->size[0]; i++) {
-			int xc = xp + form->sides[side][i*2];
-			int yc = yp + form->sides[side][i*2+1];
-			if (xc >= 0 && yc >= 0 && yc < theWorld->y && xc < theWorld->x) {
-				linkedList *forms = theWorld->map[xc][yc]->within;
-				while (forms) {	
-					Form *f = forms->data;
-					if (f) {
-						if (!compareForms(form, f)) {
-							addToList(&within, f);
-						}
-					}
-					forms = forms->next;
-				}
-			}
-		}
-	}
-	return within;
-}
-
 linkedList *takeForm(int x, int y) {
 	//Form *form = 0;S
 	linkedList *forms = 0;
@@ -575,27 +503,38 @@ Form *removeForm(Form* form) {
 			removeFromCell(theWorld->map[x][y], form);
 		}
 	} else if (form->pos[0] > 0 && form->pos[1] > 0) {
+		/*
 		for (int i = 0; i < form->size[0]; i++) {
 			for (int j = 0; j < form->size[1]; j++) {
 				int xp = floor(form->pos[0]) + (form->body[i][j])[0];
 				int yp = floor(form->pos[1]) + (form->body[i][j])[1];
 				//printf("removing form from %i, %i\n", xp, yp);
-				/*
+				//commented
 				if (xp >= 0 && yp >= 0 && xp < theWorld->x && yp < theWorld->y) {
 					theWorld->map[xp][yp] = 0;
 				}
-				*/
+				//
 				if (xp >= 0 && yp >= 0 && xp < theWorld->x && yp < theWorld->y) {
 					if (!removeFromCell(theWorld->map[xp][yp], form)) {
 						printf("its not here\n");
 					}
 				}
-				/*
+				// commented
 				if (takeForm(xp, yp) == 0) {
 					printf("its not here\n");
 				}
-				*/
+				//
 				//takeForm(form->pos[0], form->pos[1]);
+			}
+		}
+		*/
+		for (int i = 0; i < form->bLen * 2; i+=2) {
+			int xp = floor(form->pos[0]) + form->body[i];
+			int yp = floor(form->pos[1]) + form->body[i+1];
+			if (xp >= 0 && yp >= 0 && xp < theWorld->x && yp < theWorld->y) {
+				if (!removeFromCell(theWorld->map[xp][yp], form)) {
+					printf("its not here\n");
+				}
 			}
 		}
 
@@ -693,6 +632,8 @@ int saveForm(Form *f) {
 
 void makeInert() {
 	inert = makeForm(0,0,0, 0, 0);
+	inert->id = 420;
+	inert->solid = true;
 	inert->pos[0] = -1;
 	inert->pos[1] = -1;
 }
