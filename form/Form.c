@@ -78,10 +78,14 @@ int **squareSides(int wid, int len) {
 		//newForm->eMod[1] = 0;
 	}
 	int **sides = (int**) calloc(4, sizeof(int**));
-	sides[0] = (int*)calloc(wid * 2, sizeof(int));
-	sides[1] = (int*)calloc(len * 2, sizeof(int));
-	sides[2] = (int*)calloc(wid * 2, sizeof(int));
-	sides[3] = (int*)calloc(len * 2, sizeof(int));
+	sides[0] = (int*)calloc(wid * 2 + 1, sizeof(int));
+	sides[0][0] = wid;// * 2;
+	sides[1] = (int*)calloc(len * 2 + 1, sizeof(int));
+	sides[1][0] = len;// * 2;
+	sides[2] = (int*)calloc(wid * 2 + 1, sizeof(int));
+	sides[2][0] = wid;// * 2;
+	sides[3] = (int*)calloc(len * 2 + 1, sizeof(int));
+	sides[3][0] = len;// * 2;
 	int rowP = (len + eModY)/2 + 1;
 	int rowN = -((len - eModY)/2 + 1);
 	/*
@@ -90,7 +94,7 @@ int **squareSides(int wid, int len) {
 	 */
 	for (int i = 0; i < wid; i++) {
 		int xc = (-(int)wid/2) + i + eModX;// + eModX;
-		int p = i * 2;
+		int p = i * 2 + 1;
 		sides[0][p] = xc;
 		sides[0][p+1] = rowP;
 
@@ -110,7 +114,7 @@ int **squareSides(int wid, int len) {
 	//printf("1 check = ");
 	for (int i = 0; i < len; i++) {
 		int yc = (-(int)len/2) + i + eModY;
-		int p = i * 2;
+		int p = i * 2 + 1;
 		sides[1][p] = colN;
 		sides[1][p+1] = yc;
 

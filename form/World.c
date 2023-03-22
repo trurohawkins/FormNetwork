@@ -320,13 +320,13 @@ linkedList *checkSideI(Form *f, float xp, float yp, int dir, bool solid) {
 	if (dir == 1) {
 		//printf("pos: %f, %f\n", xp ,yp);
 	}
-	for (int i = 0; i < f->size[size]; i++) {
-		int xc = xp + f->sides[dir][i*2];
-		int yc = yp + f->sides[dir][i*2+1];
+	for (int i = 0; i < f->sides[dir][0]; i++) {
+		int xc = xp + f->sides[dir][i*2+1];
+		int yc = yp + f->sides[dir][i*2+2];
 		if (dir == 1) {
 			//printf("checking %i, %i\n", xc, yc);
 		}
-		checkColAddList(&content, f, xp + f->sides[dir][i*2], yp + f->sides[dir][i*2+1], solid);//floor(xp) + col, (floor(yp) - f->size[1]/2) + i);	
+		checkColAddList(&content, f, xc, yc, solid);//floor(xp) + col, (floor(yp) - f->size[1]/2) + i);	
 	}
 	return content;
 }
@@ -346,12 +346,12 @@ linkedList *checkSide(Form *f, float xp, float yp, int xd, int yd, bool solid) {
 		if (yd < 0) {
 			side = 2;
 		}
-		for (int i = 0; i < f->size[0]; i++) {
-			int xc = xp + f->sides[side][i*2];
-			int yc = yp + f->sides[side][i*2+1];
+		for (int i = 0; i < f->sides[side][0]; i++) {
+			int xc = xp + f->sides[side][i*2+1];
+			int yc = yp + f->sides[side][i*2+2];
 			//printf("checksdie ycheck %i, %i\n", xc, yc);
 			//linkedList *check = checkCol(f, xp + f->sides[side][i*2], yp + f->sides[side][i*2+1]);//floor(xp) + col, (floor(yp) - f->size[1]/2) + i);
-			checkColAddList(&solids, f, xp + f->sides[side][i*2], yp + f->sides[side][i*2+1], solid);//floor(xp) + col, (floor(yp) - f->size[1]/2) + i);
+			checkColAddList(&solids, f, xc, yc, solid);//floor(xp) + col, (floor(yp) - f->size[1]/2) + i);
 			/*
 			linkedList *c = check;
 			while (check) {
@@ -378,11 +378,11 @@ bool checkColSide(Form *f, float xp, float yp, int xd, int yd) {
 		if (xd < 0) {
 			side = 1;
 		}
-		for (int i = 0; i < f->size[1]; i++) {
-			int xc = xp + f->sides[side][i*2];
-			int yc = yp + f->sides[side][i*2+1];
+		for (int i = 0; i < f->sides[side][0]; i++) {
+			int xc = xp + f->sides[side][i*2+1];
+			int yc = yp + f->sides[side][i*2+2];
 			//printf("(%i, %i)\n", xc, yc);
-			linkedList *check = checkCol(f, xp + f->sides[side][i*2],yp + f->sides[side][i*2+1], true);
+			linkedList *check = checkCol(f, xc, yc, true);
 			linkedList *c = check;
 			while (check) {
 				if (check->data) {
@@ -404,8 +404,8 @@ bool checkColSide(Form *f, float xp, float yp, int xd, int yd) {
 		if (yd < 0) {
 			side = 2;
 		}
-		for (int i = 0; i < f->size[0]; i++) {
-			linkedList *check = checkCol(f, xp + f->sides[side][i*2], yp + f->sides[side][i*2+1], true);//floor(xp) + col, (floor(yp) - f->size[1]/2) + i);
+		for (int i = 0; i < f->sides[side][0]; i++) {
+			linkedList *check = checkCol(f, xp + f->sides[side][i*2+1], yp + f->sides[side][i*2+2], true);//floor(xp) + col, (floor(yp) - f->size[1]/2) + i);
 			linkedList *c = check;
 			while (check) {
 				if (check->data) {
@@ -432,9 +432,9 @@ bool checkSideForVal(Form *f, float xp, float yp, int xd, int yd, char *stat) {
 		if (xd < 0) {
 			side = 1;
 		}
-		for (int i = 0; i < f->size[1]; i++) {
-			int xc = xp + f->sides[side][i*2];
-			int yc = yp + f->sides[side][i*2+1];
+		for (int i = 0; i < f->sides[side][0]; i++) {
+			int xc = xp + f->sides[side][i*2+1];
+			int yc = yp + f->sides[side][i*2+2];
 			if (xc >= 0 && yc >= 0 && yc < theWorld->y && xc < theWorld->x) {
 				linkedList *forms = theWorld->map[xc][yc]->within;
 				while (forms) {
@@ -458,9 +458,9 @@ bool checkSideForVal(Form *f, float xp, float yp, int xd, int yd, char *stat) {
 		if (yd < 0) {
 			side = 2;
 		}
-		for (int i = 0; i < f->size[0]; i++) {
-			int xc = xp + f->sides[side][i*2];
-			int yc = yp + f->sides[side][i*2+1];
+		for (int i = 0; i < f->sides[side][0]; i++) {
+			int xc = xp + f->sides[side][i*2+1];
+			int yc = yp + f->sides[side][i*2+2];
 			if (xc >= 0 && yc >= 0 && yc < theWorld->y && xc < theWorld->x) {
 				linkedList *forms = theWorld->map[xc][yc]->within;
 				while (forms) {
