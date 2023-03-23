@@ -22,11 +22,43 @@ Form *makeForm(float r, float g, float b, float wid, float len) {
 		newForm->body = squareBody(wid, len);
 		newForm->bLen = wid * len;
 		newForm->sides = squareSides(wid, len);
+		//newForm->sides = squareSides(wid, len);
 	} else {
 		//printf("no body on this form\n");
 		newForm->body = 0;
 	}
 	return newForm;
+}
+
+Form *makeIrregularForm(float r, float g, float b, int *body, int bLen) {
+	Form *newForm = (Form *)calloc(1, sizeof(Form));
+	newForm->id = -1;
+	newForm->pos[0] = -1;
+	newForm->pos[1] = -1;
+	newForm->color[0] = r;
+	newForm->color[1] = g;
+	newForm->color[2] = b;
+	newForm->size[0] = 1;//wid;
+	newForm->size[1] = 1;//len;
+	newForm->anim = 0;
+	newForm->colMatrix = 0;
+	newForm->solid = true;
+	//newForm->roto = 0;
+	//newForm->invert[0] = false;
+	//newForm->invert[1] = false;
+	//float wid = w;
+	//float len = l;
+	if (body && bLen != 0) {
+		newForm->body = body;//squareBody(wid, len);
+		newForm->bLen = bLen;//wid * len;
+		newForm->sides = calcSides(newForm->body, newForm->bLen);//wid, len);
+		//newForm->sides = squareSides(wid, len);
+	} else {
+		printf("no body on this form\n");
+		newForm->body = 0;
+	}
+	return newForm;
+
 }
 
 int *squareBody(int wid, int len) {
@@ -62,8 +94,277 @@ int *squareBody(int wid, int len) {
 		}
 	}
 	return body;
-
 }
+
+int **calcSides(int *body, int len) {
+	linkedList *s[4];// = {0,0,0,0};
+	for (int i = 0; i < 4; i++) {
+		s[i] = makeList();
+	}
+	int lengths[4] = {0,0,0,0};
+	int dirs[8] = {0,1, -1,0, 0,-1, 1,0};
+	for (int i = 0; i < len; i++) {
+		int x = body[i*2];
+		int y = body[i*2+1];
+		bool in[4] = {true, true, true, true};
+		for (int j = 1; j < len; j++) {	
+			int i2 = (i + j) % len;
+			int x2 = body[i2 * 2];
+			int y2 = body[i2 * 2 +1];
+			if (x == x2) {
+				int yDiff = abs(y - y2);
+				if (yDiff == 1) {
+					if (y < y2) {
+						in[0] = false;	
+					} else if (y > y2) {
+						in[2] = false;
+					}
+				}
+			}
+			if (y == y2) {
+				int xDiff = abs(x - x2);
+				if (xDiff == 1) {
+					if (x < x2) {
+						in[3] = false;
+					} else if (x > x2) {
+						in[1] = false;
+					}
+				}
+			}
+		}
+		for (int j = 0; j < 4; j++) {
+			if (in[j]) {
+				int *xs = malloc(sizeof(int));
+				*xs = x + dirs[j*2];
+				addToList(&s[j], xs);
+				int *ys = malloc(sizeof(int));
+				*ys = y + dirs[j*2+1];
+				addToList(&s[j], ys);
+				lengths[j]++;
+				/*
+				if (j == 1) {
+					printf("x val = %i + %i\n", x, dirs[j*2]);
+					printf("y val = %i + %i\n", y, dirs[j*2+1]);
+				}
+				*/
+			}
+		}
+	}
+	int **sides = calloc(4, sizeof(int**));
+	for (int i = 0; i < 4; i++) {
+		sides[i] = calloc(lengths[i] * 2 + 1, sizeof(int));
+		sides[i][0] = lengths[i];
+		linkedList *cur = s[i];
+		printf("side %i:", i);
+		for (int j = 1; j <= lengths[i] * 2; j++) {
+			int num = *((int*)(cur->data));
+			
+			if (j%2 == 1) {
+				printf(" (%i", num);
+			} else {
+				printf(",%i) ", num);
+			}	
+			
+			sides[i][j] = num;//*((int*)(cur->data));
+			cur = cur->next;
+		}
+		printf("\n");
+		freeList(&s[i]);
+	}
+	return sides;
+}
+
+void addToBody(Form *f, int *newGrowth, int amount) {
+	//if (f->pos[0] != -1 && f->pos[1] != -1)  {
+		int lengths[4] = {f->sides[0][0], f->sides[1][0], f->sides[2][0], f->sides[3][0]};
+		int dirs[8] = {0,1, -1,0, 0,-1, 1,0};
+		//printf("adding to body of size %i\n", f->bLen);
+		int addLen = amount;
+		for (int i = 0; i < amount; i++) {
+			int x = newGrowth[i*2];
+			int y = newGrowth[i*2+1];
+			//printf("checking for pos (%i, %i)\n", x, y);
+			bool good = true;
+			//int *newBody = calloc((f->bLen + 1) * 2, sizeof(int));
+			bool in[4] = {true, true, true, true};
+			for (int j = 0; j < f->bLen; j++) {
+				int bx = f->body[j*2];
+				int by = f->body[j*2+1];
+				if (bx == x && by == y) {
+					good = false;
+					newGrowth[i*2] = INT_MIN;
+					newGrowth[i*2+1] = INT_MIN;
+					addLen--;
+					printf("already ehrei [%i] %i, %i\n", j, bx, by);
+					break;
+				} else {
+					if (x == bx) {
+						int yDiff = abs(y - by);
+						if (yDiff == 1) {
+							if (y < by) {
+								in[0] = false;	
+							} else if (y > by) {
+								in[2] = false;
+							}
+						}
+					}
+					if (y == by) {
+						int xDiff = abs(x - bx);
+						if (xDiff == 1) {
+							if (x < bx) {
+								in[3] = false;
+							} else if (x > bx) {
+								in[1] = false;
+							}
+						}
+					}
+				}
+			}
+			if (newGrowth[i*2] > INT_MIN && newGrowth[i*2+1] > INT_MIN) {
+				for (int j = 0; j < 4; j++) {
+					if (in[j]) {
+						bool gotIn = false;
+						int xc = x + dirs[j*2];
+						int yc = y + dirs[j*2+1];
+						//printf("adding (%i, %i) to side %i\n", xc, yc, j);
+						for (int k = 0; k < f->sides[j][0]; k++) {
+							int xDiff = abs(xc - f->sides[j][k*2+1]);
+							int yDiff = abs(yc - f->sides[j][k*2+2]);
+							/*
+							printf("point (%i, %i)\n", f->sides[j][k*2+1], f->sides[j][k*2+2]);
+							printf("Diff == %i, %i\n", xDiff, yDiff);
+							*/
+							if (j % 2 == 1) {
+								//check y value
+								if (yDiff == 0 && xDiff == 1) {
+									f->sides[j][k*2+1] = xc;
+									f->sides[j][k*2+2] = yc;
+									gotIn = true;
+									break;
+								}
+							} else {
+								//check x value
+								if (xDiff == 0 && yDiff == 1) {
+									f->sides[j][k*2+1] = xc;
+									f->sides[j][k*2+2] = yc;
+									gotIn = true;
+									break;
+								}
+							}
+						}
+						if (!gotIn) {
+							/*
+							printf("adding to new\n");
+							for (int k = 0; k < f->sides[j][0]; k++) {
+								printf(" (%i, %i) ", f->sides[j][k*2+1], f->sides[j][k*2+2]);
+
+							}
+							printf("\n");
+							*/
+							//add to side
+							int newLen = f->sides[j][0] + 1;
+							int *newSide = calloc(newLen * 2 + 1, sizeof(int));
+							memcpy(newSide, f->sides[j], (f->sides[j][0] * 2 + 1) * sizeof(int));
+							newSide[0] = newLen;
+							newSide[newLen*2-1] = xc;
+							newSide[newLen*2] = yc;
+							free(f->sides[j]);
+							f->sides[j] = newSide;
+							/*
+							for (int k = 0; k < f->sides[j][0]; k++) {
+								printf(" (%i, %i) ", f->sides[j][k*2+1], f->sides[j][k*2+2]);
+
+							}
+							printf("\n");
+							*/
+						}
+					}
+				}
+			}
+		}
+		if (addLen > 0) {
+			int *newBody = calloc((f->bLen + addLen) * 2, sizeof(int));
+			memcpy(newBody, f->body, f->bLen * 2 * sizeof(int));
+			int added = 0;
+			for (int i = 0; i < amount; i++) {
+				if (newGrowth[i*2] > INT_MIN) {
+					//printf("adding %i, %i\n", newGrowth[i*2], newGrowth[i*2+1]);
+					newBody[((f->bLen+added)*2)] = newGrowth[i*2];
+					newBody[((f->bLen+added)*2) + 1] = newGrowth[i*2+1];
+					added++;
+				}
+			}
+			free(f->body);
+			f->body = newBody;
+			f->bLen += addLen;
+			/*
+			for (int i = 0; i < f->bLen; i++) {
+				printf(" (%i, %i) ", f->body[i*2], f->body[i*2+1]);
+			}
+			printf("\n");
+			*/
+		}
+			/*
+			if (!good) {
+				free(newBody);
+				printf("didn't add %i, %i to body\n", x, y);
+				continue;
+			} else {
+				newBody[f->bLen*2] = x;//newGrowth[i*2];
+				newBody[f->bLen*2+1] = y;//newGrowth[i*2+1];
+				f->bLen++;
+				free(f->body);
+				f->body = newBody;
+			}
+			*/
+			/*
+		}
+		for (int i = 0; i < 4; i++) {
+			free(f->sides[i]);
+		}
+		free(f->sides);
+		f->sides = calcSides(f->body, f->bLen);
+		*/
+		/*
+			for (int j = 0; j < 4; j++) {
+				int xc = xp + dirs[j*2];
+				int yc = yp + dirs[j*2+1];
+				printf("checking (%i, %i)\n", xc, yc);
+				bool self = false;
+				if (xc >= 0 && yc >= 0 && xc < w->x && yc < w->y) {
+					linkedList *cur = w->map[xc][yc]->within;
+					while (cur) {
+						Form *f2 = cur->data;
+						if (f2) {
+							if (f->id == f2->id) {
+								self = true;
+								break;
+							}
+						}
+						cur = cur->next;
+					}
+				}
+				if (self) {
+					continue;
+				}
+				//add to side
+				int newLen = f->sides[j][0] + 1;
+				int *newSide = calloc(newLen * 2 + 1, sizeof(int));
+				newSide[0] = newLen;
+				for (int k = 0; k < f->sides[j][0] * 2; k++) {
+					newSide[k+1] = f->sides[j][k+1];
+				}
+				newSide[newLen*2] = xp;
+				newSide[newLen*2+1] = yp;
+				free(f->sides[j]);
+				f->sides[j] = newSide;
+				printf("adding to side %i\n", j);
+			}
+		}
+	}
+	*/
+}
+
 int **squareSides(int wid, int len) {
 	int eModX = 0;
 	if ((int)wid % 2 == 0) {
@@ -140,6 +441,7 @@ void changeCollider(Form *f, Collider *c) {
 	f->sides = c->sides;
 	f->size[0] = c->size[0];
 	f->size[1] = c->size[1];
+	f->bLen = c->bLen;
 }
 
 Collider *getCollider(Form *f) {
@@ -148,6 +450,7 @@ Collider *getCollider(Form *f) {
 	c->sides = f->sides;
 	c->size[0] = f->size[0];
 	c->size[1] = f->size[1];
+	c->bLen = f->bLen;
 	return c;
 }
 

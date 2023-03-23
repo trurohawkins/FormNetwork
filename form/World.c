@@ -117,6 +117,7 @@ void placeForm(float x, float y, TYPE *form) {
 			int xp = floor(x) + form->body[i];
 			int yp = floor(y) + form->body[i+1];
 			if (xp >= 0 && yp >= 0 && xp < theWorld->x && yp < theWorld->y) {
+				//printf("placing form %i, %i\n", xp, yp);
 				addToCell(theWorld->map[xp][yp],form);
 			}
 		}
@@ -531,6 +532,7 @@ Form *removeForm(Form* form) {
 		for (int i = 0; i < form->bLen * 2; i+=2) {
 			int xp = floor(form->pos[0]) + form->body[i];
 			int yp = floor(form->pos[1]) + form->body[i+1];
+			//printf("removing form %i, %i from %i, %i\n", xp, yp, form->body[0], form->body[i+1]);
 			if (xp >= 0 && yp >= 0 && xp < theWorld->x && yp < theWorld->y) {
 				if (!removeFromCell(theWorld->map[xp][yp], form)) {
 					printf("its not here\n");

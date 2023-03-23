@@ -7,6 +7,7 @@
 #include<stdbool.h>
 #include<string.h>
 #include <math.h>
+#include <limits.h>
 //#include "file.h"
 
 void initDirections();

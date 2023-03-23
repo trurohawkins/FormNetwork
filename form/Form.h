@@ -32,9 +32,12 @@ typedef struct Collider {
 } Collider;
 
 Form *makeForm(float r, float g, float b, float wid, float len);
+Form *makeIrregularForm(float r, float g, float b, int *body, int bLen);
 int *squareBody(int wid, int len);
 int **squareSides(int wid, int len);
 Collider *squareCollider (int wid, int len);
+int **calcSides(int *body, int len);
+void addToBody(Form *f, int *newGrowth, int amount);
 void freeCollider(Collider *c);
 void changeCollider(Form *f, Collider *c);
 Collider *getCollider(Form *f);
