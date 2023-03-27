@@ -71,6 +71,8 @@ Anim *makeAnim(char **sheet, int spriteNum, bool generated, int rows, int cols) 
 	a->offset[1] = 0;
 	a->roto = 3;
 	a->vao = -1;
+	a->loop = true;
+	a->reverse = false;
 	a->palette = (float*)calloc(sizeof(float), a->texture->numTex * 4);
 	for (int i = 0; i < a->texture->numTex * 4; i++) {
 		float f = (a->texture->colors)[i];
@@ -142,7 +144,23 @@ void animate(Anim *a) {
 	//printf("cur sprite: %i\n", a->sprite);
 	if (a->length[a->sprite] > 0) {
 		if (a->speedCounter > a->speed) {
-			a->frame = (a->frame + 1) % a->length[a->sprite];
+			if (!a->reverse) {
+				if (a->frame + 1 < a->length[a->sprite]) {
+					a->frame++;
+				} else {
+					if (a->loop) {
+						a->frame = 0;
+					}
+				}
+			} else {
+				if (a->frame - 1 > -1) {
+					a->frame--;
+				} else {
+					if (a->loop) {
+						a->frame = a->length[a->sprite] - 1;
+					}
+				}
+			}
 			a->speedCounter = 0;
 		} else {
 			a->speedCounter++;

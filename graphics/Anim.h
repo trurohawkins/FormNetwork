@@ -25,6 +25,8 @@ typedef struct Anim {
 	float offset[2];
 	int roto;
 	bool invert[2];
+	bool loop;
+	bool reverse;
 	textureSource *texture;
 	float *palette;
 	unsigned int vao;
