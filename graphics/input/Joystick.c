@@ -86,7 +86,7 @@ void checkControllerInput() {
 				for (int i = 0; i < 15; i++) {
 					if (state.buttons[i]) {
 						if (state.buttons[i] == GLFW_PRESS && jp->buttState[i] == false) {
-							printf("button %i was pressed\n");
+							//printf("button %i was pressed\n");
 							joyButtString(jid, i, 1);
 							jp->buttState[i] = true;
 						} 
@@ -118,9 +118,9 @@ void checkControllerInput() {
 					if (buttons[i]) {
 						//printf("has button %i\n", i);
 						if (buttons[i] == GLFW_PRESS) {
-							printf("butt %i was presed\n", i);
+							//printf("butt %i was presed\n", i);
 						} else if (buttons[i] == GLFW_RELEASE) {
-							printf("butt %i was released\n", i);
+							//printf("butt %i was released\n", i);
 						}
 						if (buttons[i] == GLFW_PRESS && jp->buttState[i] == false) {
 							joyButtString(jid, i, 1);
@@ -164,7 +164,7 @@ char *joyButtString(int jid, int butt, int onoff) {
 	ir->input = buttString;
 	ir->val = onoff;
 	//printf("button: %i -- %i\n", butt, onoff);
-	printf("%s\n", buttString);
+	//printf("%s\n", buttString);
 	linkedList *ci = getCurInput();
 	addToList(&ci, ir);
 	processMenuControllerButtons(butt, onoff);
