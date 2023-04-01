@@ -140,7 +140,7 @@ void checkControllerInput() {
 								joyAxeString(jid, i, axes[i]);
 								jp->axeState[i] = axes[i];
 							}
-						} else if (axes[i] != jp->axeState[i]) {
+						} else if (i < 6 && axes[i] != jp->axeState[i]) {
 							joyAxeString(jid, i, 0);
 							jp->axeState[i] = axes[i];
 						}
