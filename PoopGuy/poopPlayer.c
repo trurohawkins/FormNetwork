@@ -1,6 +1,6 @@
 #include "poopPlayer.h"
 PoopGuy **poopers = 0;
-int numPoopers = 1;
+int numPoopers = 0;
 int curPoopers = 0;
 /*
 PoopGuy *makePoopGuy (int sx, int sy) {

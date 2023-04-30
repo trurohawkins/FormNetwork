@@ -33,8 +33,8 @@ int main(int argc, char **argv) {
 	\*/
 	initFormGlfw();
 	initAudio();
-	int worldY = 100;
-	int worldX = 100; 
+	int worldY = 10;
+	int worldX = 10; 
 	initRecipes(3, 10);
 	addRecipe(makePoopPlayer, savePoopPlayer, 0);
 	addRecipe(makeDirt, saveDirt, 1);
