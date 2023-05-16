@@ -190,6 +190,7 @@ void freeCell(Cell *c) {
 				removeForm(forms[i]);
 				deleteForm(forms[i]);
 			}
+			free(forms);
 		}
 		//linkedList *cur = c->within;
 		freeList(&c->within);
