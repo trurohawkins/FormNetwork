@@ -20,13 +20,23 @@ void addDynVar(Action* a, void *ptr) {
 	addToList(&a->dynVars, ptr);
 }
 
+void freeAction(Action *action) {
+	void (*del)(Action*) = action->del;
+	if (del) {
+		del(action);
+	} else {
+		printf("caacva boot\n");
+		deleteAction(action);
+	}
+}
+
 void deleteAction(Action *action) {
 	if (action->name) {
 		free(action->name);
 	}
 	free(action->vars);
 	freeList(&action->dynVars);
-	//free(action);//changed because part of list and deleting that list will fre this memory
+	free(action);//changed because part of list and deleting that list will fre this memory
 }
 
 int defaultAction(Form *f, Action *a) {

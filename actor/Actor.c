@@ -66,7 +66,7 @@ void doActions(Actor *actor) {
 	linkedList *a = actor->actionList;
 	while (a != 0) {
 		Action *act = (Action*) a->data;
-		if (act->active == 1) {
+		if (act->active) {
 			(*(act->fun))(actor->body, act);
 		}
 		a = a->next;
@@ -76,13 +76,12 @@ void doActions(Actor *actor) {
 void freeActionList(Actor *actor) {
 	linkedList *a = actor->actionList;
 	while (a != 0) {
-		Action *act = a->data;
-		void (*del)(Action*) = act->del;
-		del(act);
-		//deleteAction((Action*)a->data);
+		if (a->data) {
+			freeAction(a->data);
+		}
 		a = a->next;
 	}
-	freeList(&(actor->actionList));
+	freeListSaveObj(&(actor->actionList));
 
 }
 

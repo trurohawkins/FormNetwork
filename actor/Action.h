@@ -12,6 +12,7 @@ typedef struct Action {
 Action *makeAction(int (*fun)(Form*, Action*), void *vars);
 void addDynVar(Action *a, void *ptr);
 void nameAction(Action *a, char *name);
+void freeAction(Action *action);
 void deleteAction(Action *action);
 //void setActVar(Action *action, int index, int val);
 int defaultAction(Form *f, Action *a);
