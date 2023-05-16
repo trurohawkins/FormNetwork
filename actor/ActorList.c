@@ -49,9 +49,6 @@ void actorListDo() {
 	while (cur != NULL) {
 		if (cur->data != NULL) {
 			Actor *a = cur->data;
-			if (a->active) {
-				doActions(a);
-			}
 			if (a->deleteMe) {
 				linkedList *tmp = cur;
 				//printf("deleting actor\n");
@@ -74,6 +71,10 @@ void actorListDo() {
 				count++;
 				continue;
 			}
+			if (a->active) {
+				doActions(a);
+			}
+
 			count++;
 		}
 		if (pre != cur) {

@@ -7,6 +7,7 @@ Action *makeAction(int (*n_fun)(Form*,Action*), void *n_vars) {
 		newAction->fun = n_fun;
 	}
 	newAction->vars = n_vars;
+	newAction->del = &deleteAction;
 	return newAction;
 }
 

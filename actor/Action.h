@@ -5,6 +5,7 @@ typedef struct Action {
 	void *vars;
 	linkedList *dynVars;
 	int (*fun)(Form*, struct Action*);
+	void (*del)(struct Action*);
 	char *name;
 } Action;
 

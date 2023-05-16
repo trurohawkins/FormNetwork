@@ -4,6 +4,7 @@ typedef struct WorldView {
 	float frameX;
 	float frameY;
 	float frame;
+	float baseFrame;
 	float centerX;
 	float centerY;
 	int scalePower;
@@ -32,6 +33,7 @@ WorldView *getDefaultView();
 void resizeScreen();
 void calculateFrameData();
 void setFrame(WorldView *w, float frame);
+void setBaseFrame(WorldView *w, float frame);
 void setCenter(WorldView *wv, float xp, float yp);
 void centerCamera(WorldView *wv, float x, float y);
 void followForm(Form *f);

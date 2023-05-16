@@ -42,6 +42,11 @@ void resizeScreen() {
 	}
 }
 
+void setBaseFrame(WorldView *wv, float frame) {
+	wv->baseFrame = frame;
+	setFrame(wv, frame);
+}
+
 void setFrame(WorldView *wv, float frame) {
 	Screen *s = getWindow();
 	World *w = getWorld();
@@ -212,7 +217,11 @@ void followForms(WorldView *wv) {
 		xp /= count;
 		yp /= count;
 		World *w = getWorld();
-		maxDistance = clamp(maxDistance + 10, wv->frame, max(w->x, w->y) + 1);
+		if (count == 1) {
+			maxDistance = clamp(wv->baseFrame, wv->frame, max(w->x, w->y) + 1);
+		} else {
+			maxDistance = clamp(maxDistance + 10, wv->frame, max(w->x, w->y) + 1);
+		}
 
 		if (xp * wv->scalePower != wv->centerX || yp * wv->scalePower != wv->centerY || maxDistance != wv->frame) {
 		//printf("resizing frame to %f\n", maxDistance);
