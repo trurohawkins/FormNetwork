@@ -84,9 +84,54 @@ void createWorld(int worldX, int worldY, int frameX, int frameY) {
 }
 
 void setAnim(Form *f, Anim *a) {
+	/*
 	f->anim = a;
+	f->aCount = 1;
+	addAnim(a);
+	*/
+	Anim **as = calloc(f->aCount + 1, sizeof(Anim*));
+	Anim **cur = f->anim;
+	for (int i = 0; i < f->aCount; i++) {
+		//((Anim*)(f->anim))[i] 
+		as[i] = cur[i];//((Anim**)(f->anim))[i];
+	}
+	if (f->aCount > 0) {
+		free(f->anim);
+	}
+	as[f->aCount] = a;
+	f->aCount++;
+	f->anim = as;
 	addAnim(a);
 }
+
+void changeSprites(Form *f, int index) {
+	Anim **a = f->anim;
+	for (int i = 0; i < f->aCount; i++) {
+		changeSprite(a[i], index);
+	}
+}
+
+void setOffsets(Form *f, float x, float y) {
+	Anim **a = f->anim;
+	for (int i = 0; i < f->aCount; i++) {
+		setOffset(a[i], x, y);
+	}
+}
+
+void setInverts(Form *f, int axis, bool flipped) {
+	Anim **a = f->anim;
+	for (int i = 0; i < f->aCount; i++) {
+		setInvert(a[i], axis, flipped);
+	}
+}
+
+void setRotos(Form *f, int roto) {
+	Anim **a = f->anim;
+	for (int i = 0; i < f->aCount; i++) {
+		setRoto(a[i], roto);
+	}
+}
+
 
 void exitGame() {
 	printf("exiting\n");

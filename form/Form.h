@@ -14,6 +14,7 @@ typedef struct Form {
 	int *body;
 	int bLen; //body length
 	void *anim;
+	int aCount;
 	void *stats;
 	void *actor;
 	//neg terminated

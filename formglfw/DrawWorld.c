@@ -105,13 +105,15 @@ void drawWorld(World *w) {
 
 								// check if weve seen form, not for center, incse form's center isn't on screen
  								if (f->anim != NULL) {// && (xp == (int)(floor(f->pos[0])) && yp == (int)(floor(f->pos[1])))) {
-									Anim *a = (Anim*)f->anim;
-									if (a->drawOrder > 0) {
-										addFormToAnim(front, f, 0, xfp, yfp);
-									} else if (a->drawOrder < 0) {
-										addFormToAnim(back, f, 0, xfp, yfp);
-									} else {
-										addFormToAnim(mid, f, 0, xfp, yfp);
+									for (int j = 0; j < f->aCount; j++) {
+										Anim *a = ((Anim**)f->anim)[j];
+										if (a->drawOrder > 0) {
+											addAnimToOrder(front, a, xfp, yfp);
+										} else if (a->drawOrder < 0) {
+											addAnimToOrder(back, a, xfp, yfp);
+										} else {
+											addAnimToOrder(mid, a, xfp, yfp);
+										}
 									}
 								}
 							}
@@ -276,10 +278,12 @@ AnimOrder *makeAnimOrder(int order) {
 	ao->order = order;
 }
 
-void addFormToAnim(AnimOrder *ao, Form *f, Anim *anim, float x, float y) {
+void addAnimToOrder(AnimOrder *ao, Anim *anim, float x, float y) {
+	/*
 	if (anim == NULL) {
 		anim = (Anim*)f->anim;
 	}
+	*/
 	if (cmpList(&(ao->anims), anim, compareAnims)) {
 		//printf("anim already on list not adding\n");
 		return;

@@ -30,6 +30,8 @@ typedef struct Anim {
 	textureSource *texture;
 	float *palette;
 	unsigned int vao;
+	void *data;
+	void (*animEnd)(struct Anim*);
 } Anim;
 
 #include "AnimList.h"
