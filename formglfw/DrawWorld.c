@@ -53,11 +53,14 @@ void drawWorld(World *w) {
 			int yp = y + curView->buffY;
 			if (xp >= 0 && xp < w->x && yp >= 0 && yp < w->y) {
 				Cell *cur = w->map[xp][yp];
-				Form** residents = getCellContents(cur);
-				if (residents != NULL) {
-					for (int i = 0; i < cur->count; i++) {
+				// seems more efficient to just loop through linked list, rather than copy into array
+				//Form** residents = getCellContents(cur);
+				linkedList *residents = cur->within;
+				while (residents) {
+					//for (int i = 0; i < cur->count; i++) {
+					if (residents->data) {
 						//if (residents != NULL) {
-						Form *f = residents[i];
+						Form *f = residents->data;//[i];
 						if (f != NULL) {
 							float *tile = getStat(f, "tile");
 							//printf("- %i -\n", f->id);
@@ -117,8 +120,9 @@ void drawWorld(World *w) {
 							}
 						}
 					}
+					residents = residents->next;
 				}
-				free(residents);
+				//free(residents);
 			}
 		}
 	}

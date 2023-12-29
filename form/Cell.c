@@ -58,14 +58,15 @@ bool checkSolid(void *form) {
 }
 
 linkedList *getSolidForm(Cell* c) {
-	linkedList *solids = 0;
+	//linkedList *solids = 0;
+	clearCheck();
 	if (c->within != 0) {
 		Form *f = 0;
 		//printCell(c);
 		do {
 			f = removeFromListCheck(&(c->within), checkSolid);	
 			if (f != NULL) {
-				addToList(&solids, f);
+				addToList(&check, f);
 				//printCell(c);
 				c->count--;
 				c->solid--;
@@ -73,18 +74,20 @@ linkedList *getSolidForm(Cell* c) {
 			//printf("new counnt %i\n", c->solid);
 		} while (c->solid > 0);
 	}
-	return solids;
+	return check;
 }
 
 linkedList *checkSolidForm(Cell* c) {
 	linkedList *cur = c->within;
-	linkedList *solids = 0;
+	//printf("checking solid forms\n");
+	clearCheck();
+	//linkedList *solids = 0;
 	while (cur) {
 		Form *f = cur->data;
 		if (f) {
 			//if (checkFormIsSolid(cur->data)) {
 			if (f->solid) {
-				addToList(&solids, f);
+				addToList(&check, f);
 			}
 		}
 		cur = cur->next;
@@ -97,7 +100,20 @@ linkedList *checkSolidForm(Cell* c) {
 	}
 	return f;
 	*/
-	return solids;
+	//printf("returning check\n");
+	return check;
+}
+
+bool isSolidForm(Cell *c) {
+	linkedList *cur = c->within;
+	while (cur) {
+		Form *f = cur->data;
+		if (f && f->solid) {
+			return true;
+		}
+		cur = cur->next;
+	}
+	return false;
 }
 
 Form **getCellContents(Cell *c) {
@@ -190,9 +206,10 @@ void freeCell(Cell *c) {
 				removeForm(forms[i]);
 				deleteForm(forms[i]);
 			}
+			free(forms);
 		}
 		//linkedList *cur = c->within;
-		freeList(&c->within);
+		freeListSaveObj(&c->within);
 		//deleteList(&(c->within), removeDeleteForm);
 	}
 	free(c);

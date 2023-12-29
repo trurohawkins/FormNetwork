@@ -1,6 +1,7 @@
 #include "World.h"
 
 World* theWorld = 0;
+linkedList *check = 0;
 
 void makeWorld(int x, int y) {	
 	World *newWorld = (World*)calloc(1, sizeof(World));
@@ -165,7 +166,7 @@ linkedList *checkCol(Form *f, int x, int y, bool solid) {
 		}
 		check = check->next;
 	}
-	if (c && (solid || gotInert)) {
+	if (gotInert) {
 		freeListSaveObj(&c);
 	}
 	return content;
@@ -591,6 +592,7 @@ bool checkFormID(int x, int y, int id) {
 }
 
 void freeWorld() {
+	clearCheck();
 	deleteActorList();
 	deleteWorld();
 	freeDirections();
@@ -771,4 +773,14 @@ bool loadWorld(char *file) {
 		return true;
 	}
 	return false;
+}
+
+bool clearCheck() {
+	if (check == 0) {
+		return false;
+	} else {
+		freeListSaveObj(&check);
+		check = 0;
+		return true;
+	}
 }

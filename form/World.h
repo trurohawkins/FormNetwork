@@ -11,6 +11,7 @@ typedef struct World
 } World;
 
 extern World* theWorld;
+extern linkedList *check;
 
 void makeWorld(int x, int y);
 World *getWorld();
@@ -44,4 +45,5 @@ void makeStoneSquare(int x, int y, int z);
 void makeCircle(int x, int y, int r);
 void writeWorld(char *file);
 bool loadWorld(char *file);
+bool clearCheck();
 #endif
