@@ -44,7 +44,6 @@ int stomachStuff(Form *f, Action *a) {
 				for (int y = 0; y < ep->yBite; y++) {
 					//printf(" eating %i, %i \n", xc-x, yc - y);
 					linkedList *food = takeForm(xc - x, yc - y);
-					linkedList *f = food;
 					while (food) {
 						//printf("adding food\n");
 						if (food->data != 0) {
@@ -52,7 +51,6 @@ int stomachStuff(Form *f, Action *a) {
 						}
 						food = food->next;
 					}
-					freeListSaveObj(&f);
 				}
 			}
 			//printf("done\n");

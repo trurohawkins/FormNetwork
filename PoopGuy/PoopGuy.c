@@ -39,7 +39,7 @@ void deletePoopGuy(void *poop) {Form *checkCol(int x, int y);
 void keyPressPoopGuy(PoopGuy *pooper, char input) {
 	eatPooVar *ep = (eatPooVar*)(pooper->eatPoop->vars);
 	moveVar *mv = (moveVar*)pooper->move->vars;
-	//printf("%c\n", input);
+	printf("%c\n", input);
 	controlVar *cv = (controlVar*)pooper->control->vars;
 	switch (input) {
 		case 65: //a

@@ -219,7 +219,6 @@ void followForms(WorldView *wv) {
 		// we clamp the distance between our frameMin and the world Max, we dont know which is bigger, so we use min and max to figure that out inline
 		int worldMax = max(w->x, w->y) + 1;
 		maxDistance = clamp(maxDistance + 10, min(worldMax,wv->frameMin), max(worldMax, wv->frameMin));
-
 		if (xp * wv->scalePower != wv->centerX || yp * wv->scalePower != wv->centerY || maxDistance != wv->frame) {
 		//printf("resizing frame to %f\n", maxDistance);
 		//if (xp != wv->centerX || yp != wv->centerY) {

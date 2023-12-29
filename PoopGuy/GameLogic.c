@@ -184,10 +184,9 @@ void gameLoop() {
 	// why?? defaultFrame = screen->frame;
 	cam = getDefaultView();
 	wv = getDefaultView();
-	setFrame(wv, 70);
+	setFrameMin(wv, 40);
 	w = getWorld();
-	processAudioFile("resources/SchoolBoyLoop.wav");
-	processAudioFile("resources/SchoolBoyLoop.wav");
+	processAudioFile("../resources/SchoolBoyLoop.wav");
 	//setCameraSize(mainCam, 1);
 	
 	//makeStoneSquare((w->x/2), (w->y/2) - 40, 10);
@@ -322,6 +321,7 @@ void saveMap() {
 }
 
 void togglePauseMenu(void *, float poo) {
+	printf("poo\n");
 	if (poo > 0) {
 		paused = !paused;
 		setMenuActive(pauseMenu, paused);

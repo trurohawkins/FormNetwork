@@ -79,7 +79,7 @@ Camera.o: $(GD)Camera.c $(GD)Camera.h
 glad.o: $(GD)glad.c $(GD)glad.h $(GD)khrplatform.h
 	$(CC) $(GD)glad.c -ldl
 
-helper.o: $(HD)helper.c $(HD)helper.h $(HD)list.c $(HD)list.h $(HD)binaryWriter.h $(HD)binaryWriter.c
+helper.o: $(HD)helper.c $(HD)helper.h $(HD)list.c $(HD)list.h $(HD)binaryWriter.h $(HD)binaryWriter.c $(HD)sortedList.h $(HD)sortedList.c
 	$(CC) $(HD)helper.c
 
 clean:

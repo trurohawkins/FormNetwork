@@ -167,7 +167,6 @@ int **worldToMap() {
 				//Form *guy = checkSolidForm(cur);
 				Form *guy = 0;
 				linkedList *guys = checkSolidForm(cur);
-				linkedList *g = guys;
 				while (guys) {
 					if (guys->data) {
 						if (isFormCenter(guys->data, x, y)) {
@@ -182,7 +181,6 @@ int **worldToMap() {
 					}
 					guys = guys->next;
 				}
-				freeListSaveObj(&g);
 				/*Form *guy = checkSolidForm(cur);
 				if (isFormCenter(guy, x, y)) {
 					int val = guy->id;

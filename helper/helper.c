@@ -89,6 +89,18 @@ int *getDir8(int dir) {
 		return dir8[0];
 }
 
+int d8Tod4(int dir) {
+	if (dir % 2 == 1) {
+		if (dir == 1 || dir == 3) {
+			dir = 2;
+		} else if (dir == 5 || dir == 7) {
+			dir = 6;
+		}
+	}
+	dir /= 2;
+	return dir;
+}
+
 int xyToDir4(int *xy) {
 	for (int i = 0; i < 4; i++) {
 		if (xy[0] == dirs[i][0] && xy[1] == dirs[i][1]) {
@@ -117,6 +129,14 @@ float randPercent() {
 
 int randomInt(int upper) {
 	return rand() % upper;
+}
+
+int randRange(int min, int max) {
+	int amnt = max - min + 1;
+	if (amnt == 0) {
+		amnt = 1;
+	}
+	return (rand() % amnt) + min;
 }
 
 float distance(float x1, float y1, float x2, float y2) {
@@ -270,5 +290,6 @@ float intToFrac(int i, int pow) {
 }
 
 #include "list.c"
+#include "sortedList.c"
 #include "binaryWriter.c"
 

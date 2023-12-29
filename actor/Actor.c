@@ -6,6 +6,7 @@ Actor *makeActor(Form * f/*, Action *a*/) {
 		newActor->body = f;
 		f->actor = newActor;
 	}
+	newActor->destroy = destroyActor;
 	/*
 	if (a != 0) {
 		addToList(newActor->actionList, a);
@@ -65,7 +66,7 @@ void doActions(Actor *actor) {
 	linkedList *a = actor->actionList;
 	while (a != 0) {
 		Action *act = (Action*) a->data;
-		if (act->active == 1) {
+		if (act->active) {
 			(*(act->fun))(actor->body, act);
 		}
 		a = a->next;
@@ -75,10 +76,12 @@ void doActions(Actor *actor) {
 void freeActionList(Actor *actor) {
 	linkedList *a = actor->actionList;
 	while (a != 0) {
-		deleteAction((Action*)a->data);
+		if (a->data) {
+			freeAction(a->data);
+		}
 		a = a->next;
 	}
-	freeList(&(actor->actionList));
+	freeListSaveObj(&(actor->actionList));
 
 }
 
@@ -99,5 +102,10 @@ void deleteActor(void *a) {
 	freeActionList(actor);
 	free(actor);
 }
+
+void destroyActor(Actor *a) {
+	a->deleteMe = true;
+}
+
 #include "ActorList.c"
 //#include "PoopGuy.c"

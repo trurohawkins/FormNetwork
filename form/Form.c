@@ -564,6 +564,9 @@ void deleteForm(void *form) {
 		}
 		*/
 	}
+	if (f->aCount > 0) {
+		free(f->anim);
+	}
 	if (f->sides) {
 		for (int i = 0; i < 4; i++) {
 			free(f->sides[i]);

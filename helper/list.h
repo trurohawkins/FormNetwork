@@ -1,4 +1,4 @@
-#ifndef LL
+#ifndef Ll
 #define LL
 typedef struct linkedList
 {

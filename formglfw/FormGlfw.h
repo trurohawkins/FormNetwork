@@ -15,5 +15,9 @@ void FormLoop(void (game)(void));
 void stopLoop();
 void setBackgroundColor(float r, float g, float b, float a);
 void setAnim(Form *f, Anim *a);
+void changeSprites(Form *f, int index);
+void setOffsets(Form *f, float x, float y);
+void setInverts(Form *f, int axis, bool flipped);
+void setRotos(Form *f, int roto);
 void exitGame();
 #endif

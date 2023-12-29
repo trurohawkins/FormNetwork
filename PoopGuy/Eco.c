@@ -42,23 +42,27 @@ void groundWater(){
 	rCtr ++; // counts time since last call
 	if (wCtr >= wInt) {
 		for (int x = 0; x < theWorld->x; x++) {
-			for (int y = theWorld->y - 1; y >=0; y--){
+			for (int y = theWorld->y - 1; y >=0; y--) {
+				/*
 				linkedList *forms = checkSolidForm(theWorld->map[x][y]);
-				linkedList *fo = forms;
 				while (forms) {
 					if (forms->data) {
+					
 						//if (theWorld[x][y] !=0 && theWorld[x][y]->id == 10) {
 						if (((Form*)forms->data)->id == 10) {
+						*/
+						if (checkFormID(x, y, 10)) {
 							eVap(x,y); // sunlight pulls water up
 							gravPull(x,y); // gravity pull water down
 							if (rCtr >= rInt) {
 								rain(x,y);
 							}
 						}
+						/*
 					}
 					forms = forms->next;
 				}
-				freeListSaveObj(&fo);
+				*/
 			}
 		}
 		// printf("---------------------------------------------------------------------- \n");
@@ -75,7 +79,8 @@ int chSky(int x, int y) {
 	int sky = 1;
 	for (int yi = theWorld->y - 1; yi > y; yi--) {
 		//if (theWorld->map[x][yi] != 0) {
-		if (checkSolidForm(theWorld->map[x][yi]) != 0) {
+		//if (checkSolidForm(theWorld->map[x][yi]) != 0) {
+		if (isSolidForm(theWorld->map[x][yi]) != 0) {
 			sky = 0; //block is covered from sunlight
 			return sky;
 		} 
@@ -85,20 +90,19 @@ int chSky(int x, int y) {
 
 void rain(int x, int y) {
 	//if (theWorld->map[x][y] != 0) {
-	if (checkSolidForm(theWorld->map[x][y]) != 0) {
+	//if (checkSolidForm(theWorld->map[x][y]) != 0) {
+	if (isSolidForm(theWorld->map[x][y]) != 0) {
 		int skyy = chSky(x,y);
 		if (skyy == 1) {
 			//setStat(theWorld->map[x][y], "moisture",  sat);
 			//setStat(checkSolidForm(theWorld->map[x][y]), "moisture",  sat);
 			linkedList *forms = checkSolidForm(theWorld->map[x][y]);
-			linkedList *fo = forms;
 			while (forms) {
 				if (forms->data) {
 					setStat(forms->data, "moisture",  sat);
 				}
 				forms = forms->next;
 			}
-			freeListSaveObj(&fo);
 			// fills surface blocks to max moisture value
 		}
 	}
@@ -114,7 +118,8 @@ void eVap(int x, int y){
 
 		for (int yi = y-1; yi >= 0; yi--) {
 			//if ( theWorld->map[x][yi] != 0){
-			if ( checkSolidForm(theWorld->map[x][yi]) != 0){
+			//if ( checkSolidForm(theWorld->map[x][yi]) != 0){
+			if (isSolidForm(theWorld->map[x][yi])) {
 				//float *stat = getStat(checkSolidForm(theWorld->map[x][yi]), "moisture");
 				float *stat = getStatCell(theWorld->map[x][yi], "moisture");
 				if ( stat != 0 && *stat > 0.01 ) {
@@ -123,7 +128,8 @@ void eVap(int x, int y){
 				}
 			}
 		}
-		if (checkSolidForm(theWorld->map[x][y - depth]) == 0){
+		//if (checkSolidForm(theWorld->map[x][y - depth]) == 0){
+		if (!isSolidForm(theWorld->map[x][y - depth])) {
 			return;
 		}
 	
@@ -141,12 +147,12 @@ void eVap(int x, int y){
 			//dessication!
 			} 
 		}
-
 	}
 }
 
 void gravPull(int x, int y){
-	if (checkSolidForm(theWorld->map[x][y]) == 0) {
+	//if (checkSolidForm(theWorld->map[x][y]) == 0) {
+	if (isSolidForm(theWorld->map[x][y]) == 0) {
 		return;
 	}
 
@@ -166,7 +172,8 @@ void gravPull(int x, int y){
 		return;
 	}
 	
-	if (checkSolidForm(theWorld->map[x][y-1]) ==0) {return;} 
+	if (isSolidForm(theWorld->map[x][y-1]) ==0) {return;} 
+	//if (checkSolidForm(theWorld->map[x][y-1]) ==0) {return;} 
 
 	//float *test = getStat(checkSolidForm(theWorld->map[x][y-1]), "moisture");
 	float *test = getStatCell(theWorld->map[x][y-1], "moisture");

@@ -33,8 +33,8 @@ int main(int argc, char **argv) {
 	\*/
 	initFormGlfw();
 	initAudio();
-	int worldY = 10;
-	int worldX = 10; 
+	int worldY = 30;
+	int worldX = 30; 
 	initRecipes(3, 10);
 	addRecipe(makePoopPlayer, savePoopPlayer, 0);
 	addRecipe(makeDirt, saveDirt, 1);
@@ -55,7 +55,7 @@ int main(int argc, char **argv) {
 		}
 	}
 	//if (!loadWorld("world.bin")) {
-	createWorld(worldX, worldY, 4, 4);
+	createWorld(worldX, worldY, 10, 10);
 	if (menuVal != 2) {
 		int Seedstring[4] = {1,2,3,4};
 		printf("generating world\n");

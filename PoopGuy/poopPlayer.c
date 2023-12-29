@@ -1,6 +1,6 @@
 #include "poopPlayer.h"
 PoopGuy **poopers = 0;
-int numPoopers = 0;
+int numPoopers = 1;
 int curPoopers = 0;
 /*
 PoopGuy *makePoopGuy (int sx, int sy) {
@@ -116,8 +116,8 @@ Form *makePoopPlayer(int pNum) {
 		addControl(p, "K0A", left);
 		addControl(p, "K0S", down);
 		addControl(p, "K0D", right);
-		addControl(p, "M01", toggleEat);
-		addControl(p, "M00", poop);
+		addControl(p, "K0O", toggleEat);
+		addControl(p, "K0P", poop);
 		addControl(p, "K0 ", jumpStart);
 	} else {
 		addControl(p, "K0I", up);

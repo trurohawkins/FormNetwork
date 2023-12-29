@@ -190,10 +190,12 @@ void checkColAddList(linkedList **list, Form *f, int x, int y, bool solid) {
 		}
 		check = check->next;
 	}
-	if (c && (solid || gotInert)) {
+	//checkCol always makes a list
+	if (c) {// && (solid || gotInert)) {
 		freeListSaveObj(&c);
 	}
 }
+
 
 bool checkColliderPos(Collider *c, int x, int y) {
 	/*
@@ -280,30 +282,6 @@ linkedList *checkPos(Form *form, int x, int y, bool solid) {
 	if (form->size[0] == 0 && form->size[1] == 0) {
 		return checkCol(form, x, y, true);
 	} else {
-		/*
-		for (int i = 0; i < form->size[0]; i++) {
-			for (int j = 0; j < form->size[1]; j++) {
-				int xp = x + form->body[i][j][0];
-				int yp = y + form->body[i][j][1];
-				checkColAddList(&solids, form, xp, yp, solid);
-				// commeneted
-				linkedList *check = checkCol(form, xp, yp);
-				linkedList *c = check;
-				while (check) {
-					if (check->data) {
-						if (!isInList(&solids, check)) {
-							addToList(&solids, check->data);
-						} else {
-							break;;
-						}
-					}
-					check = check->next;
-				}
-				freeListSaveObj(&c);
-				//
-			}
-		}
-		*/
 		for (int i = 0; i < form->bLen * 2; i += 2) {
 			int xp = x + form->body[i];//[j][0];
 			int yp = y + form->body[i+1];//[j][1];
@@ -504,7 +482,7 @@ Form *removeForm(Form* form) {
 		//takeForm(form->pos[0], form->pos[1]);
 			removeFromCell(theWorld->map[x][y], form);
 		}
-	} else if (form->pos[0] > 0 && form->pos[1] > 0) {
+	} else if (form->pos[0] >= 0 && form->pos[1] >= 0) {
 		/*
 		for (int i = 0; i < form->size[0]; i++) {
 			for (int j = 0; j < form->size[1]; j++) {
@@ -541,6 +519,8 @@ Form *removeForm(Form* form) {
 			}
 		}
 
+	} else {
+		printf("cant remove out of bounds form %f, %f\n", form->pos[0], form->pos[1]);
 	}
 
 //	f->pos[0] = -1;

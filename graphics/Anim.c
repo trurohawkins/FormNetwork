@@ -151,6 +151,9 @@ void animate(Anim *a) {
 					if (a->loop) {
 						a->frame = 0;
 					}
+					if (a->animEnd) {
+						a->animEnd(a);
+					}
 				}
 			} else {
 				if (a->frame - 1 > -1) {
@@ -158,6 +161,9 @@ void animate(Anim *a) {
 				} else {
 					if (a->loop) {
 						a->frame = a->length[a->sprite] - 1;
+					}
+					if (a->animEnd) {
+						a->animEnd(a);
 					}
 				}
 			}
@@ -173,6 +179,7 @@ void changeSprite(Anim *a, int index) {
 		if (a->length[index] != -1) {
 			a->sprite = index;
 			a->frame = 0;
+			a->speedCounter = 0;
 		}
 	}
 }

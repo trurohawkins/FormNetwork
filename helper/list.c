@@ -241,7 +241,8 @@ void freeListSaveObj(linkedList **ll) {
 		next = cur->next;
 		free(cur);
 		cur = next;
-	}	
+	}
+	//*ll = 0;
 }
 
 void deleteList(linkedList **ll, void (*deleteFunc)(void*)) {
