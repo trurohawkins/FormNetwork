@@ -4,7 +4,9 @@
 //#include "../helper/helper.h"
 void arrayToFile(char*, int**);
 int **fileToArray(char*);
-int **genMap(int*);
+int **genMap();
+int **hillWorld();
+int **squareWorld();
 int **genRain(int**);
 void fillWorld();
 void genWorld(int**);

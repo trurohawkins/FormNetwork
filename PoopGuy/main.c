@@ -57,9 +57,9 @@ int main(int argc, char **argv) {
 	//if (!loadWorld("world.bin")) {
 	createWorld(worldX, worldY, 10, 10);
 	if (menuVal != 2) {
-		int Seedstring[4] = {1,2,3,4};
 		printf("generating world\n");
-		int **map = genMap(Seedstring);
+		//int **map = genMap();
+		int **map = squareWorld();
 		//genRain(map);
 		genWorld(map);
 		//fillWorld();

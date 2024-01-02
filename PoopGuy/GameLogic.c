@@ -184,7 +184,7 @@ void gameLoop() {
 	// why?? defaultFrame = screen->frame;
 	cam = getDefaultView();
 	wv = getDefaultView();
-	setFrameMin(wv, 40);
+	setFrameMin(wv, 100);
 	w = getWorld();
 	//processAudioFile("../resources/SchoolBoyLoop.wav");
 	//setCameraSize(mainCam, 1);
