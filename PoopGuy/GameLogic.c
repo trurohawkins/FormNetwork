@@ -9,7 +9,7 @@ int numPlayers = 1;
 bool gridOn = false;
 bool paused = false;
 bool godMode = false;
-bool debugDraw = false;
+bool debugDraw = true;
 float *godPos;
 Menu *pauseMenu;
 GOD *god = 0;
@@ -184,7 +184,7 @@ void gameLoop() {
 	// why?? defaultFrame = screen->frame;
 	cam = getDefaultView();
 	wv = getDefaultView();
-	setFrameMin(wv, 40);
+	setFrameMin(wv, 100);
 	w = getWorld();
 	processAudioFile("../resources/SchoolBoyLoop.wav");
 	//setCameraSize(mainCam, 1);
