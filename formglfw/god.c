@@ -2,8 +2,10 @@
 
 GOD *makeGodPlayer(float px, float py, int fx, int fy) {
 	GOD *g = (GOD*)calloc(1, sizeof(GOD));
-	g->p = makePlayer(g, 0, freeGod);
-	g->p->active = false;
+	g->p = makePlayer(g, -1, freeGod);
+	addPlayer(g->p);
+	g->p->active = true;
+	g->on = false;
 	g->cam = getDefaultView();
 	g->pos = (int*)calloc(2, sizeof(int));
 	(g->pos)[0] = px;// * g->cam->scalePower;
@@ -57,10 +59,12 @@ void freeGod(void *g) {
 
 void zoomOut(void *v, float f) {
 	GOD* god = (GOD*)v;
-	if (f  > 0) {
-		god->zoom[0] = true;
-	} else {
-		god->zoom[0] = false;
+	if (god->on) {
+		if (f  > 0) {
+			god->zoom[0] = true;
+		} else {
+			god->zoom[0] = false;
+		}
 	}
 }
 
@@ -68,46 +72,56 @@ int minDist = 4;
 
 void zoomIn(void *v, float f) {
 	GOD* god = (GOD*)v;
-	printf("zoom out %f\n", f);
-	if (f > 0) {
-		god->zoom[1] = true;
-	} else {
-		god->zoom[1] = false;
+	if (god->on) {
+		printf("zoom out %f\n", f);
+		if (f > 0) {
+			god->zoom[1] = true;
+		} else {
+			god->zoom[1] = false;
+		}
 	}
 }
 
 void camUp(void *v, float f) {
 	GOD *god = (GOD*)v;
-	if (f > 0) {
-		god->move[1] = 1;
-	} else if (god->move[1] != -1) {
-		god->move[1] = 0;
+	if (god->on) {
+		if (f > 0) {
+			god->move[1] = 1;
+		} else if (god->move[1] != -1) {
+			god->move[1] = 0;
+		}
 	}
 }
 void camLeft(void *v, float f) {
 	GOD *god = (GOD*)v;
-	if (f > 0) {
-		god->move[0] = -1;
-	} else if (god->move[0] != 1) {
-		god->move[0] = 0;
+	if (god->on) {
+		if (f > 0) {
+			god->move[0] = -1;
+		} else if (god->move[0] != 1) {
+			god->move[0] = 0;
+		}
 	}
 }
 
 void camDown(void *v, float f) {
 	GOD *god = (GOD*)v;
-	if (f > 0) {
-		god->move[1] = -1;
-	} else if (god->move[1] != 1) {
-		god->move[1] = 0;
+	if (god->on) {
+		if (f > 0) {
+			god->move[1] = -1;
+		} else if (god->move[1] != 1) {
+			god->move[1] = 0;
+		}
 	}
 }
 
 void camRight(void *v, float f) {
 	GOD *god = (GOD*)v;
-	if (f > 0) {
-		god->move[0] = 1;
-	} else if (god->move[0] != -1) {
-		god->move[0] = 0;
+	if (god->on) {
+		if (f > 0) {
+			god->move[0] = 1;
+		} else if (god->move[0] != -1) {
+			god->move[0] = 0;
+		}
 	}
 }
 
@@ -153,7 +167,7 @@ int moveGodView(Form * v, Action *a) {
 		}
 		//setCenter(god->cam, god->pos[0], god->pos[1]);
 	}
-	if (!god->p->active){// || (god->zoom[0] && god->zoom[1])) {
+	if (!god->on){// || (god->zoom[0] && god->zoom[1])) {
 		return 0;
 	}
 	if (god->zoom[0]) {
@@ -189,7 +203,7 @@ int moveGodView(Form * v, Action *a) {
 
 void godOff(GOD *god) {
 	//removePlayer(god->p);
-	god->p->active = false;
+	god->on = false;
 }
 
 void setGod(GOD *god, float px, float py, int fx, int fy) {
@@ -202,7 +216,7 @@ void setGod(GOD *god, float px, float py, int fx, int fy) {
 
 void godOn(GOD *g) {
 	//addPlayer(g->p);
-	g->p->active = true;
+	g->on = true;
 	//g->pos[0] = g->world->x / 2;
 	//g->pos[1] = g->world->y / 2;
 	//setCenter(g->cam, g->pos[0], g->pos[1]);

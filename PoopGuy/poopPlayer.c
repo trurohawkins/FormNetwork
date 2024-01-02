@@ -168,8 +168,12 @@ void left(void *pg, float val) {
 	eatPooVar *ep = (eatPooVar*)(p->eatPoop->vars);
 	if (val > 0) {
 		Anim *a = (Anim*)p->me->body->anim;
-		setInvert(a, 0, true);
-		setRoto(a, 1);
+		if (a) {
+			setInvert(a, 0, true);
+			setRoto(a, 1);
+		} else {
+			printf("no anim\n");
+		}
 		changeDir(ep, p->me->body, 1);
 		cv->moveLeft = 1;
 	} else {

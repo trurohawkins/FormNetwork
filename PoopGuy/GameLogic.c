@@ -9,7 +9,7 @@ int numPlayers = 1;
 bool gridOn = false;
 bool paused = false;
 bool godMode = false;
-bool debugDraw = false;
+bool debugDraw = true;
 float *godPos;
 Menu *pauseMenu;
 GOD *god = 0;
@@ -186,7 +186,7 @@ void gameLoop() {
 	wv = getDefaultView();
 	setFrameMin(wv, 40);
 	w = getWorld();
-	processAudioFile("../resources/SchoolBoyLoop.wav");
+	//processAudioFile("../resources/SchoolBoyLoop.wav");
 	//setCameraSize(mainCam, 1);
 	
 	//makeStoneSquare((w->x/2), (w->y/2) - 40, 10);
@@ -198,6 +198,7 @@ void gameLoop() {
 	//unFollowForm(poopers[1]->me->body);
 	//set up offsets for rendering instances
 	wvMakeBackground(wv, "resources/skyy.png");
+	setBackgroundColor(0.4, 0.6, 0.8, 1);
 	Button *demonButt = makeButton("resources/demonghost.png", 0, 2, 1, tmpButtFunc);
 	Button *faceButt = makeButton("resources/faceghost.png", 0, 2, 1, exitMenu);
 	Text *resume = makeText("RESUME", 1, true, 0.3, 0.6, 0.1, 0.8);
@@ -234,67 +235,14 @@ void gameLoop() {
 
 	//glfwUpdateGamepadMappings(gamecontrollerdb);
 	god = makeGodPlayer(w->x * 0.5, w->y * 0.5, 20, 20);//wv->frameX, wv->frameY);
-	Player *nullPlayer = makePlayer(0, -1, 0);
-	addControl(nullPlayer, "K0G", toggleGod);
-	addControl(nullPlayer, "K0!", togglePauseMenu);//S
-	addControl(nullPlayer, "J07", togglePauseMenu);
-	addControl(nullPlayer, "K0B", toggleDebugDraw);//B for Boxes
+	addControl(god->p, "K0G", toggleGod);
+	addControl(god->p, "K0!", togglePauseMenu);//S
+	addControl(god->p, "J07", togglePauseMenu);
+	addControl(god->p, "K0B", toggleDebugDraw);//B for Boxes
 	godPos =  (float*)calloc(2, sizeof(float));
 	godPos[0] = getWorld()->x /2;
 	godPos[1] = getWorld()->y /2;
 	FormLoop(pooGame);
-	/*
-	while(!glfwWindowShouldClose(screen->window)) {
-		glfwPollEvents();
-		checkControllerInput();
-		processKeys();
-		if(glfwGetKey(screen->window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
-			//glfwSetWindowShouldClose(screen->window, 1);
-		}
-		if (!paused) {
-			AnimListAnimate();
-			actorListDo();
-			groundWater();
-			if (!godMode && poopers[0] != 0) {
-				//centerOnForm(poopers[0]->me->body);
-				//setCenter(wv, w->x / 2, w->y / 2);
-				followForms(wv);
-				//lerpView(wv);
-				//printf("currently at %f, %f\n", pooper->me->body->pos[0], pooper->me->body->pos[1]);
-				//followForm(poopers[0]->me->body);
-			} else {// if (god == 0) {
-				//setCenter(wv, godPos[0], godPos[1]);
-			}
-			//printf("poopguy index: %i\n",((Anim*)poopers[0]->me->body->anim)->sprite);	
-			glClearColor(0, 0, 0, 1.0);
-			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-			if (debugDraw) {
-				drawWorldDebug(w);
-			} else {
-				drawWorld(w);
-			}
-			if (gridOn) {
-				drawGrid();
-			}
-			glfwSwapBuffers(screen->window);
-		
-		} else {
-			glClearColor(0.1, 0.1, 0.1, 1.0);
-			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-			drawActiveMenu();
-			updateMenu();
-			renderTextInput();
-			if (fileVal == 1) {
-				if (strlen(fileName) > 0) {
-					writeWorld(fileName);
-					free(fileName);
-					fileName = (char*)calloc(sizeof(char), 100);
-				}
-			}
-			glfwSwapBuffers(screen->window);
-		}
-	}
-	*/
 	free(godPos);
 	exitGame();
 }
@@ -321,7 +269,6 @@ void saveMap() {
 }
 
 void togglePauseMenu(void *, float poo) {
-	printf("poo\n");
 	if (poo > 0) {
 		paused = !paused;
 		setMenuActive(pauseMenu, paused);
@@ -344,7 +291,6 @@ void centerOnForm(Form* f) {
 
 void toggleGod(void *, float poo) {
 	if (poo > 0) {
-		printf("toggle god %i\n", godMode);
 		WorldView *wv = getDefaultView();
 		if (godMode) {
 		/*

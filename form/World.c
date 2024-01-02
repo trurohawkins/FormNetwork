@@ -133,15 +133,18 @@ linkedList *checkForm(int x, int y, bool solid) {
 			return theWorld->map[x][y]->within;
 		}
 	} else {
+		/*
 		linkedList *c = makeList();
+		*/
 		//printf("returning inert\n");
+		clearCheck();
 		if (inert == 0) {
 			makeInert();
 		}
 		inert->pos[0] = x;
 		inert->pos[1] = y;
-		addToList(&c, inert);
-		return c;
+		addToList(&check, inert);
+		return check;
 	}
 }
 
@@ -158,16 +161,18 @@ linkedList *checkCol(Form *f, int x, int y, bool solid) {
 				gotInert = true;	
 			}
 			if (!compareForms(chk, f) && canCollide(f, chk)) {
+				/*
 				if (!content) {
 					content = makeList();
 				}
+				*/
 				addToList(&content, check->data);
 			}
 		}
 		check = check->next;
 	}
 	if (gotInert) {
-		freeListSaveObj(&c);
+		//freeListSaveObj(&c);
 	}
 	return content;
 }
@@ -198,21 +203,6 @@ void checkColAddList(linkedList **list, Form *f, int x, int y, bool solid) {
 
 
 bool checkColliderPos(Collider *c, int x, int y) {
-	/*
-	for (int i = 0; i < c->size[0]; i++) {
-		for (int j = 0; j < c->size[1]; j++) {
-			int xp = x + c->body[i][j][0];
-			int yp = y + c->body[i][j][1];
-			if (xp >= 0 && yp >= 0 && xp < theWorld->x && yp < theWorld->y) {
-				if (checkForm(xp, yp, true)) {
-					return true;
-				}
-			} else {
-				return true;
-			}
-		}
-	}
-	*/
 	for (int i = 0; i < c->bLen * 2; i += 2) {
 		int xp = x + c->body[i];//[i][j][0];
 		int yp = y + c->body[i+1];;//[j][1];

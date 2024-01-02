@@ -3,6 +3,7 @@
 
 typedef struct GOD {
 	Player *p;
+	bool on;
 	short *move;
 	bool *zoom;
 	int *pos;
