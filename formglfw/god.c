@@ -126,7 +126,7 @@ void camRight(void *v, float f) {
 }
 
 int counter = 0;
-int speedInterval = 5;
+int speedInterval = 0;
 //
 int moveGodView(Form * v, Action *a) {
 	if (counter < speedInterval) {

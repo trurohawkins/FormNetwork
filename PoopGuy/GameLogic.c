@@ -184,16 +184,29 @@ void gameLoop() {
 	// why?? defaultFrame = screen->frame;
 	cam = getDefaultView();
 	wv = getDefaultView();
-	setFrameMin(wv, 100);
+	setFrameMin(wv, 300);
 	w = getWorld();
 	//processAudioFile("../resources/SchoolBoyLoop.wav");
 	//setCameraSize(mainCam, 1);
 	
 	//makeStoneSquare((w->x/2), (w->y/2) - 40, 10);
 	//poopers = (PoopGuy **)calloc(numPlayers, sizeof(PoopGuy*));	
-	poopers = getPoopers();
-	for (int i = 0; i < getNumPoopers(); i++) {
-		followForm(poopers[i]->me->body);
+	god = makeGodPlayer(w->x * 0.5, w->y * 0.5, 300, 300);//wv->frameX, wv->frameY);
+	addControl(god->p, "K0G", toggleGod);
+	addControl(god->p, "K0!", togglePauseMenu);//S
+	addControl(god->p, "J07", togglePauseMenu);
+	addControl(god->p, "K0B", toggleDebugDraw);//B for Boxes
+	godPos =  (float*)calloc(2, sizeof(float));
+	godPos[0] = getWorld()->x /2;
+	godPos[1] = getWorld()->y /2;
+	if (numPoopers > 0) {
+		poopers = getPoopers();
+		for (int i = 0; i < getNumPoopers(); i++) {
+			followForm(poopers[i]->me->body);
+		}
+	} else {
+		godOn(god);
+		godMode = true;
 	}
 	//unFollowForm(poopers[1]->me->body);
 	//set up offsets for rendering instances
@@ -234,14 +247,6 @@ void gameLoop() {
 	TileSet *stoneTiles = makeTileSet(stone, wv->frameX, wv->frameY, w->x, w->y);
 
 	//glfwUpdateGamepadMappings(gamecontrollerdb);
-	god = makeGodPlayer(w->x * 0.5, w->y * 0.5, 20, 20);//wv->frameX, wv->frameY);
-	addControl(god->p, "K0G", toggleGod);
-	addControl(god->p, "K0!", togglePauseMenu);//S
-	addControl(god->p, "J07", togglePauseMenu);
-	addControl(god->p, "K0B", toggleDebugDraw);//B for Boxes
-	godPos =  (float*)calloc(2, sizeof(float));
-	godPos[0] = getWorld()->x /2;
-	godPos[1] = getWorld()->y /2;
 	FormLoop(pooGame);
 	free(godPos);
 	exitGame();

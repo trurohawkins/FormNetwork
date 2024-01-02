@@ -32,7 +32,7 @@ int main(int argc, char **argv) {
 	}
 	\*/
 	initFormGlfw();
-	initAudio();
+	//initAudio();
 	int worldY = 300;
 	int worldX = 300; 
 	initRecipes(3, 10);

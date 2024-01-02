@@ -41,13 +41,10 @@ void processKeys() {
 			inpReceived *ir = (inpReceived*)cur->data;
 			char *inp = ir->input;
 			linkedList *curPlayer = PM->playerList;
-			printf("input received %s\n", inp);
 			
 			while (curPlayer != NULL) {
 				if(curPlayer->data != NULL) {
 					Player *p = (Player*)(curPlayer->data);
-					printf("got player %i\n", p->num);
-
 					if(p->active) {// && p->self) { 
 						linkedList *con = p->controls;
 						while (con != NULL) {
