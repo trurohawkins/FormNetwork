@@ -754,3 +754,13 @@ bool clearCheck() {
 		return true;
 	}
 }
+
+bool withinBounds(int x, int y) {
+	if (x < 0|| y < 0) {
+		return false;
+	} else if (x >= theWorld->x || y >= theWorld->y){
+		return false;
+	} else {
+		return true;
+	}
+}

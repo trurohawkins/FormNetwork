@@ -33,8 +33,8 @@ int main(int argc, char **argv) {
 	\*/
 	initFormGlfw();
 	//initAudio();
-	int worldY = 300;
-	int worldX = 300; 
+	int worldY = 9;
+	int worldX = 9; 
 	initRecipes(3, 10);
 	addRecipe(makePoopPlayer, savePoopPlayer, 0);
 	addRecipe(makeDirt, saveDirt, 1);
@@ -61,6 +61,7 @@ int main(int argc, char **argv) {
 		//int **map = genMap();
 		int **map = squareWorld();
 		//genRain(map);
+		placeWater(map);
 		genWorld(map);
 		//fillWorld();
 		//arrayToFile("mapSave.txt", map);

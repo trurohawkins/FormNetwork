@@ -8,6 +8,7 @@ int **genMap();
 int **hillWorld();
 int **squareWorld();
 int **genRain(int**);
+int **placeWater(int**);
 void fillWorld();
 void genWorld(int**);
 int **worldToMap();

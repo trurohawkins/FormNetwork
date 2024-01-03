@@ -60,6 +60,7 @@ int** genMap() {
     for (int i = 0; i < sizeX ; i += 1) {
 			map[i] = (int*) calloc( sizeY , sizeof(int));
 		}
+
     // Variables for block flags
     int space = 0;
     int dirt = 10;
@@ -116,6 +117,15 @@ int **squareWorld() {
 	}
 	return map;
 }
+
+int **placeWater(int **map) {
+
+	map[2][2] = 19;
+
+	return map;
+}
+
+
 void freeMap(int **map) {
 	int sx = theWorld->x;
 	int sy = theWorld->y;
@@ -167,6 +177,9 @@ void genWorld(int **map) {
 	float moist;
 	for (int x = 0; x < theWorld->x; x++) {
 		for(int y = 0; y < theWorld->y; y++) {
+			// map is an array of ints used to calc moisture values
+			// 10-19 indicate a block that can contain moisture.
+			// So 10 = dirt and starting mositure is 1.
 			if ( map[x][y] >= 10 && map[x][y] <= 19) {
 				moist = map[x][y] - 9;
 				Form *d = makeDirt(moist);
@@ -218,26 +231,4 @@ int **worldToMap() {
 		}
 	}
 	return map;
-}
-
-/* Shapes for world including proc gen surfaces */
-
-// Proc Gen Surface Functions
-void proGenSurface(int **map, int *Seedstring, int sizeX, int sizeY) {
-	int maxGrow = sizeY/3;
-	int height = sizeY/5;
-		for (int x = 0; x < sizeX; x++) {
-			for(int y = 0; y < height; y++) {
-		// this should write flag to array
-	    	map[x][y] = 10 ;
-			}
-			if (randPercent() > 0.75) {
-				int newGrow = (int)(randPercent() * maxGrow);
-				// printf( "%f \n", randPercent());
-				if (randPercent() > 0.5) {
-					newGrow *= -1;
-				}
-				height = clamp(height + newGrow, 1, sizeY - sizeY/5);
-			}
-		}
 }

@@ -50,4 +50,5 @@ void makeCircle(int x, int y, int r);
 void writeWorld(char *file);
 bool loadWorld(char *file);
 bool clearCheck();
+bool withinBounds();
 #endif

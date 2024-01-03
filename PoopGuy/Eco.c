@@ -3,8 +3,7 @@
 // Rain - source saturating surface blocks
 // Groundwater Flow
 //  -- Sun ( pulls moisture upwards from surface blocks)
-//  -- Gravity flow (pulls downwards, empties out of bottom of world?)
-//  -- Lateral, capilariy ( pulls sideways maybe up)
+//  -- capAct is Capilary Action, omnidirectional excahnge of mositure between dirt blocks
 //-------------------------------------------------- 
 // Parameters
 // 
@@ -51,11 +50,12 @@ void groundWater(){
 						//if (theWorld[x][y] !=0 && theWorld[x][y]->id == 10) {
 						if (((Form*)forms->data)->id == 10) {
 						*/
+
 						if (checkFormID(x, y, 10)) {
-							eVap(x,y); // sunlight pulls water up
-							gravPull(x,y); // gravity pull water down
+							// eVap(x,y); // sunlight pulls water up
+							capAct(x,y); // gravity pull water down
 							if (rCtr >= rInt) {
-								rain(x,y);
+								// rain(x,y);
 							}
 						}
 						/*
@@ -150,20 +150,54 @@ void eVap(int x, int y){
 	}
 }
 
-void gravPull(int x, int y){
-	//if (checkSolidForm(theWorld->map[x][y]) == 0) {
+void capAct(int x, int y){
+
+	// checks cell for sky/space, if so returns.
 	if (isSolidForm(theWorld->map[x][y]) == 0) {
 		return;
 	}
 
-	//float *moisture = getStat(checkSolidForm(theWorld->map[x][y]), "moisture");
-	//float *k = getStat(checkSolidForm(theWorld->map[x][y]), "hydroK");
 	float *moisture = getStatCell(theWorld->map[x][y], "moisture");
 	float *k = getStatCell(theWorld->map[x][y], "hydroK");
 
+	// error testing 
 	if ( moisture == 0 || k == 0){return;}
 
-// if block is at bottom of world, water drops outs into the ether
+	for (int i = x-1; i <= x+1; i++){
+		for (int j = y-1; j <= y+1; j++){
+
+			if (withinBounds(i,j) == false){continue;}
+
+			if (i ==x && j == y){continue;}	
+
+			if (isSolidForm(theWorld->map[i][j]) == 0) {continue;}
+
+			float *m_check = getStatCell(theWorld->map[i][j], "moisture");
+			float *k_check = getStatCell(theWorld->map[i][j], "hydroK");
+
+			if (*m_check == 0 || *k_check == 0) {continue;}
+
+			float difPress = *m_check - *moisture;
+
+			if (difPress < 0.001) {
+				printf("Equilibrium");
+				continue;
+			}
+
+			printf("diff is %f\n", difPress);
+
+			*m_check = *m_check - (0.01 * difPress);
+			*moisture = *moisture + (0.01 * difPress);
+
+			printf("Passed water from %d,%d to %d,%d\n", x,y,i,j);	
+			printf("Moist level now %f\n", *moisture);
+
+		}
+	}
+}
+	
+/*
+	// if block is at bottom of world, water drops outs into the ether
 	if (y == 0 ){
 		if (*moisture - *k * gPull >= tHoldU) {
 			//ensures indexing dosn't leave bounds of array
@@ -173,17 +207,13 @@ void gravPull(int x, int y){
 	}
 	
 	if (isSolidForm(theWorld->map[x][y-1]) ==0) {return;} 
-	//if (checkSolidForm(theWorld->map[x][y-1]) ==0) {return;} 
 
-	//float *test = getStat(checkSolidForm(theWorld->map[x][y-1]), "moisture");
 	float *test = getStatCell(theWorld->map[x][y-1], "moisture");
 	if (test == 0)return;
 // if block is above tHoldU and above a block that is above tHoldL
 
 	if ( *moisture > tHoldU && *test >= tHoldL) {
 
-	//float *moisture2 = getStat(checkSolidForm(theWorld->map[x][y-1]), "moisture");
-	//float *k2 = getStat(checkSolidForm(theWorld->map[x][y-1]), "hydroK");
 	float *moisture2 = getStatCell(theWorld->map[x][y-1], "moisture");
 	float *k2 = getStatCell(theWorld->map[x][y-1], "hydroK");
 		// so ugly....
@@ -207,4 +237,4 @@ void gravPull(int x, int y){
 
 	}
 }
-
+*/
