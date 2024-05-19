@@ -1,38 +1,7 @@
 #include "poopPlayer.h"
 PoopGuy **poopers = 0;
-int numPoopers = 0;
+int numPoopers = 1;
 int curPoopers = 0;
-/*
-PoopGuy *makePoopGuy (int sx, int sy) {
-	PoopGuy *pooper = (PoopGuy *)calloc(1, sizeof(PoopGuy));
-	pooper->speed = 10;
-	pooper->maxForce = 10;
-	pooper->me = makeActor(makeForm(0.2, 1, 0.2, sx, sy));
-	pooper->me->body->id = 69;
-	addStat(pooper->me->body, "anim", 0);
-	pooper->move = makeMove();
-	((moveVar*)pooper->move->vars)->speed = 1;
-	Action *grav = makeGravity(pooper->move->vars);
-	pooper->jump = makeJump(pooper->move->vars, grav);
-	pooper->eatPoop = makeStomach(pooper->me->body, sx, sy);
-	pooper->control = makeControl();
-	//setPoopGuy(pooper->control->vars, pooper);
-	addAction(pooper->me, pooper->move);
-	addAction(pooper->me, grav);
-	addAction(pooper->me, pooper->jump);
-	addAction(pooper->me, pooper->eatPoop);
-	addAction(pooper->me, pooper->control);
-	//changeDir(pooper->eatPoop pooper->me->body, 3);
-	//cv->moveRight = 1;
-	//pg = pooper;
-	return pooper;
-}
-*/
-/*
-PoopGuy *getPoopGuy() {
-	return pg;
-}
-*/
 
 void deletePoopGuy(void *poop) {
 	PoopGuy *pooper = (PoopGuy*)poop;
@@ -143,6 +112,25 @@ Form *makePoopPlayer(int pNum) {
 	return pooper->me->body;
 }
 
+void spawnPoopers(int xPos, int yPos) {
+	for (int i = 0; i < getNumPoopers(); i++) {
+		Form *pp = makePoopPlayer(i);
+		int xp = xPos + i * 4;
+		linkedList *res = checkPos(pp, xp, yPos, true);
+		linkedList *r = res;
+		while (res) {
+			if (res->data) {
+				removeForm(res->data);
+				deleteForm(res->data);
+			}
+			res = res->next;
+		}
+		freeListSaveObj(&r);
+		placeForm(xp,  yPos, pp);//makePoopPlayer(i));
+		//poopers[i] = makePoopPlayer(xPos + (i*4), 1, i);
+	}
+}
+
 int savePoopPlayer(Form *f) {
 	return f->id;
 }
@@ -153,8 +141,8 @@ void up(void *pg, float val) {
 		Anim *a = (Anim*)p->me->body->anim;
 		//setInvert(p->me->body, 0, false);
 		//setRoto(p->me->body, 0);
-		setInvert(a, 0, false);
-		setRoto(a, 0);
+		setInverts(p->me->body, 0, false);
+		setRotos(p->me->body, 0);
 		eatPooVar *ep = (eatPooVar*)(p->eatPoop->vars);
 		changeDir(ep, p->me->body,0);
 		setAnimSprite(p);
@@ -167,13 +155,8 @@ void left(void *pg, float val) {
 	controlVar *cv = (controlVar*)p->control->vars;
 	eatPooVar *ep = (eatPooVar*)(p->eatPoop->vars);
 	if (val > 0) {
-		Anim *a = (Anim*)p->me->body->anim;
-		if (a) {
-			setInvert(a, 0, true);
-			setRoto(a, 1);
-		} else {
-			printf("no anim\n");
-		}
+		setInverts(p->me->body, 0, true);
+		setRotos(p->me->body, 1);
 		changeDir(ep, p->me->body, 1);
 		cv->moveLeft = 1;
 	} else {
@@ -185,9 +168,8 @@ void left(void *pg, float val) {
 void down(void *pg, float val) {
 	PoopGuy *p = (PoopGuy*)pg;	
 	if (val > 0) {
-		Anim *a = (Anim*)p->me->body->anim;
-		setInvert(a, 0, false);
-		setRoto(a, 2);
+		setInverts(p->me->body, 0, false);
+		setRotos(p->me->body, 2);
 		eatPooVar *ep = (eatPooVar*)(p->eatPoop->vars);
 		changeDir(ep, p->me->body,2);
 		setAnimSprite(p);
@@ -200,9 +182,8 @@ void right(void *pg, float val) {
 	controlVar *cv = (controlVar*)p->control->vars;
 	eatPooVar *ep = (eatPooVar*)(p->eatPoop->vars);
 	if (val > 0) {
-		Anim *a = (Anim*)p->me->body->anim;
-		setInvert(a, 0, false);	
-		setRoto(a, 3);
+		setInverts(p->me->body, 0, false);
+		setRotos(p->me->body, 3);
 		changeDir(ep, p->me->body, 3);
 		cv->moveRight = 1;
 	} else {
@@ -275,26 +256,26 @@ void setAnimSprite(PoopGuy *pg) {
 	eatPooVar *ep = (eatPooVar*)(pg->eatPoop->vars);
 	controlVar *cv = (controlVar*)(pg->control->vars);
 	bool walking = cv->moveLeft > 0 || cv->moveRight > 0;
-	Anim *a = (Anim*)pg->me->body->anim;
+	Form *f = pg->me->body;
 	if (walking) {
 		if (ep->eating) {
 			//setStat(pg->me->body, 3);
 			//setStat(pg->me->body, "anim", 3);
-			changeSprite(a, 3);
+			changeSprites(f, 3);
 
 		} else {
 			//setStat(pg->me->body, "anim", 2);
-			changeSprite(a, 2);
+			changeSprites(f, 2);
 			//setStat(pg->me->body, 2);	
 		}
 	} else {
 		if (ep->eating) {
 			//setStat(pg->me->body, 1);
-			changeSprite(a, 1);
+			changeSprites(f, 1);
 			//setStat(pg->me->body, "anim", 1);
 		} else {
 			//setStat(pg->me->body, 0);	
-			changeSprite(a, 0);
+			changeSprites(f, 0);
 			//setStat(pg->me->body, "anim", 0);
 		}
 	}

@@ -1,0 +1,10 @@
+void menuLogic();
+int mainMenu();
+void setUpPauseMenu();
+void exitMenu();
+void saveMap();
+char *getFileName();
+void playGame();
+void loadGame();
+void quitGame();
+void saveGame();

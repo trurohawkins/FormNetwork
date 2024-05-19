@@ -129,6 +129,7 @@ int counter = 0;
 int speedInterval = 0;
 //
 int moveGodView(Form * v, Action *a) {
+	return 0;
 	if (counter < speedInterval) {
 		counter++;
 		return 0;

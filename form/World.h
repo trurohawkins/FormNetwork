@@ -19,6 +19,12 @@ void deleteWorld();
 void deleteTerrain();
 void placeForm(float x, float y, Form *form);
 
+linkedList *scanCell(int x, int y);
+bool checkCollision(Form *f, int x, int y, bool solid);
+bool checkColAtPos(Form *form, int x, int y, bool solid);
+bool checkColSideAtPos(Form *f, float xp, float yp, int xd, int yd, bool solid);
+bool checkColSideI(Form *f, float xp, float yp, int dir, bool solid);
+
 linkedList *checkForm(int x, int y, bool solid);
 linkedList *checkCol(Form *f, int x, int y, bool solid);
 

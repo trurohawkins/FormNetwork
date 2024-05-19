@@ -69,6 +69,8 @@ Anim *makeAnim(char **sheet, int spriteNum, bool generated, int rows, int cols) 
 	a->flip[1] = 1;
 	a->offset[0] = 0;
 	a->offset[1] = 0;
+	a->invert[0] = 0;
+	a->invert[1] = 0;
 	a->roto = 3;
 	a->vao = -1;
 	a->loop = true;

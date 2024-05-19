@@ -33,8 +33,8 @@ int main(int argc, char **argv) {
 	\*/
 	initFormGlfw();
 	//initAudio();
-	int worldY = 300;
-	int worldX = 300; 
+	int worldY = 100;
+	int worldX = 100; 
 	initRecipes(3, 10);
 	addRecipe(makePoopPlayer, savePoopPlayer, 0);
 	addRecipe(makeDirt, saveDirt, 1);
@@ -65,24 +65,7 @@ int main(int argc, char **argv) {
 		//fillWorld();
 		//arrayToFile("mapSave.txt", map);
 		freeMap(map);
-		int xPos = (worldX * 0.5);
-		int yPos = worldY / 2;
-		for (int i = 0; i < getNumPoopers(); i++) {
-			Form *pp = makePoopPlayer(i);
-			int xp = xPos + i * 4;
-			linkedList *res = checkPos(pp, xp, yPos, true);
-			linkedList *r = res;
-			while (res) {
-				if (res->data) {
-					removeForm(res->data);
-					deleteForm(res->data);
-				}
-				res = res->next;
-			}
-			freeListSaveObj(&r);
-			placeForm(xp,  yPos, pp);//makePoopPlayer(i));
-			//poopers[i] = makePoopPlayer(xPos + (i*4), 1, i);
-		}
+		spawnPoopers(worldX * 0.5, worldY - 3);
 		//printArray(map, worldX, worldY);
 		//arrayToFile("mapSave.txt", map);
 		//map = fileToArray("mapSave.txt");//
@@ -92,6 +75,6 @@ int main(int argc, char **argv) {
 	//initWorldView(frameX, frameY);
 	//initWorldDrawing();
 	setCamFunction(resizeScreen);
-	gameLoop();
+	pooGame();
 	return 0;
 }

@@ -6,8 +6,11 @@ typedef struct Cell {
 	int pos[2];//for debugging
 	int solid;
 	linkedList *within;
+	Form **content;
 	int count;
 } Cell;
+
+extern int maxCellCount;
 
 Cell *makeCell(int x, int y);
 void addToCell(Cell *c, Form *f);

@@ -33,6 +33,7 @@ int control(Form *f, Action *a) {
 			//printf("%i, %i\n", cv->move->speed * moveX, cv->move->maxForce);
 			addForce(cv->move, cv->move->speed * moveX, 0);
 		}
+		/*
 		//taking steps up smll walls
 		if (checkColSide(f, f->pos[0], f->pos[1], moveX, 0) != 0) {
 			int xCol = getEdge(f, 0, moveX);
@@ -46,6 +47,7 @@ int control(Form *f, Action *a) {
 			}
 			freeListSaveObj(&ll);
 		}
+		*/
 	} else if (cv->moveRight == 0 && cv->moveLeft == 0) {
 		// no input reset last input character. Turning based on last inp, want to change direction w/o moving{
 		//cv->pooper->lastInp = 0;

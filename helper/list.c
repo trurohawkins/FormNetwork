@@ -14,7 +14,6 @@ void addToList(linkedList **head, void *item) {
 	} else {
 		linkedList *tmp = *head;
 		while(tmp->data != 0) {
-		//	printf("searching through list to add\n");
 			if (tmp->next == 0) {
 				tmp->next = makeList();
 			}

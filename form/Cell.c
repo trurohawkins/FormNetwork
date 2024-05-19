@@ -1,21 +1,32 @@
 #include "Cell.h"
+int maxCellCount = 3;
 
 Cell *makeCell(int x, int y) {
 	Cell *c = (Cell*)calloc(sizeof(Cell), 1);
 	c->pos[0] = x;
 	c->pos[1] = y;
 	c->within = 0;//makeList();
+	//c->content = calloc(sizeof(Form*), maxCellCount);
 	c->count = 0;
 }
 
 void addToCell(Cell* c, Form *f) {
-	if (f != NULL) {
+	if (f != NULL && c->count < maxCellCount - 1) {
 		/*
 		if (c->within == 0) {
 			c->within = makeList();
 		}
 		*/
 		addToList(&(c->within), f);
+		/*
+		for (int i = 0; i < maxCellCount; i++) {
+			if (c->content[i] == 0) {
+				c->content[i] = f;
+				break;
+			}
+		}
+		*/
+		//c->content[c->count] = f;
 		c->count++;
 		/*
 		if (c->count > 1) {
@@ -35,6 +46,17 @@ void addToCell(Cell* c, Form *f) {
 }
 
 Form *removeFromCell(Cell *c, Form *f) {
+	/*
+	for (int i = 0; i < maxCellCount; i++) {
+		if (c->content[i] == f) {
+			c->content[i] = 0;
+			c->count--;
+			//printf("form removed\n");
+			return f;
+		}
+	}
+	return 0;
+	*/
 	if (!c->within) {
 		return 0;
 	}
@@ -117,6 +139,7 @@ bool isSolidForm(Cell *c) {
 }
 
 Form **getCellContents(Cell *c) {
+	//return c->content;
 	if (c->count == 0 && c->within == NULL) {
 		return NULL;
 	}

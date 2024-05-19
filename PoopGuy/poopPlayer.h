@@ -18,6 +18,7 @@ typedef struct PoopGuy {
 void deletePoopGuy(void *poop);
 void initPoopers();
 Form *makePoopPlayer (int pNum);
+void spawnPoopers(int xPos, int yPos);
 int savePoopPlayer(Form *f);
 void up(void *pg, float val);
 void left(void *pg, float val);

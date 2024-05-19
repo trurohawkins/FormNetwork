@@ -21,9 +21,6 @@ void initFormGlfw() {
 	int windowX = 960;
 	int windowY = 640;
 	initializeGLFW(windowX, windowY);
-	//setAspectRatio(16, 9);
-	//setScreenMax(worldX);
-	//sizeScreen(windowX);
 	glfwSetJoystickCallback(joystickCallback);
 	initJoyList();
 	initText();
@@ -32,15 +29,15 @@ void initFormGlfw() {
 	//initAudio();
 	makeTextureManager();
 	initUILists();
-	makePlayerManager();
 	makeAnimList();
 	initTileSets();
-	Camera *defCam = makeCamera();
-	setCamera(defCam);
-	free(defCam);
 	Screen *s = getWindow();
 	glfwWindowSizeCallback(s->window, s->width, s->height);
 	glfwUpdateGamepadMappings(gamecontrollerdb);
+	Camera *defCam = makeCamera();
+	setCamera(defCam);
+	free(defCam);
+	makePlayerManager();
 	//bgColor = {0, 0 ,0, 0};
 	for (int i = 0; i < 4; i++) {
 		bgColor[i] = 0;
@@ -53,11 +50,6 @@ void FormLoop(void (game)(void)) {
 		glfwPollEvents();
 		checkControllerInput();
 		processKeys();
-		/*
-		if(glfwGetKey(screen->window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
-			glfwSetWindowShouldClose(screen->window, 1);
-		}
-		*/
 		glClearColor(bgColor[0], bgColor[1], bgColor[2], bgColor[3]);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		game();
@@ -94,6 +86,7 @@ void setAnim(Form *f, Anim *a) {
 	for (int i = 0; i < f->aCount; i++) {
 		//((Anim*)(f->anim))[i] 
 		as[i] = cur[i];//((Anim**)(f->anim))[i];
+		//removeAnim(cur[i]);
 	}
 	if (f->aCount > 0) {
 		free(f->anim);
