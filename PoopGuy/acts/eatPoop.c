@@ -32,7 +32,6 @@ int stomachStuff(Form *f, Action *a) {
 	int yc;
 	if (ep->eating != 0) {
 		if (ep->biteCounter > ep->biteInterval) {
-			//printf(":bite counter reached\n");
 			if (ep->dir % 2 == 0) {
 				xc = (f->pos[0] - (1-f->pMod[0]) + ((f->size[0]/2)+1));
 				yc = getEdge(f, 1, d[ep->dir][1]);
@@ -44,7 +43,6 @@ int stomachStuff(Form *f, Action *a) {
 				for (int y = 0; y < ep->yBite; y++) {
 					//printf(" eating %i, %i \n", xc-x, yc - y);
 					linkedList *food = takeForm(xc - x, yc - y);
-					linkedList *f = food;
 					while (food) {
 						//printf("adding food\n");
 						if (food->data != 0) {
@@ -52,7 +50,6 @@ int stomachStuff(Form *f, Action *a) {
 						}
 						food = food->next;
 					}
-					freeListSaveObj(&f);
 				}
 			}
 			//printf("done\n");

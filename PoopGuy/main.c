@@ -32,9 +32,9 @@ int main(int argc, char **argv) {
 	}
 	\*/
 	initFormGlfw();
-	initAudio();
-	int worldY = 10;
-	int worldX = 10; 
+	//initAudio();
+	int worldY = 100;
+	int worldX = 100; 
 	initRecipes(3, 10);
 	addRecipe(makePoopPlayer, savePoopPlayer, 0);
 	addRecipe(makeDirt, saveDirt, 1);
@@ -55,34 +55,17 @@ int main(int argc, char **argv) {
 		}
 	}
 	//if (!loadWorld("world.bin")) {
-	createWorld(worldX, worldY, 4, 4);
+	createWorld(worldX, worldY, 10, 10);
 	if (menuVal != 2) {
-		int Seedstring[4] = {1,2,3,4};
 		printf("generating world\n");
-		int **map = genMap(Seedstring);
+		//int **map = genMap();
+		int **map = squareWorld();
 		//genRain(map);
 		genWorld(map);
 		//fillWorld();
 		//arrayToFile("mapSave.txt", map);
 		freeMap(map);
-		int xPos = (worldX * 0.5);
-		int yPos = worldY / 2;
-		for (int i = 0; i < getNumPoopers(); i++) {
-			Form *pp = makePoopPlayer(i);
-			int xp = xPos + i * 4;
-			linkedList *res = checkPos(pp, xp, yPos, true);
-			linkedList *r = res;
-			while (res) {
-				if (res->data) {
-					removeForm(res->data);
-					deleteForm(res->data);
-				}
-				res = res->next;
-			}
-			freeListSaveObj(&r);
-			placeForm(xp,  yPos, pp);//makePoopPlayer(i));
-			//poopers[i] = makePoopPlayer(xPos + (i*4), 1, i);
-		}
+		spawnPoopers(worldX * 0.5, worldY - 3);
 		//printArray(map, worldX, worldY);
 		//arrayToFile("mapSave.txt", map);
 		//map = fileToArray("mapSave.txt");//
@@ -92,6 +75,6 @@ int main(int argc, char **argv) {
 	//initWorldView(frameX, frameY);
 	//initWorldDrawing();
 	setCamFunction(resizeScreen);
-	gameLoop();
+	pooGame();
 	return 0;
 }

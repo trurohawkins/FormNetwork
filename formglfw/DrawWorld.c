@@ -53,11 +53,14 @@ void drawWorld(World *w) {
 			int yp = y + curView->buffY;
 			if (xp >= 0 && xp < w->x && yp >= 0 && yp < w->y) {
 				Cell *cur = w->map[xp][yp];
-				Form** residents = getCellContents(cur);
-				if (residents != NULL) {
-					for (int i = 0; i < cur->count; i++) {
+				// seems more efficient to just loop through linked list, rather than copy into array
+				//Form** residents = getCellContents(cur);
+				linkedList *residents = cur->within;
+				while (residents) {
+					//for (int i = 0; i < cur->count; i++) {
+					if (residents->data) {
 						//if (residents != NULL) {
-						Form *f = residents[i];
+						Form *f = residents->data;//[i];
 						if (f != NULL) {
 							float *tile = getStat(f, "tile");
 							//printf("- %i -\n", f->id);
@@ -119,8 +122,9 @@ void drawWorld(World *w) {
 							}
 						}
 					}
+					residents = residents->next;
 				}
-				free(residents);
+				//free(residents);
 			}
 		}
 	}
@@ -341,11 +345,28 @@ void drawWorldDebug(World *w) {
 		};
 	GLuint baseShader = getSP(0);//makeShaderProgram("graphicsSource/matVS.glsl", "graphicsSource/simpFS.glsl");
 	glUseProgram(baseShader);
-	glUniformMatrix4fv(rMat, 1, GL_TRUE, rMatrix);
+
+
+	glUniformMatrix4fv(rMat, 1, GL_TRUE, mat);//rMatrix);
+	mat[0] = w->x;//1;//curView->objSX;
+	mat[5] = w->y;
+	glUniformMatrix4fv(sMat, 1, GL_TRUE, mat);
+	mat[0] = 1;
+	mat[5] = 1;
+	mat[3] = 0;//(float)w->x/2 - (int)curView->buffX - 0.5f;//-1;
+	mat[7] = 0;//-1;
+	glUniformMatrix4fv(tMat, 1, GL_TRUE, mat);
+	glUniform4f(drawColor, 0, 0, 0, 1.0);
+	glBindVertexArray(square);
+	//glDrawArrays(GL_TRIANGLES, 0, 6);
+	
+	mat[3] = 0;
+	mat[7] = 0;
+	
+	//set rotation
 	mat[0] = curView->objSX;
 	mat[5] = curView->objSY;
 	glUniformMatrix4fv(sMat, 1, GL_TRUE, mat);
-	glBindVertexArray(square);
 	mat[0] = 1;
 	mat[5] = 1;
 	float startX = -1 - (curView->objSX/2);
@@ -359,7 +380,15 @@ void drawWorldDebug(World *w) {
 				//Form *f = checkSolidForm(w->map[xp][yp]);
 				Form *f = 0;//checkSolidForm(w->map[xp][yp]);
 				linkedList *forms = w->map[xp][yp]->within;//checkSolidForm(w->map[xp][yp]);
-			//	linkedList *fo = forms;
+				/*
+				Form **forms = w->map[xp][yp]->content;
+				for (int i = 0; i < maxCellCount; i++) {
+					if (forms[i] != 0) {
+						f = forms[i];
+						break;
+					}
+				}
+				*/
 				while (forms) {
 					if (forms->data) {
 						f = forms->data;
@@ -373,13 +402,12 @@ void drawWorldDebug(World *w) {
 					glUniformMatrix4fv(tMat, 1, GL_TRUE, mat);
 					float *m = getStat(f, "moisture");
 					if (m != NULL) {
-						float *fCol = (float*)calloc(3, sizeof(float));
+						float fCol[] = {0,0,0};//(float*)calloc(3, sizeof(float));
 						float moistMulti = 1 - min(*m, 0.9);// min(1 - ( (f->stat) - 0.1), 1);
 						for (int i = 0; i < 3; i++) {
 							fCol[i] = f->color[i] * moistMulti;
 						}
 						glUniform4f(drawColor, fCol[0], fCol[1], fCol[2], 1.0);
-						free(fCol);
 					} else {
 						glUniform4f(drawColor, f->color[0], f->color[1], f->color[2], 1.0);
 					}

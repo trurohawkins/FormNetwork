@@ -38,7 +38,6 @@ float *getStat(Form *f, char *stat) {
 float *getStatCell(Cell *c, char *stat) {
 	float *s = 0;
 	linkedList *forms = checkSolidForm(c);//, "moisture");
-	linkedList *fo = forms;
 	while (forms) {
 		if (forms->data) {
 			s = getStat(forms->data, stat);
@@ -46,7 +45,6 @@ float *getStatCell(Cell *c, char *stat) {
 		}
 		forms = forms->next;
 	}
-	freeListSaveObj(&fo);
 	return s;
 }
 

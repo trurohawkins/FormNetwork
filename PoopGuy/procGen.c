@@ -47,7 +47,7 @@ int **fileToArray(char *txt) {
 	return array;
 }
 
-int** genMap(int *Seedstringd) {
+int** genMap() {
     // Declare map array
     int sizeX = theWorld->x;
     int sizeY = theWorld->y;
@@ -71,8 +71,14 @@ int** genMap(int *Seedstringd) {
         	    map[x][y] = space;
         	}
     }
-    
-    // parse out Seed String into interger vector
+  return map;
+}
+
+int** hillWorld() {
+    int sizeX = theWorld->x;
+    int sizeY = theWorld->y;
+    int dirt = 10;
+	int **map = genMap();
     
     int maxGrow = sizeY/3;
     int height = sizeY/5;
@@ -93,6 +99,23 @@ int** genMap(int *Seedstringd) {
 	return map;
 }
 
+
+int **squareWorld() {
+	int sizeX = theWorld->x;
+	int sizeY = theWorld->y;
+	int dirt = 10;
+	int **map = genMap();
+
+	int width = sizeX / 2;
+	int height = sizeY / 2;
+
+	for (int x = (width - (width / 2) ); x < (width + (width / 2 ) ); x++) {
+		for (int y = (height - (height / 2) ); y < (height + (height / 2) ); y++) {
+			map[x][y] = dirt;
+		}
+	}
+	return map;
+}
 void freeMap(int **map) {
 	int sx = theWorld->x;
 	int sy = theWorld->y;
@@ -167,7 +190,6 @@ int **worldToMap() {
 				//Form *guy = checkSolidForm(cur);
 				Form *guy = 0;
 				linkedList *guys = checkSolidForm(cur);
-				linkedList *g = guys;
 				while (guys) {
 					if (guys->data) {
 						if (isFormCenter(guys->data, x, y)) {
@@ -182,7 +204,6 @@ int **worldToMap() {
 					}
 					guys = guys->next;
 				}
-				freeListSaveObj(&g);
 				/*Form *guy = checkSolidForm(cur);
 				if (isFormCenter(guy, x, y)) {
 					int val = guy->id;
@@ -197,4 +218,26 @@ int **worldToMap() {
 		}
 	}
 	return map;
+}
+
+/* Shapes for world including proc gen surfaces */
+
+// Proc Gen Surface Functions
+void proGenSurface(int **map, int *Seedstring, int sizeX, int sizeY) {
+	int maxGrow = sizeY/3;
+	int height = sizeY/5;
+		for (int x = 0; x < sizeX; x++) {
+			for(int y = 0; y < height; y++) {
+		// this should write flag to array
+	    	map[x][y] = 10 ;
+			}
+			if (randPercent() > 0.75) {
+				int newGrow = (int)(randPercent() * maxGrow);
+				// printf( "%f \n", randPercent());
+				if (randPercent() > 0.5) {
+					newGrow *= -1;
+				}
+				height = clamp(height + newGrow, 1, sizeY - sizeY/5);
+			}
+		}
 }

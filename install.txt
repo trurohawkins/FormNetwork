@@ -3,3 +3,6 @@ sudo pacman -S glfw freetype2
 git clone https://aur.archlinux.org/cglm.git
 	cd cglm
 	makepkg -si
+install glfw3 cglm
+mv resources/build/ft2build.h /usr/include/
+mv resources/build/freetype /use/include/

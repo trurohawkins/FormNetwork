@@ -45,8 +45,7 @@ void processKeys() {
 			while (curPlayer != NULL) {
 				if(curPlayer->data != NULL) {
 					Player *p = (Player*)(curPlayer->data);
-
-					if(p->active && p->self) { 
+					if(p->active) {// && p->self) { 
 						linkedList *con = p->controls;
 						while (con != NULL) {
 							InpMap *tmp = (InpMap*)con->data;
