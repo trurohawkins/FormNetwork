@@ -1,5 +1,5 @@
 GAME = PoopGuy
-CC = gcc -c -g
+CC = gcc -c -g -I/usr/include/freetype2 
 LC = gcc -c -g 
 WC = x86_64-w64-mingw32-gcc -c -g
 RELEASELIBS = -l:libglfw3.a -l:libdl.a -l:libpthread.a -l:libfreetype.a -l:libcglm.a -lm -l:libsndfile.a -l:libportaudio.a -ljack -lasound -logg -lvorbisenc -lvorbis -lopus -lFLAC -lmpg123 -lmp3lame
@@ -20,7 +20,7 @@ $(GAME)/$GAME): $(GAME)/main.c libFormGlfw.a glad.o FormNetwork.h
 	gcc -g -o  $(GAME)/$(GAME) $(GAME)/main.c glad.o libFormGlfw.a  $(DEVLIBS)
 
 FormNetwork.h: formglfw/FormGlfw.h libFormGlfw.a
-	gcc -E $(GF)FormGlfw.h > FormNetwork.h
+	gcc -E -I/usr/include/freetype2 $(GF)FormGlfw.h > FormNetwork.h
 
 standalone: $(GAME)/main.c libFormGlfw.a glad.o FormNetwork.h
 	gcc -o $(GAME)/$(GAME) $(GAME)/main.c glad.o libFormGlfw.a $(RELEASELIBS) 
@@ -38,7 +38,7 @@ libFormGlfw.a: FormGlfw.o Form.o helper.o glfwMain.o Shaders.o Input.o Anim.o Te
 	ar rs libFormGlfw.a FormGlfw.o Form.o helper.o glfwMain.o Shaders.o Input.o Anim.o Text.o Camera.o Sound.o
 
 FormGlfw.o: $(GF)FormGlfw.c $(GF)FormGlfw.h $(GF)Player.c $(GF)Player.h  $(GF)PlayerManager.h $(GF)PlayerManager.c  $(GF)DrawWorld.c $(GF)DrawWorld.h $(GF)WorldView.c $(GF)WorldView.h $(GF)god.h $(GF)god.c
-	$(CC) $(GF)FormGlfw.c
+	$(CC) -I/usr/include/freetype2 $(GF)FormGlfw.c
 
 libform.a: Form.o helper.o
 	ar rs libform.a Form.o helper.o
