@@ -543,7 +543,7 @@ return hit;
 void deleteForm(void *form) {
 	//printf("deleting form\n");
 	Form *f = (Form*)form;
-	if (f->actor) {
+	if (f->actor != 0) {
 		Actor *a = f->actor;
 		a->body = 0;
 		//deleteActor(a);

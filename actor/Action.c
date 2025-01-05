@@ -34,7 +34,9 @@ void deleteAction(Action *action) {
 	if (action->name) {
 		free(action->name);
 	}
-	free(action->vars);
+	//vars are often more complicated structs that can manage themselves
+	//free(action->vars);
+
 	freeList(&action->dynVars);
 	free(action);//changed because part of list and deleting that list will fre this memory
 }

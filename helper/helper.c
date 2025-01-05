@@ -6,6 +6,7 @@ int **dir8;
 float *angles;
 
 void initDirections() {
+	printf("initilaizing dirs");
 	dirs = (int**)calloc(4, sizeof(int*));
 	for (int i = 0; i < 4; i++) {
 		dirs[i] = (int*)calloc(2, sizeof(int));

@@ -93,6 +93,7 @@ void deleteActor(void *a) {
 
 			//if form is not solid(it has a body larger than 1 Cell), then its easier if the actor takes care of it, t oprevent cyclical calls involving removing the different parts when deleting world
 			//Form *tmp = actor->body;
+			printf("setting actor to 0\n");
 			actor->body->actor = 0;
 			//removeForm(tmp);
 			//deleteForm(tmp);

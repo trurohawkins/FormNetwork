@@ -43,6 +43,7 @@ bool checkSideForVal(Form *f, float xp, float yp, int xd, int yd, char *val);
 
 linkedList *takeForm(int x, int y);
 Form *removeForm(Form *f);
+Form *removeFormPos(Form *f, int x, int y);
 
 void freeWorld();
 Form *makeDirt(int);

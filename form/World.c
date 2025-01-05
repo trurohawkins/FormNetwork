@@ -123,7 +123,6 @@ void placeForm(float x, float y, TYPE *form) {
 			int xp = floor(x) + form->body[i];
 			int yp = floor(y) + form->body[i+1];
 			if (xp >= 0 && yp >= 0 && xp < theWorld->x && yp < theWorld->y) {
-				//printf("placing form %i, %i\n", xp, yp);
 				addToCell(theWorld->map[xp][yp],form);
 			}
 		}
@@ -549,6 +548,14 @@ linkedList *takeForm(int x, int y) {
 		forms = getSolidForm(theWorld->map[x][y]);
 	}
 	return forms;
+}
+
+Form *removeFormPos(Form *f, int x, int y) {
+	if (x >= 0 && y >= 0 && x < theWorld->x && y < theWorld->y) {
+	//takeForm(form->pos[0], form->pos[1]);
+		removeFromCell(theWorld->map[x][y], f);
+	}
+
 }
 
 Form *removeForm(Form* form) {
