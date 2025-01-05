@@ -6,6 +6,7 @@
  /*
 	GLuint tc, ts: tc = uniform locations for matrices that determine where in the sprite sheet we are drawing from
 */
+#include "AnimOrder.c"
 #include "AnimList.c"
 #include "TextureManager.c"
 #include "UI.c"
@@ -450,6 +451,8 @@ void initTexInts() {
 float rotoToRadian(int d) {
 	if (d == 0) {
 		return 1.5708;
+	} else if (d == 1) {
+		return 3.14159; 
 	} else if (d == 2) {
 		return 4.71239;
 	}

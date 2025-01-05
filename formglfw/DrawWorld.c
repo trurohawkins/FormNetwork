@@ -29,12 +29,11 @@ void initWorldDrawing() {
 	line = lineVao2d(0);
 }
 
-
 void drawWorld(World *w) {
 	Screen *s = getWindow();
-	AnimOrder *back = makeAnimOrder(-1);
-	AnimOrder *mid = makeAnimOrder(0);
-	AnimOrder *front = makeAnimOrder(1);
+	back = makeAnimOrder(-1);
+	mid = makeAnimOrder(0);
+	front = makeAnimOrder(1);
 	float sMatrix[] = {
 		1.0, 0.0, 0.0, 0.0,
 		0.0, 1.0, 0.0, 0.0,
@@ -102,22 +101,10 @@ void drawWorld(World *w) {
 								//printf(" %i ", 1);
 								//editTranslations(x, y, 0);
 							} else {
-								float xfp = (f->pos[0] + f->pMod[0]) - (int)curView->buffX;// - curView->offsetX;//x + frame[0];
-								float yfp = (f->pos[1] + f->pMod[1]) - (int)curView->buffY;// - curView->offsetY;
-								//printf("poo\n");
-
-								// check if weve seen form, not for center, incse form's center isn't on screen
- 								if (f->anim != NULL) {// && (xp == (int)(floor(f->pos[0])) && yp == (int)(floor(f->pos[1])))) {
-									for (int j = 0; j < f->aCount; j++) {
-										Anim *a = ((Anim**)f->anim)[j];
-										if (a->drawOrder > 0) {
-											addAnimToOrder(front, a, xfp, yfp);
-										} else if (a->drawOrder < 0) {
-											addAnimToOrder(back, a, xfp, yfp);
-										} else {
-											addAnimToOrder(mid, a, xfp, yfp);
-										}
-									}
+								if (f->render != 0) {
+									f->render(f, xp, yp, (int)curView->buffX, (int)curView->buffY);
+								} else {
+									drawForm(f, (int)curView->buffX, (int)curView->buffY); 
 								}
 							}
 						}
@@ -164,6 +151,19 @@ void drawWorld(World *w) {
 	freeAnimOrder(front);
 	freeAnimOrder(mid);
 	drawFG(sMatrix);
+}
+
+void drawForm(Form *f, int buffX, int buffY) {
+	float xfp = (f->pos[0] + f->pMod[0]) - buffX;// - curView->offsetX;//x + frame[0];
+	float yfp = (f->pos[1] + f->pMod[1]) - buffY;// - curView->offsetY;
+
+	// check if weve seen form, not for center, incse form's center isn't on screen
+ 	if (f->anim != NULL) {// && (xp == (int)(floor(f->pos[0])) && yp == (int)(floor(f->pos[1])))) {
+		for (int j = 0; j < f->aCount; j++) {
+			Anim *a = ((Anim**)f->anim)[j];
+			addAnimToOrder(a->drawOrder, a, xfp, yfp, -1, -1, true);
+		}
+	}
 }
 
 void tileCell(TileSet *t, float remainder, int x, int y) {
@@ -273,61 +273,6 @@ void tileCell(TileSet *t, float remainder, int x, int y) {
 		editData(ds, x -(int)curView->buffX, y - (int)curView->buffY, texValX, 2);
 		setRot(rot, x - (int)curView->buffX, y - (int)curView->buffY, dirToRad(startSide));
 	}
-}
-
-AnimOrder *makeAnimOrder(int order) {
-	AnimOrder *ao = (AnimOrder*)calloc(sizeof(AnimOrder), 1);
-	ao->anims = makeList();
-	ao->poses = makeList();
-	ao->order = order;
-}
-
-void addAnimToOrder(AnimOrder *ao, Anim *anim, float x, float y) {
-	/*
-	if (anim == NULL) {
-		anim = (Anim*)f->anim;
-	}
-	*/
-	if (cmpList(&(ao->anims), anim, compareAnims)) {
-		//printf("anim already on list not adding\n");
-		return;
-	}
-	
-	addToList(&(ao->anims), anim);
-	float *xPos = (float*)calloc(1, sizeof(float));
-	float *yPos = (float*)calloc(1, sizeof(float));
-	*xPos = x;
-	*yPos = y;
-	addToList(&(ao->poses), xPos);
-	addToList(&(ao->poses), yPos);
-}
-
-void drawAnimOrder(AnimOrder *ao, float *sMatrix, float xSize, float ySize) {
-	linkedList *curAnim = ao->anims;//animList;
-	linkedList *curPos = ao->poses;//posList;
-	float *xPos;
-	float *yPos;
-	while (curAnim != NULL) {
-		if (curAnim->data != NULL) {
-			xPos = (float*)(curPos->data);
-			curPos = curPos->next;
-			if (curPos != NULL) {
-				yPos = (float*)(curPos->data);
-			} else {
-				printf("no yPos\n");
-			}
-			curPos = curPos->next;
-			Anim *a = (Anim*)(curAnim->data);
-			drawSprite(a, sMatrix, xSize, ySize, *xPos, *yPos);
-		}
-		curAnim = curAnim->next;
-	}
-}
-
-void freeAnimOrder(AnimOrder *ao) {
-	freeListSaveObj(&(ao->anims));
-	freeList(&(ao->poses));
-	free(ao);
 }
 
 void drawWorldDebug(World *w) {

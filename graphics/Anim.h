@@ -34,6 +34,7 @@ typedef struct Anim {
 	void (*animEnd)(struct Anim*);
 } Anim;
 
+#include "AnimOrder.h"
 #include "AnimList.h"
 #include "Tile.h"
 #include "UI.h"

@@ -15,6 +15,7 @@ void initJoyList() {
 Joypad *makeJoypad(int j) {
 	Joypad *jp = (Joypad *)calloc(1, sizeof(Joypad));
 	jp->jid = j;
+	printf("bool size %d\n", sizeof(bool));
 	jp->buttState = (bool *)calloc(15, sizeof(bool));
 	jp->axeState = (float *)calloc(6, sizeof(float));
 	//jp->defAxeState - (float *)calloc(6, sizeof(float));
@@ -113,8 +114,8 @@ void checkControllerInput() {
 				const unsigned char* buttons = glfwGetJoystickButtons(jid, &count);
 				//printf("we got a joystick, with %i buttons\n", count);
 				//printf("%c\n", GLFW_PRESS);
-				//printf("%s\n", buttons);
-				for (int i = 0; i < count; i++) {
+				// for some reaason we were getting a joystick with 78 buttons, so hard stopping at 15
+				for (int i = 0; i < count && i < 15; i++) {
 					if (buttons[i]) {
 						//printf("has button %i\n", i);
 						if (buttons[i] == GLFW_PRESS) {

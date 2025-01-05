@@ -20,6 +20,7 @@ typedef struct Form {
 	//neg terminated
 	int *colMatrix;
 	bool solid;
+	void (*render)(struct Form*, int xp, int yp, int buffX, int buffY);
 	// float stat; // Used to store moisture
 	// float stat2; // Used to store hydralic conductivity
 } Form;
