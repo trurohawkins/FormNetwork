@@ -1,0 +1,5 @@
+sudo pacman -S glfw freetype2
+	glfw x11
+git clone https://aur.archlinux.org/cglm.git
+	cd cglm
+	makepkg -si
