@@ -7,6 +7,7 @@ typedef struct Player {
 	Joypad *joy;
 	void(*delFunc)(void*);
 	bool active;
+	bool pausePlayer;//should I process controls while game is paused?
 } Player;
 
 #include "PlayerManager.h"

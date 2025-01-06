@@ -34,7 +34,7 @@ void removePlayer(Player *p) {
 	removeFromList(&(PM->playerList), p);
 }
 
-void processKeys() {
+void processKeys(bool paused) {
 	linkedList *cur = getCurInput();
 	if (cur != NULL && cur->data != NULL) {
 		while (cur != NULL) {
@@ -45,7 +45,7 @@ void processKeys() {
 			while (curPlayer != NULL) {
 				if(curPlayer->data != NULL) {
 					Player *p = (Player*)(curPlayer->data);
-					if(p->active) {// && p->self) { 
+					if(p->active && (!paused || !p->pausePlayer)) {// && p->self) { 
 						linkedList *con = p->controls;
 						while (con != NULL) {
 							InpMap *tmp = (InpMap*)con->data;

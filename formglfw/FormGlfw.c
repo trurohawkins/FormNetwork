@@ -13,6 +13,7 @@ int defaultFrameY = -1;
 int defaultFrameX = -1;
 float bgColor[4];
 bool running = true;
+bool freeze = false;
 
 void initFormGlfw() {
 	srand(time(NULL));
@@ -49,10 +50,12 @@ void FormLoop(void (game)(void)) {
 	while(!glfwWindowShouldClose(screen->window) && running) {
 		glfwPollEvents();
 		checkControllerInput();
-		processKeys();
-		glClearColor(bgColor[0], bgColor[1], bgColor[2], bgColor[3]);
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		game();
+		processKeys(freeze);
+		if (!freeze) {
+			glClearColor(bgColor[0], bgColor[1], bgColor[2], bgColor[3]);
+			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+			game();
+		} // maybe we want to include the next 2 lines, should test with sound
 		cleanUpPlayedAudio();
 		glfwSwapBuffers(screen->window);
 	}
@@ -60,6 +63,10 @@ void FormLoop(void (game)(void)) {
 
 void stopLoop() {
 	running =  false;
+}
+
+void togglePause() {
+	freeze = !freeze;
 }
 
 void setBackgroundColor(float r, float g, float b, float a) {

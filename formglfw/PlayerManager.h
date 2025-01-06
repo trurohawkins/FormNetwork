@@ -8,6 +8,6 @@ void makePlayerManager();
 Player *checkPlayer(int num);
 Player *addPlayer(Player *p);
 void removePlayer(Player *p);
-void processKeys();
+void processKeys(bool paused);
 void freePlayerManager();
 #endif
