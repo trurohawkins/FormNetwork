@@ -72,7 +72,7 @@ textureSource *makeTexture(char *img, bool single) {
 	textureSource *ts = (textureSource*)calloc(sizeof(textureSource), 1);
 	stbi_set_flip_vertically_on_load(true);
 	unsigned char *data = stbi_load(img, &(ts->width), &(ts->height), &(ts->channels), 0);
-	printf("texture-%s has width of %d\n", img, ts->width);
+	//printf("texture-%s has width of %d\n", img, ts->width);
 	if (data) {
 		/*
 		unsigned int tex = genTexture(data, ts->width, ts->height);
@@ -86,7 +86,7 @@ textureSource *makeTexture(char *img, bool single) {
 			makeLayerTexture(ts, data, 0);
 			//separateImgByColor(ts, data, 0, false);
 		} else {
-			printf("single sprite being made to texture\n");
+			//printf("single sprite being made to texture\n");
 			unsigned int tex = genTexture(data, ts->width, ts->height);
 			ts->tex = (unsigned int*)calloc(sizeof(unsigned int), 1);
 			*(ts->tex) = tex;

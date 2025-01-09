@@ -4,7 +4,6 @@ void makeAnimList() {
 	AnimList = makeList();
 }
 void addAnim(Anim *a) {
-	printf("adding to anim list\n");
 	addToList(&AnimList, a);
 }
 

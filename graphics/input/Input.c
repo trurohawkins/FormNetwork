@@ -47,11 +47,8 @@ void takeKeys(GLFWwindow *window, int key, int scancode, int action, int mods) {
 			key = '<';
 		}
 		keyString[2] = key;
-		/*
-		printf("pressed %i \n", key);
-		printf("pressed %c \n", key);
-		*/
 		keyString[3] = '\0';
+		//printf("%s\n", keyString);
 		ir->input = keyString;
 		ir->val = action;
 		addToList(&curInput, ir);

@@ -6,7 +6,6 @@ linkedList *makeList() {
 	return nl;
 }
 
-//NOTE: add fuynction add to list with checks for doubles
 void addToList(linkedList **head, void *item) {
 	if ((*head) == 0) {
 		(*head) = makeList();
@@ -22,6 +21,29 @@ void addToList(linkedList **head, void *item) {
 		tmp->data = item;
 	}
 }
+
+//checks for doubles
+bool addToListSingle(linkedList **head, void *item) {
+	if ((*head) == 0) {
+		(*head) = makeList();
+		(*head)->data = item;
+	} else {
+		linkedList *tmp = *head;
+		while(tmp->data != 0) {
+			if (tmp->data == item) {
+				return false;
+			}
+			if (tmp->next == 0) {
+				tmp->next = makeList();
+			}
+			tmp = tmp->next;
+		}
+		tmp->data = item;
+	}
+	return true;
+}
+
+
 
 void *indexList(linkedList **head, int index) {
 	linkedList *cur = *head;
@@ -143,10 +165,12 @@ void *removeFromList(linkedList **head, void *item) {
 				data = tmp->data;
 				free(tmp);
 				tmp = pre->next;
+				//break;
 			} else {
 				tmp = tmp->next;
+				pre = pre->next;
 			}
-			pre = pre->next;
+			//pre = pre->next;
 		}
 	}
 	return data;

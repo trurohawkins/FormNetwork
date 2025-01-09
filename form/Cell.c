@@ -1,5 +1,5 @@
 #include "Cell.h"
-int maxCellCount = 3;
+int maxCellCount = 8;
 
 Cell *makeCell(int x, int y) {
 	Cell *c = (Cell*)calloc(sizeof(Cell), 1);
@@ -11,35 +11,20 @@ Cell *makeCell(int x, int y) {
 }
 
 void addToCell(Cell* c, Form *f) {
-	if (f != NULL && c->count < maxCellCount - 1) {
+	if (f != NULL && c->count < maxCellCount) {
 		/*
 		if (c->within == 0) {
 			c->within = makeList();
 		}
 		*/
-		addToList(&(c->within), f);
-		/*
-		for (int i = 0; i < maxCellCount; i++) {
-			if (c->content[i] == 0) {
-				c->content[i] = f;
-				break;
+		if (addToListSingle(&(c->within), f)) {
+			c->count++;
+			if (f->solid) {
+				c->solid++;
 			}
 		}
-		*/
-		//c->content[c->count] = f;
-		c->count++;
-		/*
-		if (c->count > 1) {
-			printf("why so many in here??\n");
-			printCell(c);
-		}
-		*/
-		//if (f->size[0] != 0 && f->size[1] != 0) {
-		//if (checkFormIsSolid(f)) {
-		if (f->solid) {
-			c->solid++;
-		}
 	} else {
+		printf("%i < %i\n", c->count, (maxCellCount - 1));
 		printf("tried to add NULL form to Cell ");
 		printCell(c);
 	}
@@ -65,7 +50,6 @@ Form *removeFromCell(Cell *c, Form *f) {
 		void *v = removeFromList(&(c->within), fv);
 		if (v != NULL) {
 			c->count--;
-			//if (checkFormIsSolid(f)) {
 			if (f->solid) {
 				c->solid--;
 			}
@@ -226,8 +210,10 @@ void freeCell(Cell *c) {
 			Form **forms = getCellContents(c);
 			int count = c->count;
 			for (int i = 0; i < count; i++) {
-				removeForm(forms[i]);
-				deleteForm(forms[i]);
+				if (!forms[i]->terrain) {
+					removeForm(forms[i]);
+					deleteForm(forms[i]);
+				}
 			}
 			free(forms);
 		}

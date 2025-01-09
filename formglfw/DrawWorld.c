@@ -4,7 +4,6 @@ int tMat, rMat, sMat, drawColor;
 GLuint square, line;
 
 void initWorldDrawing() {
-	printf("initiating world drawing\n");
 	GLuint baseShader = getSP(0);
 	if (baseShader != 0) {
 		tMat = glGetUniformLocation(baseShader, "tMat");
@@ -184,7 +183,6 @@ void tileCell(TileSet *t, float remainder, int x, int y) {
 		}
 	}
 	free(ids);
-
 	if (id == t->typeID) {
 		int mostOpen = -1;
 		int start = 0;

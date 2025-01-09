@@ -21,6 +21,7 @@ typedef struct Form {
 	int *colMatrix;
 	bool solid;
 	void (*render)(struct Form*, int xp, int yp, int buffX, int buffY);
+	bool terrain;
 	// float stat; // Used to store moisture
 	// float stat2; // Used to store hydralic conductivity
 } Form;

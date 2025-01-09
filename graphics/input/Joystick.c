@@ -15,7 +15,6 @@ void initJoyList() {
 Joypad *makeJoypad(int j) {
 	Joypad *jp = (Joypad *)calloc(1, sizeof(Joypad));
 	jp->jid = j;
-	printf("bool size %d\n", sizeof(bool));
 	jp->buttState = (bool *)calloc(15, sizeof(bool));
 	jp->axeState = (float *)calloc(6, sizeof(float));
 	//jp->defAxeState - (float *)calloc(6, sizeof(float));

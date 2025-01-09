@@ -29,6 +29,11 @@ World *getWorld() {
 	return theWorld;
 }
 
+void addToTerrain(Form *f) {
+	f->terrain = true;
+	addToList(&(theWorld->terrain), f);
+}
+
 void deleteWorld() {
 	if (!theWorld) {
 		return;
@@ -68,7 +73,7 @@ void deleteTerrain() {
 	}
 }
 
-void placeForm(float x, float y, TYPE *form) {
+bool placeForm(float x, float y, TYPE *form) {
 	/*
 	int mod[2] = {0,0};
 	if (form->size[0] != 0 && form->size[1] != 0) {
@@ -97,6 +102,7 @@ void placeForm(float x, float y, TYPE *form) {
 			*/
 			//theWorld->map[xp][yp] = form;
 			addToCell(theWorld->map[xp][yp], form);
+			return true;
 		}
 	} else {
 		//printf("placing for mof size %i, %i\n", form->size[0], form->size[1]);
@@ -119,14 +125,19 @@ void placeForm(float x, float y, TYPE *form) {
 			}
 		}
 		*/
+		bool inWorld = true;
 		for (int i = 0; i < form->bLen * 2; i+=2) {
 			int xp = floor(x) + form->body[i];
 			int yp = floor(y) + form->body[i+1];
 			if (xp >= 0 && yp >= 0 && xp < theWorld->x && yp < theWorld->y) {
 				addToCell(theWorld->map[xp][yp],form);
+			} else {
+				inWorld = false;
 			}
 		}
+		return inWorld;
 	}
+	return false;
 }
 
 linkedList *scanCell(int x, int y) {
@@ -623,11 +634,12 @@ int* getFormID(int x, int y) {
 		Form **forms = getCellContents(theWorld->map[x][y]);
 		int count = theWorld->map[x][y]->count;
 		int *ids = calloc(count + 1, sizeof(int));
-		for (int i = 0; i < maxCellCount; i++) {
+		//printf("%i and max: %i\n", count, maxCellCount);
+		for (int i = 0; i < maxCellCount && i < count; i++) {
 			ids[i] = forms[i]->id; 
 		}
 		ids[count] = -1;
-		//free(forms);
+		free(forms);
 		return ids;
 	}
 	return 0;
@@ -642,12 +654,13 @@ bool checkFormID(int x, int y, int id) {
 			if (forms) {
 				int count = theWorld->map[x][y]->count;
 				//int *ids = calloc(count + 1, sizeof(int));
-				for (int i = 0; i < maxCellCount; i++) {
+				for (int i = 0; i < maxCellCount && i < count; i++) {
 					if (forms[i]->id == id) {
 						check = true;
 						break;
 					}
 				}
+				free(forms);
 			}
 		}
 	}

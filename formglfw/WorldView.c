@@ -9,7 +9,6 @@ WorldView *makeWorldView(int scale) {
 	wv->frameX = 0;
 	wv->frameY = 0;
 	wv->scalePower = scale;
-	printf("scalepower: %i\n", scale);
 	wv->zoomSpeed = 0.2;
 	wv->moveSpeed = 18;
 	/*
@@ -21,7 +20,6 @@ WorldView *makeWorldView(int scale) {
 }
 
 void initWorldView(int x, int y) {
-	printf("initializibng world view\n");
 	defaultView = makeWorldView(100);
 	/*
 	defaultView->defaultFrameX = defaultView->frameX = x;	
@@ -29,7 +27,6 @@ void initWorldView(int x, int y) {
 	*/
 	defaultView->frameDest = defaultView->frame = (int)(sqrt(x * y));
 	setFrame(defaultView, x);
-	printf("camera initialized %i, %i, %i\n", defaultView->frameX, defaultView->frameY, defaultView->frame);
 }
 
 WorldView *getDefaultView() {
@@ -114,7 +111,6 @@ void setFrame(WorldView *wv, float frame) {
 		setTileSize(ts, wv->objSX, wv->objSY);
 		resizeTileSet(ts, wv->frameX, wv->frameY);//wv->frameX != w->x, wv->frameY != w->y);
 	}
-	//printf("\n");
 }
 
 void setCenter(WorldView *wv, float xp, float yp) {

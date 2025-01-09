@@ -16,8 +16,9 @@ extern linkedList *check;
 void makeWorld(int x, int y);
 World *getWorld();
 void deleteWorld();
+void addToTerrain(Form *f);
 void deleteTerrain();
-void placeForm(float x, float y, Form *form);
+bool placeForm(float x, float y, Form *form);
 
 linkedList *scanCell(int x, int y);
 bool checkCollision(Form *f, int x, int y, bool solid);

@@ -13,6 +13,7 @@ typedef struct linkedList
 linkedList *makeList();
 
 void addToList(linkedList **head, void *item);
+bool addToListSingle(linkedList **head, void *item);
 void *printList(linkedList **head, char *listName, void (*print)(void*));
 void* findList(linkedList **head, void *item, bool (*cmp)(void*, void*));
 bool cmpList(linkedList **head, void *item, bool (*cmp)(void*, void*));
