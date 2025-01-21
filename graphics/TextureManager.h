@@ -27,6 +27,7 @@ void deleteTextureManager();
 unsigned int genTexture(unsigned char *data, int wid, int hei);
 textureSource *makeTexture(char *img, bool single);
 textureSource *makeTextureFromImages(char **imgs, int num, bool whiteGen);
+textureSource *makeWhiteLayerTextureFiles(char *img);
 void makeLayerTexture(textureSource *ts, unsigned char *data, int numColors);
 void writeLayerTextureToFile(textureSource *ts, unsigned char *data, char *paletteName);
 void genLayerTexture(textureSource *ts, colorLayerInfo *layers);

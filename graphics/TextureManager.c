@@ -58,56 +58,16 @@ textureSource *findTexture(char *name) {
 textureSource *getTexture(char **name, int num, bool whiteGen) {
 	textureSource *ts = findTexture(*name);//textures always saved as first file
 	if (ts == NULL) {
-		//printf("making new texture\n");
+		printf("making new texture %i\n", whiteGen);
 		ts = makeTextureFromImages(name, num, whiteGen);
 	} else {
-		//printf("no need to make new texture\n");
+		printf("no need to make new texture\n");
 	}
-	return ts;
-}
-
-//will make a singlesprite to a single texture
-// if single is false, will dynamically create white layered sprite w/color pallete
-textureSource *makeTexture(char *img, bool single) {
-	textureSource *ts = (textureSource*)calloc(sizeof(textureSource), 1);
-	stbi_set_flip_vertically_on_load(true);
-	unsigned char *data = stbi_load(img, &(ts->width), &(ts->height), &(ts->channels), 0);
-	//printf("texture-%s has width of %d\n", img, ts->width);
-	if (data) {
-		/*
-		unsigned int tex = genTexture(data, ts->width, ts->height);
-		ts->tex = (unsigned int*)calloc(sizeof(unsigned int), 1);
-		*(ts->tex) = tex;
-		ts->numTex = 1;
-		*/
-		ts->name = (char *)calloc(sizeof(char), strlen(img)+1);
-		strcpy(ts->name, img);
-		if (!single) {
-			makeLayerTexture(ts, data, 0);
-			//separateImgByColor(ts, data, 0, false);
-		} else {
-			//printf("single sprite being made to texture\n");
-			unsigned int tex = genTexture(data, ts->width, ts->height);
-			ts->tex = (unsigned int*)calloc(sizeof(unsigned int), 1);
-			*(ts->tex) = tex;
-			ts->numTex = 1;
-			ts->colors = (float*)calloc(sizeof(float), 4);
-			for (int i = 0; i < 4; i++) {
-				(ts->colors)[i] = 1;
-			}
-		}
-		addTexture(ts);
-		//printf("number of textures %i\n", ts->numTex);
-	} else {
-		free(ts);
-		printf("failed to load texture from file %s\n", img);
-		ts = 0;
-	}
-	stbi_image_free(data);
 	return ts;
 }
 
 textureSource *makeTextureFromImages(char **imgs, int num, bool whiteGen) {
+	printf("texture from images %i\n", num);
 	if (num == 1) {
 		return makeTexture(*imgs, true);
 	} else if (num == 0) {
@@ -145,6 +105,71 @@ textureSource *makeTextureFromImages(char **imgs, int num, bool whiteGen) {
 	return ts;
 }
 
+
+//will make a singlesprite to a single texture
+// if single is false, will dynamically create white layered sprite w/color pallete
+textureSource *makeTexture(char *img, bool single) {
+	textureSource *ts = (textureSource*)calloc(sizeof(textureSource), 1);
+	stbi_set_flip_vertically_on_load(true);
+	unsigned char *data = stbi_load(img, &(ts->width), &(ts->height), &(ts->channels), 0);
+	//printf("texture-%s has width of %d\n", img, ts->width);
+	if (data) {
+		/*
+		unsigned int tex = genTexture(data, ts->width, ts->height);
+		ts->tex = (unsigned int*)calloc(sizeof(unsigned int), 1);
+		*(ts->tex) = tex;
+		ts->numTex = 1;
+		*/
+		ts->name = (char *)calloc(sizeof(char), strlen(img)+1);
+		strcpy(ts->name, img);
+		if (!single) {
+			printf("making layer texture\n");
+			makeLayerTexture(ts, data, 0);
+			//separateImgByColor(ts, data, 0, false);
+		} else {
+			//printf("single sprite being made to texture\n");
+			unsigned int tex = genTexture(data, ts->width, ts->height);
+			ts->tex = (unsigned int*)calloc(sizeof(unsigned int), 1);
+			*(ts->tex) = tex;
+			ts->numTex = 1;
+			ts->colors = (float*)calloc(sizeof(float), 4);
+			for (int i = 0; i < 4; i++) {
+				(ts->colors)[i] = 1;
+			}
+		}
+		addTexture(ts);
+		//printf("number of textures %i\n", ts->numTex);
+	} else {
+		free(ts);
+		printf("failed to load texture from file %s\n", img);
+		ts = 0;
+	}
+	stbi_image_free(data);
+	return ts;
+}
+
+textureSource *makeWhiteLayerTextureFiles(char *img) {
+	textureSource *ts = (textureSource*)calloc(sizeof(textureSource), 1);
+	stbi_set_flip_vertically_on_load(true);
+	unsigned char *data = stbi_load(img, &(ts->width), &(ts->height), &(ts->channels), 0);
+	if (data) {
+		ts->name = (char *)calloc(sizeof(char), strlen(img)+1);
+		strcpy(ts->name, img);
+		printf("making layer texture files\n");
+		makeLayerTexture(ts, data, 0);
+		writeLayerTextureToFile(ts, data, "0");
+		// could probably be done without adding texture file
+		addTexture(ts);
+		//printf("number of textures %i\n", ts->numTex);
+	} else {
+		free(ts);
+		printf("failed to load texture from file %s\n", img);
+		ts = 0;
+	}
+	stbi_image_free(data);
+	return ts;
+}
+
 int countColors(textureSource *ts, unsigned char *data) {
 	linkedList *colors = makeList();
 	int numColors = 0;
@@ -176,7 +201,7 @@ void makeLayerTexture(textureSource *ts, unsigned char *data, int numColors) {
 void writeLayerTextureToFile(textureSource *ts, unsigned char *data, char *paletteName) {
 	colorLayerInfo *layers = separateImgByColor(ts, data, 0);
 	writeTextureToFile(ts, layers);
-	writePalette(ts, paletteName);
+	//writePalette(ts, paletteName);
 	freeColorLayerInfo(layers);
 }
 
@@ -186,7 +211,7 @@ void writeLayerTextureToFile(textureSource *ts, unsigned char *data, char *palet
  * ts - textureSource tp be filled in
  * data - raw data of png file
  * numColors - if you know how many colors there are you can save some time by including it
- *	otherwise <=0 will count the colors in the fle for you
+ *	otherwise <=0 will count the colors in the file for you
  */
 colorLayerInfo *separateImgByColor(textureSource *ts, unsigned char *data, int numColors) {
 	if (numColors <= 0) {
