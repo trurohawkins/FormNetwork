@@ -25,6 +25,6 @@ AnimOrder *makeAnimOrder(int order);
 void addAnimToOrder(int drawOrder, Anim *anim, float x, float y, int sprite, int rotation, float *tint, bool check);
 void drawAnimOrder(AnimOrder *ao, float *sMatrix, float xSize, float ySize);
 bool compareStamp(void *s1, void *s2);
-void freeStamp(AnimStamp *stamp);
+void freeStamp(void *stamp);
 void freeAnimOrder(AnimOrder *ao);
 
