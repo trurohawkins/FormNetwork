@@ -6,10 +6,10 @@ intList *makeIntList(int data) {
 }
 void addToIntList(intList **head, int item) {
 	if ((*head) == 0) {
-		(*head) = makeIntList();
+		(*head) = makeIntList(item);
 		(*head)->data = item;
 	} else {
-		linkedList *tmp = *head;
+		intList *tmp = *head;
 		while(tmp != 0) {
 			if (tmp->next == 0) {
 				tmp->next = makeIntList(item);
@@ -19,19 +19,19 @@ void addToIntList(intList **head, int item) {
 	}
 }
 
-int removeFromList(intList **head, int item) {
+int removeFromIntList(intList **head, int item) {
 	if (*head == 0) {
 		return 0;
 	}
 	int data = 0;
 	if ((*head)->data == item) {
-		linkedList *oh = *head;
+		intList *oh = *head;
 		(*head) = (*head)->next;
 		data = oh->data;
 		free(oh);
 	} else {
-		linkedList *tmp = (*head)->next;
-		linkedList *pre = *head;
+		intList *tmp = (*head)->next;
+		intList *pre = *head;
 		while (tmp != 0) {
 			if (tmp->data == item) {
 				pre->next = tmp->next;
@@ -47,7 +47,7 @@ int removeFromList(intList **head, int item) {
 	return data;
 }
 
-void freeList(intList **head) {
+void freeIntList(intList **head) {
 	intList *cur = *head;
 	intList *next = 0;
 	while (cur != 0) {

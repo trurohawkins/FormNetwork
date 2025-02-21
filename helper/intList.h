@@ -7,8 +7,8 @@ typedef struct intList
 	struct intList *next;
 } intList;
 
-intList *makeIntList();
+intList *makeIntList(int data);
 void addToIntList(intList **head, int item);
-int removeIntList(intList **head, int item);
+int removeFromIntList(intList **head, int item);
 void freeIntList(intList **head);
 #endif
