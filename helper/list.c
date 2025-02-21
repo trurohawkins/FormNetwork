@@ -308,3 +308,11 @@ void *removeFromListInt(linkedList **head, int item) {
 	}
 	return data;
 }
+
+void *popList(linkedList **head) {
+	void *data = (*head)->data;
+	linkedList *oh = *head;
+	(*head) = (*head)->next;
+	free(oh);
+	return data;
+}

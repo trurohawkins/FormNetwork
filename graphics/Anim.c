@@ -348,6 +348,17 @@ void loadPalette(Anim *a, float *palette) {
 	}
 }
 
+float *getPalette(Anim *a) {
+	float *palette = (float*)calloc(sizeof(float), a->texture->numTex * 4);
+	for (int i = 0; i < a->texture->numTex; i++) {
+		int step = i * 4;
+		for (int j = 0; j < 4; j++) {
+			palette[step+j] = a->palette[step+j];
+		}
+	}
+	return palette;
+}
+
 void setScale(Anim *a, float x, float y) {
 	a->scale[0] = x;
 	a->scale[1] = y;

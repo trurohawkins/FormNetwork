@@ -160,7 +160,7 @@ void drawForm(Form *f, int buffX, int buffY) {
  	if (f->anim != NULL) {// && (xp == (int)(floor(f->pos[0])) && yp == (int)(floor(f->pos[1])))) {
 		for (int j = 0; j < f->aCount; j++) {
 			Anim *a = ((Anim**)f->anim)[j];
-			addAnimToOrder(a->drawOrder, a, xfp, yfp, -1, -1, true);
+			addAnimToOrder(a->drawOrder, a, xfp, yfp, -1, -1, 0, true);
 		}
 	}
 }
@@ -314,6 +314,7 @@ void drawWorldDebug(World *w) {
 	mat[5] = 1;
 	float startX = -1 - (curView->objSX/2);
 	float startY = -1 - (curView->objSY/2);
+	printf("%f + %f\n", startX, (startX + curView->objSX) + ((curView->frameX/2) * curView->objSX));
 	for (int x = 0; x < curView->frameX; x++) {
 		mat[3] = (startX + curView->objSX) + (x * curView->objSX);
 		for (int y = 0; y < curView->frameY; y++) {

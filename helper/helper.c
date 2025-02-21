@@ -291,6 +291,7 @@ float intToFrac(int i, int pow) {
 }
 
 #include "list.c"
+#include "intList.h"
 #include "sortedList.c"
 #include "binaryWriter.c"
 

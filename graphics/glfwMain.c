@@ -258,3 +258,39 @@ void setAspectRatio(int x, int y) {
 		curScreen->aspectRatioY = y;
 	}
 }
+
+void drawShape() {
+		float mat[] = {
+			1.0, 0.0, 0.0, -0.340426,
+			0.0, 1.0, 0.0, 0.0,
+			0.0, 0.0, 1.0, 0.0,
+			0.0, 0.0, 0.0, 1.0
+		};
+		float sx = 1;
+		float sy = 1;
+		float sMatrix[] = {
+			curScreen->yRatio * sx, 0.0, 0.0, 0.0,
+			0.0, curScreen->xRatio * sy, 0.0, 0.0,
+			0.0, 0.0, 1.0, 0.0,
+			0.0, 0.0, 0.0, 1.0
+		};
+		float rMatrix[] = {
+			cos(0), -sin(0), 0.0, 0.0,
+			sin(0), cos(0), 0.0, 0.0,
+			0.0, 0.0, 1.0, 0.0,
+			0.0, 0.0, 0.0, 1.0
+		};
+	GLuint baseShader = getSP(0);
+	glUseProgram(baseShader);
+	int rMat = glGetUniformLocation(baseShader, "rMat");
+	glUniformMatrix4fv(rMat, 1, GL_TRUE, rMatrix);
+	int tMat = glGetUniformLocation(baseShader, "tMat");
+	glUniformMatrix4fv(tMat, 1, GL_TRUE, mat);
+	int sMat = glGetUniformLocation(baseShader, "sMat");
+	glUniformMatrix4fv(sMat, 1, GL_TRUE, sMatrix);
+	GLuint sqr = squareVao2d();
+	int drawColor = glGetUniformLocation(baseShader, "inputColor");
+	glUniform4f(drawColor, 1, 1, 1, 1.0);
+	glBindVertexArray(sqr);
+	glDrawArrays(GL_TRIANGLES, 0 ,6);
+}

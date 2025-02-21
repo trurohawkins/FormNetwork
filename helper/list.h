@@ -29,4 +29,5 @@ int countContents(linkedList *head);
 void freeList(linkedList **ll);
 void deleteList(linkedList **ll, void (*deleteFunc)(void*));
 void freeListSaveObj(linkedList **ll);
+void *popList(linkedList **head);
 #endif

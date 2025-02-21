@@ -40,4 +40,5 @@ GLuint makeSpriteVao(float sx, float sy);
 Screen *getWindow();
 GLuint getSP();
 void setCamFunction(void (*newFunc)(void));
+void drawShape();
 #endif
