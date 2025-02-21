@@ -10,12 +10,10 @@ void addToIntList(intList **head, int item) {
 		(*head)->data = item;
 	} else {
 		intList *tmp = *head;
-		while(tmp != 0) {
-			if (tmp->next == 0) {
-				tmp->next = makeIntList(item);
-			}
+		while(tmp->next != 0) {
 			tmp = tmp->next;
 		}
+		tmp->next = makeIntList(item);
 	}
 }
 
