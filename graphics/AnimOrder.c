@@ -1,14 +1,12 @@
 AnimOrder *back;
 AnimOrder *mid;
 AnimOrder *front;
+SortedList *backLayers;
+SortedList *layers;
 
 AnimOrder *makeAnimOrder(int order) {
 	AnimOrder *ao = (AnimOrder*)calloc(sizeof(AnimOrder), 1);
 	ao->stamps = makeList();
-	ao->anims = makeList();
-	ao->poses = makeList();
-	ao->sprites = makeList();
-	ao->rotations = makeList();
 	ao->order = order;
 	return ao;
 }
@@ -19,13 +17,19 @@ void addAnimToOrder(int drawOrder, Anim *anim, float x, float y, int sprite, int
 		anim = (Anim*)f->anim;
 	}
 	*/
-	AnimOrder *ao;
-	if (drawOrder > 0) {
-		ao = front;
-	} else if (drawOrder < 0) {
-		ao = back;
+	AnimOrder *ao ;
+	if (drawOrder < 0) {
+		ao = searchSlist(backLayers, drawOrder);
+		if (!ao) {
+			ao = makeAnimOrder(drawOrder);
+			sortedAdd(&backLayers, ao, drawOrder);
+		}
 	} else {
-		ao = mid;
+		ao = searchSlist(layers, drawOrder);
+		if (!ao) {
+			ao = makeAnimOrder(drawOrder);
+			sortedAdd(&layers, ao, drawOrder);
+		}
 	}
 
 	if (check && cmpList(&(ao->stamps), anim, compareStamp)) {
@@ -41,40 +45,9 @@ void addAnimToOrder(int drawOrder, Anim *anim, float x, float y, int sprite, int
 	stamp->roto = rotation;
 	stamp->color = tint;
 	addToList(&(ao->stamps), stamp);
-	/*
-	addToList(&(ao->anims), anim);
-	float *xPos = (float*)calloc(1, sizeof(float));
-	float *yPos = (float*)calloc(1, sizeof(float));
-	*xPos = x;
-	*yPos = y;
-	addToList(&(ao->poses), xPos);
-	addToList(&(ao->poses), yPos);
-	int *spr = (int*)calloc(1, sizeof(int));
-	*spr = sprite;
-	addToList(&(ao->sprites), spr);
-	int *roto = (int*)calloc(1, sizeof(int));
-	*roto = rotation;
-	addToList(&(ao->rotations), roto);
-	addToList(&(ao->tints), tint);
-	*/
-	//printf("adding to tints: %i\n", countContents(ao->tints));
 }
 
 void drawAnimOrder(AnimOrder *ao, float *sMatrix, float xSize, float ySize) {
-	//printf("drawing anim orcer\n");
-	linkedList *curAnim = ao->anims;//animList;
-	linkedList *curPos = ao->poses;//posList;
-	linkedList *curSprite = ao->sprites;
-	linkedList *curRoto = ao->rotations;
-	linkedList *curTint = ao->tints;
-	//printf("rotos: %i, tints: %i\n", countContents(curRoto), countContents(curTint));
-	/*
-	float *xPos;
-	float *yPos;
-	int *sprite;
-	int *roto;
-	float *tint;
-	*/
 	linkedList *curStamp = ao->stamps;
 	while (curStamp != NULL) {
 		if (curStamp->data != NULL) {
@@ -128,11 +101,6 @@ void freeStamp(void *stamp) {
 
 void freeAnimOrder(AnimOrder *ao) {
 	deleteList(&(ao->stamps), freeStamp);
-	freeListSaveObj(&(ao->anims));
-	freeList(&(ao->poses));
-	freeList(&(ao->sprites));
-	freeList(&(ao->rotations));
-	freeList(&(ao->tints));
 	free(ao);
 }
 

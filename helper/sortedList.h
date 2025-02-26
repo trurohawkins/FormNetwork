@@ -10,6 +10,7 @@ typedef struct SortedList {
 
 SortedList *makeSlist(void *data, int val);
 void sortedAdd(SortedList **head, void *item, int val);
+void *searchSlist(SortedList *cur, int val);
 void freeSlist(SortedList *head);
 void printSlist(SortedList *head);
 #endif

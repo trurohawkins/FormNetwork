@@ -39,6 +39,16 @@ void sortedAdd(SortedList **head, void *item, int val) {
 	}
 }
 
+void *searchSlist(SortedList *cur, int val) {
+	while (cur) {
+		if (cur->val == val) {
+			return cur->data;
+		}
+		cur = cur->next;
+	}
+	return 0;
+}
+
 void freeSlist(SortedList *head) {
 	SortedList *cur = head;
 	while(cur) {

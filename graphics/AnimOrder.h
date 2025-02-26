@@ -20,6 +20,9 @@ extern AnimOrder *front;
 extern AnimOrder *mid;
 extern AnimOrder *back;
 
+extern SortedList *backLayers;
+extern SortedList *layers;
+
 AnimOrder *makeAnimOrder(int order);
 //default -1 to not affect sprite and rotation, check for making cure mulitples don't get added
 void addAnimToOrder(int drawOrder, Anim *anim, float x, float y, int sprite, int rotation, float *tint, bool check);

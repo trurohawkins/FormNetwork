@@ -45,6 +45,30 @@ int removeFromIntList(intList **head, int item) {
 	return data;
 }
 
+void checkAndRemoveInt(intList **head, bool (*chk)(int)) {
+	if ((*head) != NULL) {
+			if (chk((*head)->data)) {
+				intList *oh = *head;
+				(*head) = (*head)->next;
+				free(oh);
+			} else {
+				intList *tmp = (*head)->next;
+				intList *pre = *head;
+				while (tmp != 0) {
+					if (chk(tmp->data)) {
+						pre->next = tmp->next;
+						free(tmp);
+						tmp = pre->next;
+					} else {
+						tmp = tmp->next;
+					}
+					pre = pre->next;
+				}
+			}
+	}
+}
+
+
 void freeIntList(intList **head) {
 	intList *cur = *head;
 	intList *next = 0;

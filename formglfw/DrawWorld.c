@@ -30,9 +30,11 @@ void initWorldDrawing() {
 
 void drawWorld(World *w) {
 	Screen *s = getWindow();
+	/*
 	back = makeAnimOrder(-1);
 	mid = makeAnimOrder(0);
 	front = makeAnimOrder(1);
+	*/
 	float sMatrix[] = {
 		1.0, 0.0, 0.0, 0.0,
 		0.0, 1.0, 0.0, 0.0,
@@ -123,7 +125,11 @@ void drawWorld(World *w) {
 	glUseProgram(texShader);
 	wvDrawBackground(getDefaultView(), mat);	
 	drawBG(sMatrix);
-	drawAnimOrder(back, mat, curView->objSX, curView->objSY);
+	SortedList *cur = backLayers;
+	while (cur) {
+		drawAnimOrder(cur->data, mat, curView->objSX, curView->objSY);
+		cur = cur->next;
+	}
 	GLuint squa = squareVao2d();
 	if (tileSeen > 0) {
 		glUseProgram(tileShader);
@@ -144,11 +150,27 @@ void drawWorld(World *w) {
 	}
 	freeList(&tileList);
 	glUseProgram(texShader);
-	drawAnimOrder(mid, mat, curView->objSX, curView->objSY); 
-	drawAnimOrder(front, mat, curView->objSX, curView->objSY);
-	freeAnimOrder(back);
-	freeAnimOrder(front);
-	freeAnimOrder(mid);
+	//drawAnimOrder(mid, mat, curView->objSX, curView->objSY); 
+	//drawAnimOrder(front, mat, curView->objSX, curView->objSY);
+	cur = layers;
+	while (cur) {
+		drawAnimOrder(cur->data, mat, curView->objSX, curView->objSY);
+		cur = cur->next;
+	}
+	cur = backLayers;
+	while (cur) {
+		freeAnimOrder(cur->data);
+		cur = cur->next;
+	}
+	cur = layers;
+	while (cur) {
+		freeAnimOrder(cur->data);
+		cur = cur->next;
+	}
+	freeSlist(backLayers);
+	backLayers = 0;
+	freeSlist(layers);
+	layers = 0;
 	drawFG(sMatrix);
 }
 
