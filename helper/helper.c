@@ -208,6 +208,11 @@ int abs(int num) {
 	}
 }
 
+float lerp(float a, float b, float t) {
+	return a * (1.0 - t) + (b * t);
+}
+
+
 char *fileToString(char *txt)
 {
 	FILE *fptr;

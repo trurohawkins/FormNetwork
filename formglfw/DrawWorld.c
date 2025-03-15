@@ -43,7 +43,8 @@ void drawWorld(World *w) {
 	};
 	GLuint texShader = getSP(1);
 	GLuint tileShader = getSP(2);
-	linkedList *tileList = makeList();
+	//linkedList *tileList = makeList();
+	SortedList *tileList = 0;
 	glUseProgram(tileShader);
 	int tileSeen = 0;
 	//printf("draw %i, %i\n", curView->buffX, curView->buffY);
@@ -65,30 +66,29 @@ void drawWorld(World *w) {
 							float *tile = getStat(f, "tile");
 							//printf("- %i -\n", f->id);
 							if (tile != NULL) {
-								int *ts = (int*)calloc(sizeof(int), 1);
-								*ts = (int)(*tile);			
-								TileSet *t = getTile(*ts);
-								float remainder = *tile - *ts;
+								//int *ts = (int*)calloc(sizeof(int), 1);
+								//*ts = (int)(*tile);			
+								TileSet *t = getTile(*tile);
+								float remainder = *tile - *tile;
 								if (t != NULL) {
 									if (t->typeID == -1) {
 										setTileSetID(t, f->id);
 									}
-									if (!isInListInt(&tileList, *ts)) {
-										//printf("new tile seen\n");
+									if (!isInSlist(tileList, t)) {
 										tileSeen++;
-										addToList(&tileList, ts);
+										sortedAdd(&tileList, t, t->renderOrder);
 										clearData(t->trans, false);
 										//clearData(t->texture, true);
 										setRots(t->rot, 0);
 										//setData(t->color, 1);
 									} else {
-										free(ts);
+										//free(ts);
 									}
 									editData(t->trans, x, y, 1, 1);
 									//printf("tile %i, %i\n", x, y);
 
 								} else {
-									free(ts);
+									//free(ts);
 								}
 								tileCell(t, remainder, xp, yp);
 								float *m = getStat(f, "moisture");
@@ -134,10 +134,14 @@ void drawWorld(World *w) {
 	if (tileSeen > 0) {
 		glUseProgram(tileShader);
 		glBindVertexArray(getTileVAO());
-		void **tileSets = getContents(&tileList, tileSeen);
-		for (int i = 0; i < tileSeen; i++) {
-			int cur = *((int*)tileSets[i]);
-			TileSet *tmp = getTile(cur);
+		SortedList *cur = tileList;
+		while (cur) {
+			TileSet *tmp = cur->data;
+		//void **tileSets = getContents(&tileList, tileSeen);
+		//for (int i = 0; i < tileSeen; i++) {
+			//int cur = *((int*)tileSets[i]);
+			//TileSet *tmp = getTile(cur);
+
 			setTileVBO(tmp);
 			setUpTiles(tmp->set, sMatrix, curView->objSX, curView->objSY);
 			bindData(tmp->trans);
@@ -145,10 +149,11 @@ void drawWorld(World *w) {
 			bindData(tmp->color);
 			bindData(tmp->texture);
 			glDrawElementsInstanced(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0, (ceil(curView->frameX)+0) * ceil(curView->frameY));
+			cur = cur->next;
 		}
-		free(tileSets);
+		//free(tileSets);
 	}
-	freeList(&tileList);
+	freeSlist(tileList);
 	glUseProgram(texShader);
 	//drawAnimOrder(mid, mat, curView->objSX, curView->objSY); 
 	//drawAnimOrder(front, mat, curView->objSX, curView->objSY);

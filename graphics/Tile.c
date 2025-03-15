@@ -20,6 +20,7 @@ TileSet *makeTileSet(Anim *a, int xd, int yd, int mx, int my) {
 	TileSet *ts = (TileSet*)calloc(sizeof(TileSet), 1);
 	ts->set = a;
 	ts->typeID = -1;
+	ts->renderOrder = 0;
 	GLuint tileShader = getSP(2);
 	glUseProgram(tileShader);
 	//printf("diemnsions recieved %i, %i\n", xd, yd);

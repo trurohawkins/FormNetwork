@@ -23,6 +23,7 @@ typedef struct TileSet {
 	DrawScreen *rot;
 	DrawScreen *color;
 	DrawScreen *texture;
+	int renderOrder;
 } TileSet;
 
 void initTileSets();

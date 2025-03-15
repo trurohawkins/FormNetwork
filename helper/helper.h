@@ -29,6 +29,7 @@ float max(float a, float b);
 float min(float a, float b);
 int sign(int);
 int signF(float num);
+float lerp(float a, float b, float t);
 //int abs(int);
 float distance(float x1, float y1, float x2, float y2);
 char *fileToString(char *txt);
