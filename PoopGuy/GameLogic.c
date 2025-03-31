@@ -28,18 +28,6 @@ void pooGame() {
 	wv = getDefaultView();
 	setFrameMin(wv, 30);
 	w = getWorld();
-	int midX = w->x / 2;
-	int midY = w->y/2;
-	printf("\nTESTING MOISTURE: %i, %i\n", midX, midY);
-	float *m = getStatCell(theWorld->map[midX + 3][midY], "moisture");
-	if (m) {
-		printf("got moisture %f\n", *m);
-		*m = 0.9f;
-		float *mo = getStatCell(theWorld->map[midX + 3][midY], "moisture");
-		printf("moisture now %f\n", *mo);
-	} else {
-		printf("no moisture\n");
-	}
 	//processAudioFile("../resources/SchoolBoyLoop.wav");
 	//setCameraSize(mainCam, 1);
 	
@@ -89,7 +77,7 @@ void pooLoop() {
 		if (!paused) {
 			AnimListAnimate();
 			actorListDo();
-			//groundWater();
+			groundWater();
 			if (!god->on && poopers[0] != 0) {
 				//centerOnForm(poopers[0]->me->body);
 				//setCenter(wv, w->x / 2, w->y / 2);
