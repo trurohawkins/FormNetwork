@@ -16,6 +16,7 @@ void setControlsMove(void *c, moveVar *mv) {
 
 int control(Form *f, Action *a) {
 	controlVar *cv = (controlVar*)(a->vars);
+	//printf("%i - %i\n", cv->moveRight, cv->moveLeft);
 	int moveX = cv->moveRight - cv->moveLeft; 
 	if (cv->moveRight == 1) {
 		cv->mrCount++;
@@ -30,7 +31,6 @@ int control(Form *f, Action *a) {
 	if (moveX != 0 && (cv->mrCount > 3 || cv->mlCount > 3)) {
 		//moveVar *mv = (moveVar*)(cv->pooper->move->vars);
 		if (abs(cv->move->force[0] + (cv->move->speed * moveX)) <= cv->move->maxForce) {
-			//printf("%i, %i\n", cv->move->speed * moveX, cv->move->maxForce);
 			addForce(cv->move, cv->move->speed * moveX, 0);
 		}
 		/*

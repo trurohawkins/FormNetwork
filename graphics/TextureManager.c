@@ -58,16 +58,16 @@ textureSource *findTexture(char *name) {
 textureSource *getTexture(char **name, int num, bool whiteGen) {
 	textureSource *ts = findTexture(*name);//textures always saved as first file
 	if (ts == NULL) {
-		printf("making new texture %i\n", whiteGen);
+		//printf("making new texture %i\n", whiteGen);
 		ts = makeTextureFromImages(name, num, whiteGen);
 	} else {
-		printf("no need to make new texture\n");
+		//printf("no need to make new texture\n");
 	}
 	return ts;
 }
 
 textureSource *makeTextureFromImages(char **imgs, int num, bool whiteGen) {
-	printf("texture from images %i\n", num);
+	//printf("texture from images %i\n", num);
 	if (num == 1) {
 		return makeTexture(*imgs, true);
 	} else if (num == 0) {

@@ -21,4 +21,6 @@ void setOffsets(Form *f, float x, float y);
 void setInverts(Form *f, int axis, bool flipped);
 void setRotos(Form *f, int roto);
 void exitGame();
+
+TileSet *newTileSet(char *sheet, int rows, int cols, int id);
 #endif

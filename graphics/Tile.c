@@ -16,7 +16,7 @@ void freeTileSets() {
 	deleteList(&TileSets, freeTileSet);
 }
 
-TileSet *makeTileSet(Anim *a, int xd, int yd, int mx, int my) {
+TileSet *makeTileSet(Anim *a, int xd, int yd, int mx, int my, float tileSizeX, float tileSizeY) {
 	TileSet *ts = (TileSet*)calloc(sizeof(TileSet), 1);
 	ts->set = a;
 	ts->typeID = -1;
@@ -24,10 +24,10 @@ TileSet *makeTileSet(Anim *a, int xd, int yd, int mx, int my) {
 	GLuint tileShader = getSP(2);
 	glUseProgram(tileShader);
 	//printf("diemnsions recieved %i, %i\n", xd, yd);
-	ts->color = makeDrawScreen(xd, yd, mx, my, 1, 4, true, 1);
-	ts->trans = makeDrawScreen(xd, yd, mx, my, 3, 3, false, 0);
-	ts->rot = makeDrawScreen(xd, yd, mx, my, 4, 4, true, 0);
-	ts->texture = makeDrawScreen(xd, yd, mx, my, 5, 2, true, 0);
+	ts->color = makeDrawScreen(xd, yd, mx, my, tileSizeX, tileSizeY, 1, 4, true, 1);
+	ts->trans = makeDrawScreen(xd, yd, mx, my, tileSizeX, tileSizeY, 3, 3, false, 0);
+	ts->rot = makeDrawScreen(xd, yd, mx, my, tileSizeX, tileSizeY, 4, 4, true, 0);
+	ts->texture = makeDrawScreen(xd, yd, mx, my, tileSizeX, tileSizeY, 5, 2, true, 0);
 	addTileSet(ts);
 	return ts;
 }
@@ -66,10 +66,12 @@ int getTileCount() {
 	return tileCount;
 }
 
-DrawScreen *makeDrawScreen(int dimensionX ,int dimensionY, int maxDimensionX ,int maxDimensionY, int location, int stride, bool base, float defaultVal) {
+DrawScreen *makeDrawScreen(int dimensionX ,int dimensionY, int maxDimensionX ,int maxDimensionY, float tileSizeX, float tileSizeY, int location, int stride, bool base, float defaultVal) {
 	DrawScreen *ds = (DrawScreen*)calloc(sizeof(DrawScreen), 1);
 	ds->maxX = maxDimensionX;
 	ds->maxY = maxDimensionY;
+	ds->sizeX = tileSizeX;
+	ds->sizeY = tileSizeY;
 	//printf("maxDs: %i, %i * %i\n", maxDimensionX, maxDimensionY, stride);
 	ds->data = (float*)calloc(sizeof(float), (maxDimensionX) * (maxDimensionY) * stride);
 	for (int i = 0; i < maxDimensionX * maxDimensionY * stride; i++) {

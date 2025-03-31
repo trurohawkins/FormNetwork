@@ -8,7 +8,7 @@ PoopGuy **poopers;
 int numPlayers = 1;
 bool gridOn = false;
 bool paused = false;
-bool debugDraw = true;
+bool debugDraw = false;
 float *godPos;
 Menu *pauseMenu;
 GOD *god = 0;
@@ -26,7 +26,7 @@ void pooGame() {
 	// why?? defaultFrame = screen->frame;
 	cam = getDefaultView();
 	wv = getDefaultView();
-	setFrameMin(wv, 300);
+	setFrameMin(wv, 30);
 	w = getWorld();
 	int midX = w->x / 2;
 	int midY = w->y/2;
@@ -71,12 +71,12 @@ void pooGame() {
 	Anim *dirt = makeAnimSheet("resources/dirtTileSheet.png", 1, 15, 5);
 	GLuint sv = makeSpriteVao(1,1);
 	animAddVao(dirt, sv);
-	TileSet *dirtTiles = makeTileSet(dirt, wv->frameX, wv->frameY, w->x, w->y);
+	TileSet *dirtTiles = makeTileSet(dirt, wv->frameX, wv->frameY, w->x, w->y, wv->objSX, wv->objSY);
 
 	Anim *stone = makeAnimSheet("resources/rockSheet.png", 1, 15, 1);
 	GLuint ss = makeSpriteVao(1,1);
 	animAddVao(stone, ss);
-	TileSet *stoneTiles = makeTileSet(stone, wv->frameX, wv->frameY, w->x, w->y);
+	TileSet *stoneTiles = makeTileSet(stone, wv->frameX, wv->frameY, w->x, w->y, wv->objSX, wv->objSY);
 
 	//glfwUpdateGamepadMappings(gamecontrollerdb);
 	FormLoop(pooLoop);
@@ -93,7 +93,7 @@ void pooLoop() {
 			if (!god->on && poopers[0] != 0) {
 				//centerOnForm(poopers[0]->me->body);
 				//setCenter(wv, w->x / 2, w->y / 2);
-				//followForms(wv);
+				followForms(wv);
 				//lerpView(wv);
 				//printf("currently at %f, %f\n", pooper->me->body->pos[0], pooper->me->body->pos[1]);
 				//followForm(poopers[0]->me->body);

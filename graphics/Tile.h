@@ -28,13 +28,13 @@ typedef struct TileSet {
 
 void initTileSets();
 void freeTileSets();
-TileSet *makeTileSet(Anim *a, int dx, int dy, int mx, int my);
+TileSet *makeTileSet(Anim *a, int dx, int dy, int mx, int my, float sizeX, float sizeY);
 void freeTileSet(void *ts);
 void setTileVBO(TileSet *ts);
 int addTileSet(TileSet *ts);
 TileSet *getTile(int index);
 int getTileCount();
-DrawScreen *makeDrawScreen(int dimensionX, int dimensionY, int maxDimensionX, int maxDimensionY, int location, int stride, bool base, float defaultVal);
+DrawScreen *makeDrawScreen(int dimensionX, int dimensionY, int maxDimensionX, int maxDimensionY, float tileSizeX, float tileSizeY, int location, int stride, bool base, float defaultVal);
 void freeDrawScreen(DrawScreen *ds);
 void initializeData(DrawScreen *ds, bool base);
 void setScreenVBO(DrawScreen *ds);

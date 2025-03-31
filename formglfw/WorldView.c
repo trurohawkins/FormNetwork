@@ -48,6 +48,9 @@ void setFrame(WorldView *wv, float frame) {
 	World *w = getWorld();
 	wv->frame = frame;
 
+	float objSizes[2] = {wv->objSX, wv->objSY};
+	float frames[2] = {wv->frameX, wv->frameY};
+
 	float frameX = ceil(frame  * s->xRatio) - 1; 
 	int centerBuffX = 0;
 	if ((int)frameX % 2 == 0) {
@@ -106,10 +109,15 @@ void setFrame(WorldView *wv, float frame) {
 	setCamera(wv->cam);
 	//printf("worldbuffer %i, camera trans %f\n", wv->buffX, -xRem);
 	//printf("about to resize tiles, the offset is %i and bool value is %i\n",wv->offsetX, wv->offsetX != 0);
-	for (int i = 0; i < getTileCount(); i++) {
-		TileSet *ts = getTile(i);
-		setTileSize(ts, wv->objSX, wv->objSY);
-		resizeTileSet(ts, wv->frameX, wv->frameY);//wv->frameX != w->x, wv->frameY != w->y);
+	if (!equal(wv->objSX,objSizes[0]) || !equal(wv->objSY,objSizes[1])) {
+		printf("obj size %f, %f -> %f, %f\n", objSizes[0], objSizes[1], wv->objSX, wv->objSY);
+		printf("frame size %f, %f -> %f. %f\n", frames[0], frames[1], wv->frameX, wv->frameY);
+		printf("resize\n");
+		for (int i = 0; i < getTileCount(); i++) {
+			TileSet *ts = getTile(i);
+			setTileSize(ts, wv->objSX, wv->objSY);
+			resizeTileSet(ts, wv->frameX, wv->frameY);//wv->frameX != w->x, wv->frameY != w->y);
+		}
 	}
 }
 
@@ -215,29 +223,12 @@ void followForms(WorldView *wv) {
 		// we clamp the distance between our frameMin and the world Max, we dont know which is bigger, so we use min and max to figure that out inline
 		int worldMax = max(w->x, w->y) + 1;
 		maxDistance = clamp(maxDistance + 10, min(worldMax,wv->frameMin), max(worldMax, wv->frameMin));
-		if (xp * wv->scalePower != wv->centerX || yp * wv->scalePower != wv->centerY || maxDistance != wv->frame) {
-		//printf("resizing frame to %f\n", maxDistance);
-		//if (xp != wv->centerX || yp != wv->centerY) {
+		if (xp * wv->scalePower != wv->centerX || yp * wv->scalePower != wv->centerY) {
 			setCenter(wv, xp, yp);
-			//printf("%f, %f\n", xp *wv->scalePower, yp * wv->scalePower);
-		//wv->cenDestX = xp * wv->scalePower;
-		//wv->cenDestY = yp * wv->scalePower;
-		//}
-		//if (maxDistance != wv->frame) {
-			setFrame(wv, maxDistance);
-			//wv->frameDest = maxDistance;
 		}
-			/*
-			if (wv->frameX > w->x) {
-				xp = w->x/2;
-			}
-			if (wv->frameY > w->y) {
-				yp = w->y/2;
-			}
-			resizeScreen();
-			*/
+		//if (maxDistance != wv->frame ) {
+			setFrame(wv, maxDistance);
 		//}
-		//printf("have %i forms center: %i, %i\n", count, xp, yp);
 	}
 }
 
@@ -245,7 +236,7 @@ void lerpView(WorldView *wv) {
 	if (wv->frame == wv->frameDest && wv->centerX == wv->cenDestX && wv->centerY == wv->cenDestY) {// && wv->frameY == wv->frameDestY) {
 		return;
 	}
-	//printf("lerping from %f,%f to %f, %f\n", wv->centerX, wv->centerY, wv->cenDestX, wv->cenDestY);
+	printf("lerping from %f,%f to %f, %f\n", wv->centerX, wv->centerY, wv->cenDestX, wv->cenDestY);
 	if (wv->frame != wv->frameDest) {
 		int dir = sign(wv->frameDest - wv->frame);
 		if (dir > 0) {

@@ -208,6 +208,10 @@ int abs(int num) {
 	}
 }
 
+bool equal(float a, float b) {
+	return fabs(a - b) < 1e-6;
+}
+
 float lerp(float a, float b, float t) {
 	return a * (1.0 - t) + (b * t);
 }

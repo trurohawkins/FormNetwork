@@ -160,7 +160,7 @@ bool checkCollision(Form *f, int x, int y, bool solid) {
 			Form *chk = check->data;
 			if ((solid && chk->solid || !solid) 
 			&& !compareForms(chk, f) && canCollide(f, chk)) {
-				printf("form hit: %i\n", chk->id);
+				//printf("form hit: %i\n", chk->id);
 				return true;
 			}
 		}

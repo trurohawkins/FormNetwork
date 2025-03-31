@@ -146,3 +146,15 @@ void exitGame() {
 	endAudio();
 	endGlfw();
 }
+
+TileSet *newTileSet(char *sheet, int rows, int cols, int id) {
+	World *w = getWorld();
+	WorldView *wv = getDefaultView();
+	Anim *dirtSheet = makeAnimSheet(sheet, 1, rows, cols);
+	GLuint dv = makeSpriteVao(1,1);
+	animAddVao(dirtSheet, dv);
+	TileSet *ts = makeTileSet(dirtSheet, wv->frameX, wv->frameY, w->x, w->y, wv->objSX, wv->objSY);
+	ts->typeID = id;
+	return ts;
+}
+

@@ -5,7 +5,13 @@ linkedList *joystickList = 0;
 void initJoyList() {
 	for (int i = 0; i < 16; i++) {
 		if (glfwJoystickPresent(i)) {
-			printf("joy stick connected %i\n", i);
+			const char *name = glfwGetJoystickName(i);
+			printf("joy stick connected %i: %s\n", i, name);
+			if (glfwJoystickIsGamepad(i)) {
+				printf("  is a gamepad\n");
+			} else if (glfwJoystickPresent(i)) {
+				printf("  is a joystick\n");
+			}
 			addJoystick(i);
 		}
 	}
@@ -53,18 +59,17 @@ void joystickCallback(int jid, int event) {
 }
 
 void readJoysticks() {
-	printf("reading sticks\n");
 	linkedList *head = joystickList;
 	while (head != 0) {
 		if (head->data != 0) {
 			//int jid = *(int*)(head->data);
 			Joypad *jp = (Joypad*)(head->data);
 			int jid = jp->jid;
-			printf("joystick# %i", jid);
+			//printf("joystick# %i", jid);
 			if (glfwJoystickIsGamepad(jid)) {
-				printf("is a gamepad\n");
+				//printf("is a gamepad\n");
 			} else if (glfwJoystickPresent(jid)) {
-				printf("is a joystick\n");
+				//printf("is a joystick\n");
 			}
 
 		} else {

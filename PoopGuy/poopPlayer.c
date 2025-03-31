@@ -97,6 +97,7 @@ Form *makePoopPlayer(int pNum) {
 		addControl(p, "K0U", poop);
 		addControl(p, "K0M", jumpStart);
 	}
+	/* need to find way to differentiate between controllers and keyboards
 	makeJoyButtControl(p, ';', up);
 	makeJoyButtControl(p, '>', left);
 	makeJoyButtControl(p, '=', down);
@@ -108,6 +109,7 @@ Form *makePoopPlayer(int pNum) {
 	makeJoyAxeControl(p, '4', toggleEat);
 	makeJoyAxeControl(p, '0', xMove);
 	makeJoyAxeControl(p, '1', yMove);
+	*/
 	poopers[curPoopers++] = pooper;
 	return pooper->me->body;
 }
@@ -141,6 +143,7 @@ void up(void *pg, float val) {
 		Anim *a = (Anim*)p->me->body->anim;
 		//setInvert(p->me->body, 0, false);
 		//setRoto(p->me->body, 0);
+		setInverts(p->me->body, 1, false);
 		setInverts(p->me->body, 0, false);
 		setRotos(p->me->body, 0);
 		eatPooVar *ep = (eatPooVar*)(p->eatPoop->vars);
@@ -150,12 +153,12 @@ void up(void *pg, float val) {
 }
 
 void left(void *pg, float val) {
-	//printf("left %f\n", val);
 	PoopGuy *p = (PoopGuy*)pg;	
 	controlVar *cv = (controlVar*)p->control->vars;
 	eatPooVar *ep = (eatPooVar*)(p->eatPoop->vars);
 	if (val > 0) {
-		setInverts(p->me->body, 0, true);
+		setInverts(p->me->body, 0, false);
+		setInverts(p->me->body, 1, true);
 		setRotos(p->me->body, 1);
 		changeDir(ep, p->me->body, 1);
 		cv->moveLeft = 1;
@@ -168,6 +171,7 @@ void left(void *pg, float val) {
 void down(void *pg, float val) {
 	PoopGuy *p = (PoopGuy*)pg;	
 	if (val > 0) {
+		setInverts(p->me->body, 1, false);
 		setInverts(p->me->body, 0, false);
 		setRotos(p->me->body, 2);
 		eatPooVar *ep = (eatPooVar*)(p->eatPoop->vars);
@@ -183,6 +187,7 @@ void right(void *pg, float val) {
 	eatPooVar *ep = (eatPooVar*)(p->eatPoop->vars);
 	if (val > 0) {
 		setInverts(p->me->body, 0, false);
+		setInverts(p->me->body, 1, false);
 		setRotos(p->me->body, 3);
 		changeDir(ep, p->me->body, 3);
 		cv->moveRight = 1;
@@ -193,9 +198,11 @@ void right(void *pg, float val) {
 }
 
 void xMove(void *pg, float val) {
+	printf("%f\n", val);
 	if (val > 0) {
 		right(pg, 1);
 	}  else if (val < 0) {
+		printf("moving left\n");
 		left(pg, 1);
 	} else {
 		right(pg, 0);
