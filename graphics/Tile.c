@@ -21,11 +21,12 @@ TileSet *makeTileSet(Anim *a, int xd, int yd, int mx, int my, float tileSizeX, f
 	ts->set = a;
 	ts->typeID = -1;
 	ts->renderOrder = 0;
+	ts->multi = 1;
 	GLuint tileShader = getSP(2);
 	glUseProgram(tileShader);
 	//printf("diemnsions recieved %i, %i\n", xd, yd);
-	ts->color = makeDrawScreen(xd, yd, mx, my, tileSizeX, tileSizeY, 1, 4, true, 1);
 	ts->trans = makeDrawScreen(xd, yd, mx, my, tileSizeX, tileSizeY, 3, 3, false, 0);
+	ts->color = makeDrawScreen(xd, yd, mx, my, tileSizeX, tileSizeY, 1, 4, true, 1);
 	ts->rot = makeDrawScreen(xd, yd, mx, my, tileSizeX, tileSizeY, 4, 4, true, 0);
 	ts->texture = makeDrawScreen(xd, yd, mx, my, tileSizeX, tileSizeY, 5, 2, true, 0);
 	addTileSet(ts);
@@ -98,11 +99,15 @@ void sizeDrawScreen(DrawScreen *ds, int newSizeX, int newSizeY, bool base) {
 		ds->dimensionY = newSizeY;
 		initializeData(ds, base);
 		glGenBuffers(1, &(ds->vbo));
-		glBindBuffer(GL_ARRAY_BUFFER, ds->vbo);
-		glBufferData(GL_ARRAY_BUFFER, sizeof(float) * ((ds->dimensionX) * (ds->dimensionY) * ds->stride), &((ds->data)[0]), GL_STATIC_DRAW);
+		bindData(ds);
 		setScreenVBO(ds);
 	}
 
+}
+
+void bindData(DrawScreen *ds) {
+	glBindBuffer(GL_ARRAY_BUFFER, ds->vbo);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * ((ds->dimensionX) * (ds->dimensionY) * ds->stride), &((ds->data)[0]), GL_STATIC_DRAW);
 }
 
 void initializeData(DrawScreen *ds, bool base) {
@@ -134,7 +139,58 @@ void setScreenVBO(DrawScreen *ds) {
 	glBindBuffer(GL_ARRAY_BUFFER, ds->vbo);
 	glVertexAttribPointer(ds->location, ds->stride, GL_FLOAT, GL_FALSE, ds->stride * sizeof(float), (void*)0);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	glVertexAttribDivisor(ds->location,1);
+	glVertexAttribDivisor(ds->location, 1);
+}
+
+void setUpTiles(Anim *a, float *sMatrix, double xSize, double ySize) {
+	float mat[] = {
+		1.0, 0.0, 0.0, 0.0,
+		0.0, 1.0, 0.0, 0.0,
+		0.0, 0.0, 1.0, 0.0,
+		0.0, 0.0, 0.0, 1.0
+	};
+	glUniformMatrix4fv(spriteRotTile, 1, GL_TRUE, mat);
+	glUniformMatrix4fv(spriteTransTile, 1, GL_TRUE, mat);
+	mat[3] = 0;
+	mat[7] = 0;
+	// for some reason gets rid of tile distortion lines when resizing screen
+	xSize += 0.00001;
+	ySize += 0.00001;
+	mat[0] = xSize * a->ratio[0] * a->scale[0] * convertInvert(a->invert[0]);//a->flip[0];
+	mat[5] = ySize * a->ratio[1] * a->scale[1] * convertInvert(a->invert[1]);//a->flip[1];
+	glUniformMatrix4fv(spriteScaleTile, 1, GL_TRUE, mat);
+	float tMat [] = {
+		1.0, 0.0, getCoordX(a),
+		0.0, 1.0, getCoordY(a),
+		0.0, 0.0, 1.0,
+	};
+	float sMat [] = {
+		a->frameX, 0.0, 0.0,
+		0.0, a->frameY, 0.0,
+		0.0, 0.0, 1.0,
+	};
+	glUniformMatrix3fv(tcTransTile, 1, GL_TRUE, tMat);
+	glUniformMatrix3fv(tcScaleTile, 1, GL_TRUE, sMat);
+	textureSource *ts = a->texture;
+	int step = 0 * 4;
+	glUniform4f(tcColorTile,(a->palette)[step],(a->palette)[step+1], (a->palette)[step+2], (a->palette)[step+3]);
+	glBindTexture(GL_TEXTURE_2D, (ts->tex)[0]);
+}
+
+void drawTileSet(TileSet *ts, float objSX, float objSY, float frameX, float frameY) {
+	setTileVBO(ts);
+	float mat[] = {
+		1.0, 0.0, 0.0, 0.0,
+		0.0, 1.0, 0.0, 0.0,
+		0.0, 0.0, 1.0, 0.0,
+		0.0, 0.0, 0.0, 1.0
+	};
+	setUpTiles(ts->set, mat, objSX/ts->multi, objSY/ts->multi);
+	bindData(ts->trans);
+	bindData(ts->rot);
+	bindData(ts->color);
+	bindData(ts->texture);
+	glDrawElementsInstanced(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0, (ceil(frameX*ts->multi)) * ceil(frameY*ts->multi));
 }
 
 
@@ -182,11 +238,6 @@ int *getXY(DrawScreen *ds, int index) {
 	pair[0] = x;
 	pair[1] = y;
 	return pair;
-}
-
-void bindData(DrawScreen *ds) {
-	glBindBuffer(GL_ARRAY_BUFFER, ds->vbo);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * ((ds->dimensionX) * (ds->dimensionY) * ds->stride), &((ds->data)[0]), GL_STATIC_DRAW);
 }
 
 void clearData(DrawScreen *ds, bool base) {
@@ -275,3 +326,9 @@ void printData(DrawScreen *ds) {
 void setTileSetID(TileSet *ts, int id) {
 	ts->typeID = id;
 }
+
+void tileProgram() {
+	glUseProgram(getSP(2));
+	glBindVertexArray(getTileVAO());
+}
+

@@ -10,7 +10,6 @@
 #include "AnimList.c"
 #include "TextureManager.c"
 #include "UI.c"
-#include "Tile.c"
 
 GLuint tcTrans;
 GLuint tcScale;
@@ -25,6 +24,7 @@ GLuint tcColorTile;
 GLuint spriteTransTile;
 GLuint spriteScaleTile;
 GLuint spriteRotTile;
+#include "Tile.c"
 
 Anim *makeAnim(char **sheet, int spriteNum, bool generated, int rows, int cols) { 
 	Anim *a = (Anim*)calloc(sizeof(Anim), 1);
@@ -264,52 +264,6 @@ void drawUIAnim(Anim *a, float *sMatrix, float xSize, float ySize, float xp, flo
 	drawAnim(a, sMatrix, xSize, ySize);
 }
 
-void setUpTiles(Anim *a, float *sMatrix, double xSize, double ySize) {
-	float mat[] = {
-		1.0, 0.0, 0.0, 0.0,
-		0.0, 1.0, 0.0, 0.0,
-		0.0, 0.0, 1.0, 0.0,
-		0.0, 0.0, 0.0, 1.0
-	};
-	glUniformMatrix4fv(spriteRotTile, 1, GL_TRUE, mat);
-	glUniformMatrix4fv(spriteTransTile, 1, GL_TRUE, mat);
-	mat[3] = 0;
-	mat[7] = 0;
-	// for some reason gets rid of tile distortion lines when resizing screen
-	xSize += 0.00001;
-	ySize += 0.00001;
-	mat[0] = xSize * a->ratio[0] * a->scale[0] * convertInvert(a->invert[0]);//a->flip[0];
-	mat[5] = ySize * a->ratio[1] * a->scale[1] * convertInvert(a->invert[1]);//a->flip[1];
-	glUniformMatrix4fv(spriteScaleTile, 1, GL_TRUE, mat);
-	float tMat [] = {
-		1.0, 0.0, getCoordX(a),
-		0.0, 1.0, getCoordY(a),
-		0.0, 0.0, 1.0,
-	};
-	float sMat [] = {
-		a->frameX, 0.0, 0.0,
-		0.0, a->frameY, 0.0,
-		0.0, 0.0, 1.0,
-	};
-	glUniformMatrix3fv(tcTransTile, 1, GL_TRUE, tMat);
-	glUniformMatrix3fv(tcScaleTile, 1, GL_TRUE, sMat);
-	//setSpriteTexture(a);
-	//float rad = rotoToRadian(a->roto);
-	/*
-	float rMatrix[] = {
-		cos(rad), -sin(rad), 0.0, 0.0,
-		sin(rad), cos(rad), 0.0, 0.0,
-		0.0, 0.0, 1.0 ,0.0,
-		0.0, 0.0, 0.0, 1.0
-	};
-	*/
-	//glUniform2f(tcTrans, getCoordX(a), getCoordY(a));
-	//glBindVertexArray(a->vao);
-	textureSource *ts = a->texture;
-	int step = 0 * 4;
-	glUniform4f(tcColorTile,(a->palette)[step],(a->palette)[step+1], (a->palette)[step+2], (a->palette)[step+3]);
-	glBindTexture(GL_TEXTURE_2D, (ts->tex)[0]);
-}
 
 void useTile(Anim *a) {
 	glBindVertexArray(a->vao);

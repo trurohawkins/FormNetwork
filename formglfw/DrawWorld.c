@@ -69,7 +69,6 @@ void drawWorld(World *w) {
 								//int *ts = (int*)calloc(sizeof(int), 1);
 								//*ts = (int)(*tile);			
 								TileSet *t = getTile(*tile);
-								float remainder = *tile - *tile;
 								if (t != NULL) {
 									if (t->typeID == -1) {
 										setTileSetID(t, f->id);
@@ -84,13 +83,14 @@ void drawWorld(World *w) {
 									} else {
 										//free(ts);
 									}
-									editData(t->trans, x, y, 1, 1);
 									//printf("tile %i, %i\n", x, y);
-
+									if (t->tileSprites) {
+										//tileCell(t, remainder, xp, yp);
+										t->tileSprites(t, f, xp, yp);
+									}
 								} else {
 									//free(ts);
 								}
-								tileCell(t, remainder, xp, yp);
 								float *m = getStat(f, "moisture");
 								if (m != NULL) {
 									float moistMulti = 1 - min(*m, 0.9);// min(1 - ( (f->stat) - 0.1), 1);
@@ -137,19 +137,7 @@ void drawWorld(World *w) {
 		glBindVertexArray(getTileVAO());
 		SortedList *cur = tileList;
 		while (cur) {
-			TileSet *tmp = cur->data;
-		//void **tileSets = getContents(&tileList, tileSeen);
-		//for (int i = 0; i < tileSeen; i++) {
-			//int cur = *((int*)tileSets[i]);
-			//TileSet *tmp = getTile(cur);
-
-			setTileVBO(tmp);
-			setUpTiles(tmp->set, sMatrix, curView->objSX, curView->objSY);
-			bindData(tmp->trans);
-			bindData(tmp->rot);
-			bindData(tmp->color);
-			bindData(tmp->texture);
-			glDrawElementsInstanced(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0, (ceil(curView->frameX)+0) * ceil(curView->frameY));
+			drawTileSet(cur->data, curView->objSX, curView->objSY, curView->frameX, curView->frameY);
 			cur = cur->next;
 		}
 		//free(tileSets);
@@ -194,7 +182,11 @@ void drawForm(Form *f, int buffX, int buffY) {
 	}
 }
 
-void tileCell(TileSet *t, float remainder, int x, int y) {
+void tileCell(TileSet *t, void *f, int x, int y) {
+	float *tile = getStat(f, "tile");
+	printf("tiling sprite %f, %i\n", *tile, t->typeID);
+	float remainder = *tile - *tile;
+	editData(t->trans, x, y, 1, 1);
 	int **d = getDirs();
 	DrawScreen *ds = t->texture;
 	DrawScreen *rot = t->rot;
@@ -296,6 +288,7 @@ void tileCell(TileSet *t, float remainder, int x, int y) {
 
 		float texVal = (t->set->spriteNum-1 - mostOpen) * (t->set->frameY)+1; 
 		float texValX = (int)(round(remainder * (t->set->length[0] - 1))) * t->set->frameX;
+		printf("tex val %f, %f\n", texVal, texValX);
 		editData(ds, x - (int)curView->buffX, y - (int)curView->buffY, texVal, 1);
 		editData(ds, x -(int)curView->buffX, y - (int)curView->buffY, texValX, 2);
 		setRot(rot, x - (int)curView->buffX, y - (int)curView->buffY, dirToRad(startSide));
@@ -343,7 +336,7 @@ void drawWorldDebug(World *w) {
 	mat[5] = 1;
 	float startX = -1 - (curView->objSX/2);
 	float startY = -1 - (curView->objSY/2);
-	printf("%f + %f\n", startX, (startX + curView->objSX) + ((curView->frameX/2) * curView->objSX));
+	//printf("%f + %f\n", startX, (startX + curView->objSX) + ((curView->frameX/2) * curView->objSX));
 	for (int x = 0; x < curView->frameX; x++) {
 		mat[3] = (startX + curView->objSX) + (x * curView->objSX);
 		for (int y = 0; y < curView->frameY; y++) {
@@ -351,7 +344,7 @@ void drawWorldDebug(World *w) {
 			int yp = y + curView->buffY;//frame[1];//(cy-fy);
 			if (xp >= 0 && xp < w->x && yp >= 0 && yp < w->y) {
 				//Form *f = checkSolidForm(w->map[xp][yp]);
-				Form *f = 0;//checkSolidForm(w->map[xp][yp]);
+				//Form *f = 0;//checkSolidForm(w->map[xp][yp]);
 				linkedList *forms = w->map[xp][yp]->within;//checkSolidForm(w->map[xp][yp]);
 				/*
 				Form **forms = w->map[xp][yp]->content;
@@ -364,28 +357,27 @@ void drawWorldDebug(World *w) {
 				*/
 				while (forms) {
 					if (forms->data) {
-						f = forms->data;
-						break;
+						Form *f = forms->data;
+						if (f != NULL) {
+							mat[7] = (startY + curView->objSY) + (y * curView->objSY);	
+							glUniformMatrix4fv(tMat, 1, GL_TRUE, mat);
+							float *m = getStat(f, "moisture");
+							if (m != NULL) {
+								float fCol[] = {0,0,0};//(float*)calloc(3, sizeof(float));
+								float moistMulti = 1 - min(*m, 0.9);// min(1 - ( (f->stat) - 0.1), 1);
+								for (int i = 0; i < 3; i++) {
+									fCol[i] = f->color[i] * moistMulti;
+								}
+								glUniform4f(drawColor, fCol[0], fCol[1], fCol[2], 1.0);
+							} else {
+								glUniform4f(drawColor, f->color[0], f->color[1], f->color[2], 1.0);
+							}
+							glDrawArrays(GL_TRIANGLES, 0, 6);
+						}
 					}
 					forms = forms->next;
 				}
-				//freeListSaveObj(&fo);
-				if (f != NULL) {
-					mat[7] = (startY + curView->objSY) + (y * curView->objSY);	
-					glUniformMatrix4fv(tMat, 1, GL_TRUE, mat);
-					float *m = getStat(f, "moisture");
-					if (m != NULL) {
-						float fCol[] = {0,0,0};//(float*)calloc(3, sizeof(float));
-						float moistMulti = 1 - min(*m, 0.9);// min(1 - ( (f->stat) - 0.1), 1);
-						for (int i = 0; i < 3; i++) {
-							fCol[i] = f->color[i] * moistMulti;
-						}
-						glUniform4f(drawColor, fCol[0], fCol[1], fCol[2], 1.0);
-					} else {
-						glUniform4f(drawColor, f->color[0], f->color[1], f->color[2], 1.0);
-					}
-					glDrawArrays(GL_TRIANGLES, 0, 6);
-				}
+
 			}
 		}
 	}

@@ -14,6 +14,7 @@ void createWorld(int worldX, int worldY, int frameX, int frameY);
 void FormLoop(void (game)(void));
 void stopLoop();
 void togglePause();
+void toggleFPS();
 void setBackgroundColor(float r, float g, float b, float a);
 void setAnim(Form *f, Anim *a);
 void changeSprites(Form *f, int index);

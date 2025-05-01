@@ -14,6 +14,7 @@ int defaultFrameX = -1;
 float bgColor[4];
 bool running = true;
 bool freeze = false;
+bool printFPS = false;
 
 void initFormGlfw() {
 	srand(time(NULL));
@@ -47,6 +48,8 @@ void initFormGlfw() {
 
 void FormLoop(void (game)(void)) {
 	Screen *screen = getWindow();
+	int frameCount = 0;
+	int initialTime = time(NULL);
 	while(!glfwWindowShouldClose(screen->window) && running) {
 		glfwPollEvents();
 		checkControllerInput();
@@ -58,6 +61,16 @@ void FormLoop(void (game)(void)) {
 		} // maybe we want to include the next 2 lines, should test with sound
 		cleanUpPlayedAudio();
 		glfwSwapBuffers(screen->window);
+		frameCount++;
+		int curTime = time(NULL);
+		if (curTime - initialTime >= 1) {
+			int fps = frameCount / (curTime - initialTime);
+			if (printFPS) {
+				printf("FPS: %i\n", fps);
+			}
+			initialTime = curTime;
+			frameCount = 0;
+		}
 	}
 }
 
@@ -67,6 +80,10 @@ void stopLoop() {
 
 void togglePause() {
 	freeze = !freeze;
+}
+
+void toggleFPS() {
+	printFPS = !printFPS;
 }
 
 void setBackgroundColor(float r, float g, float b, float a) {
@@ -150,11 +167,12 @@ void exitGame() {
 TileSet *newTileSet(char *sheet, int rows, int cols, int id) {
 	World *w = getWorld();
 	WorldView *wv = getDefaultView();
-	Anim *dirtSheet = makeAnimSheet(sheet, 1, rows, cols);
+	Anim *newSheet = makeAnimSheet(sheet, 1, rows, cols);
 	GLuint dv = makeSpriteVao(1,1);
-	animAddVao(dirtSheet, dv);
-	TileSet *ts = makeTileSet(dirtSheet, wv->frameX, wv->frameY, w->x, w->y, wv->objSX, wv->objSY);
+	animAddVao(newSheet, dv);
+	TileSet *ts = makeTileSet(newSheet, wv->frameX, wv->frameY, w->x, w->y, wv->objSX, wv->objSY);
 	ts->typeID = id;
+	ts->tileSprites = &tileCell;
 	return ts;
 }
 

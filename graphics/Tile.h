@@ -24,6 +24,8 @@ typedef struct TileSet {
 	DrawScreen *color;
 	DrawScreen *texture;
 	int renderOrder;
+	void (*tileSprites)(struct TileSet*, void*, int, int);
+	int multi;//this can be used for making a tile set with higher resolution
 } TileSet;
 
 void initTileSets();
@@ -38,6 +40,8 @@ DrawScreen *makeDrawScreen(int dimensionX, int dimensionY, int maxDimensionX, in
 void freeDrawScreen(DrawScreen *ds);
 void initializeData(DrawScreen *ds, bool base);
 void setScreenVBO(DrawScreen *ds);
+void setUpTiles(Anim *a, float *sMatrix, double xSize, double ySize);
+void drawTileSet(TileSet *ts, float objSX, float objSY, float frameX, float frameY);
 void sizeDrawScreen(DrawScreen *ds, int newSizeX, int newSizeY, bool base);
 void resizeTileSet(TileSet *t, int newSizeX, int newSizeY);
 void setTileSize(TileSet *t, float sizeX, float sizeY);
@@ -54,4 +58,5 @@ float dirToRad(int d);
 GLuint getTileVAO();
 void printData(DrawScreen *ds);
 void setTileSetID(TileSet *t, int id);
+void tileProgram();
 #endif
