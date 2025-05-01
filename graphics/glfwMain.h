@@ -34,11 +34,11 @@ void setOrtho(float scale);
 void setScreenMax(int max);
 void setAspectRatio(int x, int y);
 GLuint squareVao2d();
-GLuint lineVao2d();
+GLuint lineVao2d(int lineType);
 GLuint makeVao2d(float *shape, int len);
 GLuint makeSpriteVao(float sx, float sy);
 Screen *getWindow();
-GLuint getSP();
+GLuint getSP(int shader);
 void setCamFunction(void (*newFunc)(void));
 void drawShape();
 #endif

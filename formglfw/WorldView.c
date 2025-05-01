@@ -169,6 +169,9 @@ Anim *wvChangeBackground(WorldView *wv, Anim *bg) {
 void wvDrawBackground(WorldView *wv, float *matrix) {
 	if (wv->background) {
 		World *w = getWorld();
+		// maybe dont need to set these
+		matrix[0] = 1;
+		matrix[5] = 1;
 		drawSprite(wv->background, matrix, wv->objSX, wv->objSY, (float)w->x/2 -(int)wv->buffX - 0.5f, (float)w->y/2 - (int)wv->buffY - 0.5f);
 	}
 }

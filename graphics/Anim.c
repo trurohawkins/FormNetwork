@@ -219,8 +219,8 @@ void setSpriteTexture(Anim *a) {
 void drawSprite(Anim *a, float *sMatrix, float xSize, float ySize, float xp, float yp) {
 	sMatrix[3] = (-1 + xSize/2) + ((xp + a->offset[0]) * xSize);// + -a->flip[0] * 0.01f;
 	sMatrix[7] = (-1 + ySize/2) + ((yp + a->offset[1]) * ySize);// + 0.01f;	
-	sMatrix[0] = 1;//xSize * a->scale[0] * a->flip[0];
-	sMatrix[5] = 1;//ySize * a->scale[1] * a->flip[1];
+	//sMatrix[0] = 1;//xSize * a->scale[0] * a->flip[0];
+	//sMatrix[5] = 1;//ySize * a->scale[1] * a->flip[1];
 	glUniformMatrix4fv(spriteTrans, 1, GL_TRUE, sMatrix);
 	drawAnim(a, sMatrix, xSize, ySize);
 }

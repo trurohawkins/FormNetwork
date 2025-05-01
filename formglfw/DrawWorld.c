@@ -124,7 +124,8 @@ void drawWorld(World *w) {
 	};
 	glUseProgram(texShader);
 	wvDrawBackground(getDefaultView(), mat);	
-	drawBG(sMatrix);
+	//drawBG(sMatrix); //idk what this is from and how it changed
+	drawBG();
 	SortedList *cur = backLayers;
 	while (cur) {
 		drawAnimOrder(cur->data, mat, curView->objSX, curView->objSY);
@@ -176,7 +177,8 @@ void drawWorld(World *w) {
 	backLayers = 0;
 	freeSlist(layers);
 	layers = 0;
-	drawFG(sMatrix);
+	//drawFG(sMatrix); // idk why I passed this at any point
+	drawFG();
 }
 
 void drawForm(Form *f, int buffX, int buffY) {
@@ -187,7 +189,7 @@ void drawForm(Form *f, int buffX, int buffY) {
  	if (f->anim != NULL) {// && (xp == (int)(floor(f->pos[0])) && yp == (int)(floor(f->pos[1])))) {
 		for (int j = 0; j < f->aCount; j++) {
 			Anim *a = ((Anim**)f->anim)[j];
-			addAnimToOrder(a->drawOrder, a, xfp, yfp, -1, -1, 0, true);
+			addAnimToOrder(a->drawOrder, a, xfp, yfp, 0, -1, -1, 0, true);
 		}
 	}
 }
