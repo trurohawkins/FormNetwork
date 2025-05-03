@@ -99,6 +99,7 @@ void drawWorld(World *w) {
 									editData(t->color, x, y, moistMulti, 2);
 									editData(t->color, x, y, 1, 1);
 								}
+								editData(t->trans, x * t->multi, y * t->multi, 1, 1);
 								//printf(" %i ", 1);
 								//editTranslations(x, y, 0);
 							} else {
@@ -184,9 +185,7 @@ void drawForm(Form *f, int buffX, int buffY) {
 
 void tileCell(TileSet *t, void *f, int x, int y) {
 	float *tile = getStat(f, "tile");
-	printf("tiling sprite %f, %i\n", *tile, t->typeID);
 	float remainder = *tile - *tile;
-	editData(t->trans, x, y, 1, 1);
 	int **d = getDirs();
 	DrawScreen *ds = t->texture;
 	DrawScreen *rot = t->rot;
@@ -288,7 +287,6 @@ void tileCell(TileSet *t, void *f, int x, int y) {
 
 		float texVal = (t->set->spriteNum-1 - mostOpen) * (t->set->frameY)+1; 
 		float texValX = (int)(round(remainder * (t->set->length[0] - 1))) * t->set->frameX;
-		printf("tex val %f, %f\n", texVal, texValX);
 		editData(ds, x - (int)curView->buffX, y - (int)curView->buffY, texVal, 1);
 		editData(ds, x -(int)curView->buffX, y - (int)curView->buffY, texValX, 2);
 		setRot(rot, x - (int)curView->buffX, y - (int)curView->buffY, dirToRad(startSide));
