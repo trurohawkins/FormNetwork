@@ -184,12 +184,12 @@ int **worldToMap() {
 	for (int x = 0; x < sizeX; x++) {
 		map[x] = (int*) calloc(sizeY , sizeof(int));
 		for(int y = 0; y < sizeY; y++) {
-			Cell *cur = theWorld->map[x][y];
+			Cell *cur = &theWorld->map[x][y];
 			Form **residents = getCellContents(cur);
 			if (residents != 0) {
 				//Form *guy = checkSolidForm(cur);
 				Form *guy = 0;
-				linkedList *guys = checkSolidForm(cur);
+				linkedList *guys = cur->within;
 				while (guys) {
 					if (guys->data) {
 						if (isFormCenter(guys->data, x, y)) {

@@ -29,9 +29,15 @@ void initWorldView(int x, int y) {
 	setFrame(defaultView, x);
 }
 
+void freeWorldView() {
+	free(defaultView->cam);
+	free(defaultView);
+}
+
 WorldView *getDefaultView() {
 	return defaultView;
 }
+
 //applying new screen ratio to frame data
 void resizeScreen() {
 	if (defaultView) {

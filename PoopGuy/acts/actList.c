@@ -37,7 +37,7 @@ int move(Form *f, Action *a) {
 		int speed = (mv->forceCounter[0] + abs(mv->force[0])) / mv->mass;
 		mv->forceCounter[0] = (int)(mv->forceCounter[0] + abs(mv->force[0])) % mv->mass;
 		//if (checkSide(f, sign(mv->force[0]), 0, true) == 0) {
-		if (checkColSideAtPos(f, f->pos[0], f->pos[1], sign(mv->force[0]), 0, true) == 0) {
+		if (checkColSideAtPos(f, f->pos[0], f->pos[1], sign(mv->force[0]), 0) == 0) {
 			f->pMod[0] = ((float)mv->forceCounter[0]/mv->mass) * sign(mv->force[0]);
 		} else {
 			f->pMod[0] = 0;
@@ -46,7 +46,7 @@ int move(Form *f, Action *a) {
 		for (int i = 0; i < speed; i++) {
 			int p = f->pos[0] + sign(mv->force[0]);
 			//if (checkSide(f, sign(mv->force[0]), 0, true) == 0) {
-			if (checkColSideAtPos(f, f->pos[0], f->pos[1], sign(mv->force[0]), 0, true) == 0) {
+			if (checkColSideAtPos(f, f->pos[0], f->pos[1], sign(mv->force[0]), 0) == 0) {
 				removeForm(f);
 				placeForm(p, f->pos[1], f);
 			} else {
@@ -60,7 +60,7 @@ int move(Form *f, Action *a) {
 		for (int i = 0; i < speed; i++) {
 			int p = f->pos[1] + sign(mv->force[1]);//mv->dir[1];
 			//if (checkSide(f, 0, sign(mv->force[1]), true) == 0) {
-			if (checkColSideAtPos(f, f->pos[0], f->pos[1], 0, sign(mv->force[1]), true) == 0) {
+			if (checkColSideAtPos(f, f->pos[0], f->pos[1], 0, sign(mv->force[1])) == 0) {
 				removeForm(f);
 				placeForm(f->pos[0], p, f);
 			}

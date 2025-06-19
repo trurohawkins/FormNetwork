@@ -53,7 +53,7 @@ void drawWorld(World *w) {
 			int xp = x + curView->buffX;
 			int yp = y + curView->buffY;
 			if (xp >= 0 && xp < w->x && yp >= 0 && yp < w->y) {
-				Cell *cur = w->map[xp][yp];
+				Cell *cur = &w->map[xp][yp];
 				// seems more efficient to just loop through linked list, rather than copy into array
 				//Form** residents = getCellContents(cur);
 				linkedList *residents = cur->within;
@@ -343,7 +343,7 @@ void drawWorldDebug(World *w) {
 			if (xp >= 0 && xp < w->x && yp >= 0 && yp < w->y) {
 				//Form *f = checkSolidForm(w->map[xp][yp]);
 				//Form *f = 0;//checkSolidForm(w->map[xp][yp]);
-				linkedList *forms = w->map[xp][yp]->within;//checkSolidForm(w->map[xp][yp]);
+				linkedList *forms = w->map[xp][yp].within;//checkSolidForm(w->map[xp][yp]);
 				/*
 				Form **forms = w->map[xp][yp]->content;
 				for (int i = 0; i < maxCellCount; i++) {

@@ -12,7 +12,6 @@ Form *makeForm(float r, float g, float b, float wid, float len) {
 	newForm->size[1] = len;
 	newForm->anim = 0;
 	newForm->colMatrix = 0;
-	newForm->solid = true;
 	//newForm->roto = 0;
 	//newForm->invert[0] = false;
 	//newForm->invert[1] = false;
@@ -42,7 +41,6 @@ Form *makeIrregularForm(float r, float g, float b, int *body, int bLen) {
 	newForm->size[1] = 1;//len;
 	newForm->anim = 0;
 	newForm->colMatrix = 0;
-	newForm->solid = true;
 	//newForm->roto = 0;
 	//newForm->invert[0] = false;
 	//newForm->invert[1] = false;

@@ -24,7 +24,7 @@ int gravity(Form *f, Action *a) {
 	int ns = 1;
 	//if (checkCol(f->pos[0]-1, f->pos[1]) == 0 && checkCol(f->pos[0]+1, f->pos[1]) == 0) {
 	//if (checkSide(f, -1, 0, false) == 0 && checkSide(f, 1, 0, false) == 0) {
-	if (checkColSideAtPos(f, f->pos[0], f->pos[1], -1, 0, true) != 0 || checkColSideAtPos(f, f->pos[0], f->pos[1], 1, 0, true) != 0) {
+	if (checkColSideAtPos(f, f->pos[0], f->pos[1], -1, 0) != 0 || checkColSideAtPos(f, f->pos[0], f->pos[1], 1, 0) != 0) {
 		ns = 0;
 	}
 	if (ns != gv->sideCol && ns == 1) {
@@ -33,7 +33,7 @@ int gravity(Form *f, Action *a) {
 	gv->sideCol = ns;
 	//if (checkCol(f->pos[0], f->pos[1] - 1) == 0) {
 	//if (checkSide(f, 0, -1, true) == 0) {
-	if (!checkColSideAtPos(f, f->pos[0], f->pos[1], 0, -1, true)) {
+	if (!checkColSideAtPos(f, f->pos[0], f->pos[1], 0, -1)) {
 		if (gv->fricCount >= gv->friction * gv->sideCol) {
 			if (mv->force[1] >= (terminalVelocity * mv->mass) + gravForce) {
 				addForce(mv, 0, -gravForce);

@@ -1,24 +1,35 @@
 #include "World.h"
 
-World* theWorld = 0;
+static World world;
+World* theWorld = &world;
 linkedList *check = 0;
 linkedList *outOfBounds = 0;
 
 void makeWorld(int x, int y) {	
+	/*
+	int size = 0;
+	size += sizeof(World);
 	World *newWorld = (World*)calloc(1, sizeof(World));
+	size += sizeof(Cell**) * x;
 	Cell ***mudBall = (Cell***) calloc( x, sizeof(Cell**));
 
 	for (int i = 0; i < x ; i += 1) {
 		mudBall[i] = (Cell**) calloc(y , sizeof(Cell*));
+		size += sizeof(Cell) * y;
 		for (int j = 0; j < y; j++) {
 			mudBall[i][j] = makeCell(i,j);
+			size += sizeof(Cell);
 		}
 	}
+	printf("new world size is maybe %i\n", size);
 	newWorld->map = mudBall;
 	newWorld->x = x;
 	newWorld->y = y;
 	newWorld->terrain = makeList();
 	theWorld = newWorld;
+	*/
+	world.x = WX;
+	world.y = WY;
 	makeInert();
 	addToList(&outOfBounds, inert);
 	//outOfBounds = calloc(1, sizeof(Form*));
@@ -49,14 +60,14 @@ void deleteWorld() {
 			}
 			*/
 		//	printCell(theWorld->map[i][j]);
-			freeCell(theWorld->map[i][j]);
+			freeCell(&theWorld->map[i][j]);
 		}
-		free(theWorld->map[i]); 
+		//free(theWorld->map[i]); 
 	}
 	deleteTerrain();
 
-	free(theWorld->map);
-	free(theWorld);
+	//free(theWorld->map);
+	//free(theWorld);
 }
 
 void deleteTerrain() {
@@ -101,7 +112,7 @@ bool placeForm(float x, float y, TYPE *form) {
 			}
 			*/
 			//theWorld->map[xp][yp] = form;
-			addToCell(theWorld->map[xp][yp], form);
+			addToCell(&theWorld->map[xp][yp], form);
 			return true;
 		}
 	} else {
@@ -130,7 +141,7 @@ bool placeForm(float x, float y, TYPE *form) {
 			int xp = floor(x) + form->body[i];
 			int yp = floor(y) + form->body[i+1];
 			if (xp >= 0 && yp >= 0 && xp < theWorld->x && yp < theWorld->y) {
-				addToCell(theWorld->map[xp][yp],form);
+				addToCell(&theWorld->map[xp][yp],form);
 			} else {
 				inWorld = false;
 			}
@@ -142,7 +153,7 @@ bool placeForm(float x, float y, TYPE *form) {
 
 linkedList *scanCell(int x, int y) {
 	if (x >= 0 && y >= 0 && x < theWorld->x && y < theWorld->y) {
-		return theWorld->map[x][y]->within;
+		return theWorld->map[x][y].within;
 	} else {
 		if (!inert) {
 			makeInert();
@@ -153,13 +164,12 @@ linkedList *scanCell(int x, int y) {
 	}
 }
 
-bool checkCollision(Form *f, int x, int y, bool solid) {
+bool checkCollision(Form *f, int x, int y) {
 	linkedList *check = scanCell(x, y);
 	while (check) {
 		if (check->data) {	
 			Form *chk = check->data;
-			if ((solid && chk->solid || !solid) 
-			&& !compareForms(chk, f) && canCollide(f, chk)) {
+			if (!compareForms(chk, f) && canCollide(f, chk)) {
 				//printf("form hit: %i\n", chk->id);
 				return true;
 			}
@@ -169,14 +179,14 @@ bool checkCollision(Form *f, int x, int y, bool solid) {
 	return false;
 }
 
-bool checkColAtPos(Form *form, int x, int y, bool solid) {
+bool checkColAtPos(Form *form, int x, int y) {
 	if (form->size[0] == 0 && form->size[1] == 0) {
-		return checkCollision(form, x, y, true);
+		return checkCollision(form, x, y);
 	} else {
 		for (int i = 0; i < form->bLen * 2; i += 2) {
 			int xp = x + form->body[i];//[j][0];
 			int yp = y + form->body[i+1];//[j][1];
-			if (checkCollision(form, xp, yp, solid)) {
+			if (checkCollision(form, xp, yp)) {
 				return true;
 			}
 		}
@@ -184,13 +194,13 @@ bool checkColAtPos(Form *form, int x, int y, bool solid) {
 	return false;
 }
 
-bool checkColSideAtPos(Form *f, float xp, float yp, int xd, int yd, bool solid) {
+bool checkColSideAtPos(Form *f, float xp, float yp, int xd, int yd) {
 	if (xd != 0) {
 		int side = 3;
 		if (xd < 0) {
 			side = 1;
 		}
-		if (checkColSideI(f, xp, yp, side, solid)) {
+		if (checkColSideI(f, xp, yp, side)) {
 			return true;
 		}
 	}
@@ -199,14 +209,14 @@ bool checkColSideAtPos(Form *f, float xp, float yp, int xd, int yd, bool solid) 
 		if (yd < 0) {
 			side = 2;
 		}
-		if (checkColSideI(f, xp, yp, side, solid)) {
+		if (checkColSideI(f, xp, yp, side)) {
 			return true;
 		}
 	}
 	return false;
 }
 
-bool checkColSideI(Form *f, float xp, float yp, int dir, bool solid) {
+bool checkColSideI(Form *f, float xp, float yp, int dir) {
 	int size = 0;
 	if (dir % 2 == 1) {
 		size = 1;
@@ -221,20 +231,16 @@ bool checkColSideI(Form *f, float xp, float yp, int dir, bool solid) {
 			//printf("checking %i, %i\n", xc, yc);
 		}
 		//checkColAddList(&content, f, xc, yc, solid);//floor(xp) + col, (floor(yp) - f->size[1]/2) + i);	
-		if (checkCollision(f, xc, yc, solid)) {
+		if (checkCollision(f, xc, yc)) {
 			return true;
 		}
 	}
 	return false;
 }
 
-linkedList *checkForm(int x, int y, bool solid) {
+linkedList *checkForm(int x, int y) {
 	if (x >= 0 && y >= 0 && x < theWorld->x && y < theWorld->y) {
-		if (solid) {
-			return checkSolidForm(theWorld->map[x][y]);
-		} else {
-			return theWorld->map[x][y]->within;
-		}
+			return theWorld->map[x][y].within;
 	} else {
 		clearCheck();
 		if (inert == 0) {
@@ -247,9 +253,9 @@ linkedList *checkForm(int x, int y, bool solid) {
 	}
 }
 
-linkedList *checkCol(Form *f, int x, int y, bool solid) {
+linkedList *checkCol(Form *f, int x, int y) {
 	linkedList *content = 0;
-	linkedList *check = checkForm(x, y, solid);
+	linkedList *check = checkForm(x, y);
 	linkedList *c = check;
 	bool gotInert = false;
 	while (check) {
@@ -261,8 +267,7 @@ linkedList *checkCol(Form *f, int x, int y, bool solid) {
 				gotInert = true;	
 			}
 			*/
-			if ((solid && chk->solid || !solid) 
-			&& !compareForms(chk, f) && canCollide(f, chk)) {
+			if (!compareForms(chk, f) && canCollide(f, chk)) {
 				addToList(&content, check->data);
 			}
 		}
@@ -274,8 +279,8 @@ linkedList *checkCol(Form *f, int x, int y, bool solid) {
 	return content;
 }
 
-void checkColAddList(linkedList **list, Form *f, int x, int y, bool solid) {
-	linkedList *check = checkCol(f, x, y, solid);
+void checkColAddList(linkedList **list, Form *f, int x, int y) {
+	linkedList *check = checkCol(f, x, y);
 	linkedList *c = check;
 	bool gotInert = false;
 	while (check) {
@@ -304,7 +309,7 @@ bool checkColliderPos(Collider *c, int x, int y) {
 		int xp = x + c->body[i];//[i][j][0];
 		int yp = y + c->body[i+1];;//[j][1];
 		if (xp >= 0 && yp >= 0 && xp < theWorld->x && yp < theWorld->y) {
-			if (checkForm(xp, yp, true)) {
+			if (checkForm(xp, yp)) {
 				return true;
 			}
 		} else {
@@ -317,7 +322,7 @@ bool checkColliderPos(Collider *c, int x, int y) {
 bool checkPosCol(Form *form, int x, int y) {
 	if (form->size[0] == 0 && form->size[1] == 0) {
 		if (x >= 0 && y >= 0 && x < theWorld->x && y < theWorld->y) {
-			linkedList *c = checkCol(form, x, y, true);
+			linkedList *c = checkCol(form, x, y);
 			if (c) {
 				freeListSaveObj(&c);
 				return true;
@@ -350,7 +355,7 @@ bool checkPosCol(Form *form, int x, int y) {
 			int xp = x + form->body[i];//[j][0];
 			int yp = y + form->body[i+1];//[j][1];
 			if (xp >= 0 && yp >= 0 && xp < theWorld->x && yp < theWorld->y) {
-				linkedList *c = checkCol(form, xp, yp, true);
+				linkedList *c = checkCol(form, xp, yp);
 				if (c) {
 					freeListSaveObj(&c);
 					return true;
@@ -364,21 +369,21 @@ bool checkPosCol(Form *form, int x, int y) {
 	}
 }
 
-linkedList *checkPos(Form *form, int x, int y, bool solid) {
+linkedList *checkPos(Form *form, int x, int y) {
 	linkedList *solids = 0;//makeList();
 	if (form->size[0] == 0 && form->size[1] == 0) {
-		return checkCol(form, x, y, true);
+		return checkCol(form, x, y);
 	} else {
 		for (int i = 0; i < form->bLen * 2; i += 2) {
 			int xp = x + form->body[i];//[j][0];
 			int yp = y + form->body[i+1];//[j][1];
-			checkColAddList(&solids, form, xp, yp, solid);
+			checkColAddList(&solids, form, xp, yp);
 		}
 	}
 	return solids;
 }
 
-linkedList *checkSideI(Form *f, float xp, float yp, int dir, bool solid) {
+linkedList *checkSideI(Form *f, float xp, float yp, int dir) {
 	linkedList *content = 0;
 	int size = 0;
 	if (dir % 2 == 1) {
@@ -393,19 +398,19 @@ linkedList *checkSideI(Form *f, float xp, float yp, int dir, bool solid) {
 		if (dir == 1) {
 			//printf("checking %i, %i\n", xc, yc);
 		}
-		checkColAddList(&content, f, xc, yc, solid);//floor(xp) + col, (floor(yp) - f->size[1]/2) + i);	
+		checkColAddList(&content, f, xc, yc);//floor(xp) + col, (floor(yp) - f->size[1]/2) + i);
 	}
 	return content;
 }
 
-linkedList *checkSide(Form *f, float xp, float yp, int xd, int yd, bool solid) {
+linkedList *checkSide(Form *f, float xp, float yp, int xd, int yd) {
 	linkedList *solids = 0;//makeList();
 	if (xd != 0) {
 		int side = 3;
 		if (xd < 0) {
 			side = 1;
 		}
-		solids = checkSideI(f, xp, yp, side, solid);
+		solids = checkSideI(f, xp, yp, side);
 		//printf("checking side %i\n", side);
 	}
 	if (yd != 0) {
@@ -418,7 +423,7 @@ linkedList *checkSide(Form *f, float xp, float yp, int xd, int yd, bool solid) {
 			int yc = yp + f->sides[side][i*2+2];
 			//printf("checksdie ycheck %i, %i\n", xc, yc);
 			//linkedList *check = checkCol(f, xp + f->sides[side][i*2], yp + f->sides[side][i*2+1]);//floor(xp) + col, (floor(yp) - f->size[1]/2) + i);
-			checkColAddList(&solids, f, xc, yc, solid);//floor(xp) + col, (floor(yp) - f->size[1]/2) + i);
+			checkColAddList(&solids, f, xc, yc);//floor(xp) + col, (floor(yp) - f->size[1]/2) + i);
 			/*
 			linkedList *c = check;
 			while (check) {
@@ -449,7 +454,7 @@ bool checkColSide(Form *f, float xp, float yp, int xd, int yd) {
 			int xc = xp + f->sides[side][i*2+1];
 			int yc = yp + f->sides[side][i*2+2];
 			//printf("(%i, %i)\n", xc, yc);
-			linkedList *check = checkCol(f, xc, yc, true);
+			linkedList *check = checkCol(f, xc, yc);
 			linkedList *c = check;
 			while (check) {
 				if (check->data) {
@@ -472,7 +477,7 @@ bool checkColSide(Form *f, float xp, float yp, int xd, int yd) {
 			side = 2;
 		}
 		for (int i = 0; i < f->sides[side][0]; i++) {
-			linkedList *check = checkCol(f, xp + f->sides[side][i*2+1], yp + f->sides[side][i*2+2], true);//floor(xp) + col, (floor(yp) - f->size[1]/2) + i);
+			linkedList *check = checkCol(f, xp + f->sides[side][i*2+1], yp + f->sides[side][i*2+2]);
 			linkedList *c = check;
 			while (check) {
 				if (check->data) {
@@ -503,7 +508,7 @@ bool checkSideForVal(Form *f, float xp, float yp, int xd, int yd, char *stat) {
 			int xc = xp + f->sides[side][i*2+1];
 			int yc = yp + f->sides[side][i*2+2];
 			if (xc >= 0 && yc >= 0 && yc < theWorld->y && xc < theWorld->x) {
-				linkedList *forms = theWorld->map[xc][yc]->within;
+				linkedList *forms = theWorld->map[xc][yc].within;
 				while (forms) {
 					if (forms->data) {
 						Form *chk = forms->data;
@@ -529,7 +534,7 @@ bool checkSideForVal(Form *f, float xp, float yp, int xd, int yd, char *stat) {
 			int xc = xp + f->sides[side][i*2+1];
 			int yc = yp + f->sides[side][i*2+2];
 			if (xc >= 0 && yc >= 0 && yc < theWorld->y && xc < theWorld->x) {
-				linkedList *forms = theWorld->map[xc][yc]->within;
+				linkedList *forms = theWorld->map[xc][yc].within;
 				while (forms) {
 					if (forms->data) {
 						Form *chk = forms->data;
@@ -549,14 +554,16 @@ bool checkSideForVal(Form *f, float xp, float yp, int xd, int yd, char *stat) {
 }
 
 linkedList *takeForm(int x, int y) {
-	//Form *form = 0;S
 	linkedList *forms = 0;
 	if (x >= 0 && y >= 0 && x < theWorld->x && y < theWorld->y) {
-		/*
-		form = theWorld->map[x][y];
-		theWorld->map[x][y] = 0;
-		*/
-		forms = getSolidForm(theWorld->map[x][y]);
+		linkedList *within = theWorld->map[x][y].within;
+		while (within) {
+			addToList(&forms, within->data);
+			within = within->next;
+		}
+		freeListSaveObj(&theWorld->map[x][y].within);
+		theWorld->map[x][y].within = 0;
+		theWorld->map[x][y].count = 0;
 	}
 	return forms;
 }
@@ -564,7 +571,7 @@ linkedList *takeForm(int x, int y) {
 Form *removeFormPos(Form *f, int x, int y) {
 	if (x >= 0 && y >= 0 && x < theWorld->x && y < theWorld->y) {
 	//takeForm(form->pos[0], form->pos[1]);
-		removeFromCell(theWorld->map[x][y], f);
+		removeFromCell(&theWorld->map[x][y], f);
 	}
 
 }
@@ -575,7 +582,7 @@ Form *removeForm(Form* form) {
 		int y = form->pos[1];
 		if (x >= 0 && y >= 0 && x < theWorld->x && y < theWorld->y) {
 		//takeForm(form->pos[0], form->pos[1]);
-			removeFromCell(theWorld->map[x][y], form);
+			removeFromCell(&theWorld->map[x][y], form);
 		}
 	} else if (form->pos[0] >= 0 && form->pos[1] >= 0) {
 		/*
@@ -608,7 +615,7 @@ Form *removeForm(Form* form) {
 			int yp = floor(form->pos[1]) + form->body[i+1];
 			//printf("removing form %i, %i from %i, %i\n", xp, yp, form->body[0], form->body[i+1]);
 			if (xp >= 0 && yp >= 0 && xp < theWorld->x && yp < theWorld->y) {
-				if (!removeFromCell(theWorld->map[xp][yp], form)) {
+				if (!removeFromCell(&theWorld->map[xp][yp], form)) {
 					printf("its not here\n");
 				}
 			}
@@ -631,8 +638,8 @@ int* getFormID(int x, int y) {
 			return f->id;
 		}
 		*/
-		Form **forms = getCellContents(theWorld->map[x][y]);
-		int count = theWorld->map[x][y]->count;
+		Form **forms = getCellContents(&theWorld->map[x][y]);
+		int count = theWorld->map[x][y].count;
 		int *ids = calloc(count + 1, sizeof(int));
 		//printf("%i and max: %i\n", count, maxCellCount);
 		for (int i = 0; i < maxCellCount && i < count; i++) {
@@ -648,20 +655,17 @@ int* getFormID(int x, int y) {
 bool checkFormID(int x, int y, int id) {
 	bool check = false;
 	if (x >= 0 && y >= 0 && x < theWorld->x && y < theWorld->y) {
-		Cell *c = theWorld->map[x][y];
-		if (c) {
-			Form **forms = getCellContents(c);//theWorld->map[x][y]);
-			if (forms) {
-				int count = theWorld->map[x][y]->count;
-				//int *ids = calloc(count + 1, sizeof(int));
-				for (int i = 0; i < maxCellCount && i < count; i++) {
-					if (forms[i]->id == id) {
-						check = true;
-						break;
-					}
+		Cell *c = &theWorld->map[x][y];
+		Form **forms = getCellContents(c);//theWorld->map[x][y]);
+		if (forms) {
+			//int *ids = calloc(count + 1, sizeof(int));
+			for (int i = 0; i < maxCellCount && i < c->count; i++) {
+				if (forms[i]->id == id) {
+					check = true;
+					break;
 				}
-				free(forms);
 			}
+			free(forms);
 		}
 	}
 	return check;
@@ -713,7 +717,6 @@ int saveForm(Form *f) {
 void makeInert() {
 	inert = makeForm(0,0,0, 0, 0);
 	inert->id = 420;
-	inert->solid = true;
 	inert->pos[0] = -1;
 	inert->pos[1] = -1;
 }
@@ -801,9 +804,9 @@ void writeWorld(char *file) {
 	int count = 0;
 	for (int x = 0; x < xs; x++) {
 		for (int y = 0; y < ys; y++) {
-			Cell *cur = theWorld->map[x][y];
-			if (cur->count > 0) {
-				if (writeCell(file, cur)) {
+			Cell cur = theWorld->map[x][y];
+			if (cur.count > 0) {
+				if (writeCell(file, &cur)) {
 					count++;
 				}
 			}
@@ -823,7 +826,7 @@ bool loadWorld(char *file) {
 			//int *cellCount = readBinaryInt(fptr, 1);
 			int *pos = readBinaryInt(fptr, 2);
 			int *residents = readBinaryInt(fptr, *cellCount);
-			Cell *cur = theWorld->map[pos[0]][pos[1]];
+			//Cell cur = theWorld->map[pos[0]][pos[1]];
 
 			for (int j = 0; j < *cellCount; j++) {
 				if (residents[j] < 10) {

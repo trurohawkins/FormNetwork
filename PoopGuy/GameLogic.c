@@ -63,11 +63,12 @@ void pooGame() {
 	TileSet *dirtTiles = makeTileSet(dirt, wv->frameX, wv->frameY, w->x, w->y, wv->objSX, wv->objSY);
 	dirtTiles->tileSprites = &tileCell;
 
+	/*
 	Anim *stone = makeAnimSheet("resources/rockSheet.png", 1, 15, 1);
 	GLuint ss = makeSpriteVao(1,1);
 	animAddVao(stone, ss);
 	TileSet *stoneTiles = makeTileSet(stone, wv->frameX, wv->frameY, w->x, w->y, wv->objSX, wv->objSY);
-	
+	*/	
 	//newTileSet("resources/dirtTileSheet.png", 15, 5, 1);
 	//newTileSet("resources/rockSheet.png", 15, 1, -1);
 

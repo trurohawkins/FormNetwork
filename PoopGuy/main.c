@@ -56,6 +56,7 @@ int main(int argc, char **argv) {
 	}
 	//if (!loadWorld("world.bin")) {
 	createWorld(worldX, worldY, 10, 10);
+	World *w = getWorld();
 	if (menuVal != 2) {
 		printf("generating world\n");
 		//int **map = genMap();
@@ -65,7 +66,7 @@ int main(int argc, char **argv) {
 		//fillWorld();
 		//arrayToFile("mapSave.txt", map);
 		freeMap(map);
-		spawnPoopers(worldX * 0.5, worldY - 3);
+		spawnPoopers(w->x * 0.5, w->y - 3);
 		//printArray(map, worldX, worldY);
 		//arrayToFile("mapSave.txt", map);
 		//map = fileToArray("mapSave.txt");//

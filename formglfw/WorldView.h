@@ -25,6 +25,7 @@ typedef struct WorldView {
 
 WorldView *makeWorldView(int scale);
 void initWorldView(int x, int y);
+void freeWorldView();
 void wvMakeBackground(WorldView *wv, char *image);
 Anim *wvChangeBackground(WorldView *wv, Anim *bg);
 void wvDrawBackground(WorldView *wv, float *matrix); 

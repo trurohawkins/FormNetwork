@@ -86,6 +86,7 @@ void freeActionList(Actor *actor) {
 }
 
 void deleteActor(void *a) {
+	printf("deleting actor\n");
 	Actor *actor = a;
 
 	if (actor->body != NULL) {

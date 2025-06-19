@@ -3,7 +3,7 @@ World *w = 0;
 
 Actor *makeCloud(int x, int y, int speed) {
 	Form *f = makeForm(1,1,1,0,0);
-	f->solid = false;
+	//f->solid = false; replace with collision checking
 	placeForm(x, y, f);
 	//printf("made cloud, is it solid? %i\n", checkFormIsSolid(f));
 	if (w == 0) {

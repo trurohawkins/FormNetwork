@@ -156,6 +156,7 @@ void exitGame() {
 	deleteAnimList();
 	deleteTextureManager();
 	freePlayerManager();
+	freeWorldView();
 	freeWorld();
 	freeJoyList();
 	freeInput();

@@ -10,7 +10,7 @@ Cell *makeCell(int x, int y) {
 	c->count = 0;
 }
 
-void addToCell(Cell* c, Form *f) {
+void addToCell(Cell *c, Form *f) {
 	if (f != NULL && c->count < maxCellCount) {
 		/*
 		if (c->within == 0) {
@@ -19,9 +19,6 @@ void addToCell(Cell* c, Form *f) {
 		*/
 		if (addToListSingle(&(c->within), f)) {
 			c->count++;
-			if (f->solid) {
-				c->solid++;
-			}
 		}
 	} else {
 		printf("%i < %i\n", c->count, (maxCellCount - 1));
@@ -50,76 +47,9 @@ Form *removeFromCell(Cell *c, Form *f) {
 		void *v = removeFromList(&(c->within), fv);
 		if (v != NULL) {
 			c->count--;
-			if (f->solid) {
-				c->solid--;
-			}
 		}
 	}
 	return fv;
-}
-
-bool checkSolid(void *form) {
-	Form *f = form;
-	return f->solid;
-}
-
-linkedList *getSolidForm(Cell* c) {
-	//linkedList *solids = 0;
-	clearCheck();
-	if (c->within != 0) {
-		Form *f = 0;
-		//printCell(c);
-		do {
-			f = removeFromListCheck(&(c->within), checkSolid);	
-			if (f != NULL) {
-				addToList(&check, f);
-				//printCell(c);
-				c->count--;
-				c->solid--;
-			}
-			//printf("new counnt %i\n", c->solid);
-		} while (c->solid > 0);
-	}
-	return check;
-}
-
-linkedList *checkSolidForm(Cell* c) {
-	linkedList *cur = c->within;
-	//printf("checking solid forms\n");
-	clearCheck();
-	//linkedList *solids = 0;
-	while (cur) {
-		Form *f = cur->data;
-		if (f) {
-			//if (checkFormIsSolid(cur->data)) {
-			if (f->solid) {
-				addToList(&check, f);
-			}
-		}
-		cur = cur->next;
-	}
-	/*
-	Form *f = 0;
-	//if (c->solid) {
-	if (c->within != 0) {
-		f = (Form*)checkList(&(c->within), checkFormIsSolid);	
-	}
-	return f;
-	*/
-	//printf("returning check\n");
-	return check;
-}
-
-bool isSolidForm(Cell *c) {
-	linkedList *cur = c->within;
-	while (cur) {
-		Form *f = cur->data;
-		if (f && f->solid) {
-			return true;
-		}
-		cur = cur->next;
-	}
-	return false;
 }
 
 Form **getCellContents(Cell *c) {
@@ -148,18 +78,8 @@ bool writeCell(char *file, Cell *c) {
 		if (cur->data != NULL) {
 			Form *f = (Form*)cur->data;
 			if (isFormCenter(f, c->pos[0], c->pos[1])) {
-				/*
-				if (f->id == 69) {
-					int cx = (int)floor(f->pos[0]);
-					int cy = (int)floor(f->pos[1]);
-					printf("%i, %i got poopguy at %i, %i\n", data[1], data[2], cx, cy);
-				}
-				*/
 				FormRecipe *r = getRecipe(f->id);
 				if (r) {
-					if (f->id == 0) {
-						printf("saving poop guy at %i, %i\n", c->pos[0], c->pos[1]);
-					}
 					arr[count] = r->saveFunc(f);
 					count++;
 				}
@@ -221,5 +141,5 @@ void freeCell(Cell *c) {
 		freeListSaveObj(&c->within);
 		//deleteList(&(c->within), removeDeleteForm);
 	}
-	free(c);
+	//free(c);
 }

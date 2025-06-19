@@ -1,9 +1,13 @@
 #ifndef WORLD
 #define WORLD
+
+#define WX 30
+#define WY 30
+
 #define TYPE Form
 typedef struct World
 {
-	Cell ***map; 
+	Cell map[WX][WY]; 
 	int x;
 	int y;
 	linkedList *terrain;
@@ -21,15 +25,15 @@ void deleteTerrain();
 bool placeForm(float x, float y, Form *form);
 
 linkedList *scanCell(int x, int y);
-bool checkCollision(Form *f, int x, int y, bool solid);
-bool checkColAtPos(Form *form, int x, int y, bool solid);
-bool checkColSideAtPos(Form *f, float xp, float yp, int xd, int yd, bool solid);
-bool checkColSideI(Form *f, float xp, float yp, int dir, bool solid);
+bool checkCollision(Form *f, int x, int y);
+bool checkColAtPos(Form *form, int x, int y);
+bool checkColSideAtPos(Form *f, float xp, float yp, int xd, int yd);
+bool checkColSideI(Form *f, float xp, float yp, int dir);
 
-linkedList *checkForm(int x, int y, bool solid);
-linkedList *checkCol(Form *f, int x, int y, bool solid);
+linkedList *checkForm(int x, int y);
+linkedList *checkCol(Form *f, int x, int y);
 
-void checkColAddList(linkedList **list, Form *f, int x, int y, bool solid);
+void checkColAddList(linkedList **list, Form *f, int x, int y);
 int* getFormID(int x, int y);
 bool checkFormID(int x, int y, int id);
 
@@ -37,9 +41,9 @@ bool checkPosCol(Form *f, int x, int y);
 bool checkColSide(Form *f, float xp, float yp, int xd, int yd);
 bool checkColliderPos(Collider *c, int x, int y);
 
-linkedList *checkPos(Form *f, int x, int y, bool solid);
-linkedList *checkSide(Form *form, float xp, float yp, int xd, int yd, bool solid);
-linkedList *checkSideI(Form *form, float xp, float yp, int dir, bool solid);
+linkedList *checkPos(Form *f, int x, int y);
+linkedList *checkSide(Form *form, float xp, float yp, int xd, int yd);
+linkedList *checkSideI(Form *form, float xp, float yp, int dir);
 bool checkSideForVal(Form *f, float xp, float yp, int xd, int yd, char *val);
 
 linkedList *takeForm(int x, int y);

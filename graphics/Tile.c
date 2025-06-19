@@ -17,6 +17,7 @@ void freeTileSets() {
 }
 
 TileSet *makeTileSet(Anim *a, int xd, int yd, int mx, int my, float tileSizeX, float tileSizeY) {
+	//printf("\n new tileset\n");
 	TileSet *ts = (TileSet*)calloc(sizeof(TileSet), 1);
 	ts->set = a;
 	ts->typeID = -1;
@@ -29,6 +30,7 @@ TileSet *makeTileSet(Anim *a, int xd, int yd, int mx, int my, float tileSizeX, f
 	ts->color = makeDrawScreen(xd, yd, mx, my, tileSizeX, tileSizeY, 1, 4, true, 1);
 	ts->rot = makeDrawScreen(xd, yd, mx, my, tileSizeX, tileSizeY, 4, 4, true, 0);
 	ts->texture = makeDrawScreen(xd, yd, mx, my, tileSizeX, tileSizeY, 5, 2, true, 0);
+	printf("\n\n");
 	addTileSet(ts);
 	return ts;
 }
@@ -75,6 +77,7 @@ DrawScreen *makeDrawScreen(int dimensionX ,int dimensionY, int maxDimensionX ,in
 	ds->sizeY = tileSizeY;
 	//printf("maxDs: %i, %i * %i\n", maxDimensionX, maxDimensionY, stride);
 	ds->data = (float*)calloc(sizeof(float), (maxDimensionX) * (maxDimensionY) * stride);
+	//printf("drawScreen is %i big\n", (sizeof(float) * maxDimensionX * maxDimensionY * stride) + sizeof(DrawScreen));
 	for (int i = 0; i < maxDimensionX * maxDimensionY * stride; i++) {
 		ds->data[i] = defaultVal;
 	}

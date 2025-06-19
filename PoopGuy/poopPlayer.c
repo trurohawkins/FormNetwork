@@ -4,6 +4,7 @@ int numPoopers = 1;
 int curPoopers = 0;
 
 void deletePoopGuy(void *poop) {
+	printf("deleting poop guy\n");
 	PoopGuy *pooper = (PoopGuy*)poop;
 	eatPooVar *ep = (eatPooVar*)(pooper->eatPoop->vars);
 	freeList(&(ep->stomach));
@@ -118,7 +119,7 @@ void spawnPoopers(int xPos, int yPos) {
 	for (int i = 0; i < getNumPoopers(); i++) {
 		Form *pp = makePoopPlayer(i);
 		int xp = xPos + i * 4;
-		linkedList *res = checkPos(pp, xp, yPos, true);
+		linkedList *res = checkPos(pp, xp, yPos);
 		linkedList *r = res;
 		while (res) {
 			if (res->data) {

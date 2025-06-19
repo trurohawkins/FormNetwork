@@ -19,7 +19,6 @@ typedef struct Form {
 	void *actor;
 	//neg terminated
 	int *colMatrix;
-	bool solid;
 	void (*render)(struct Form*, int xp, int yp, int buffX, int buffY);
 	bool terrain;
 	// float stat; // Used to store moisture
