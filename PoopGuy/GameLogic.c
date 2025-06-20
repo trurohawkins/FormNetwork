@@ -26,7 +26,7 @@ void pooGame() {
 	// why?? defaultFrame = screen->frame;
 	cam = getDefaultView();
 	wv = getDefaultView();
-	setFrameMin(wv, 30);
+	setFrameMin(wv, 45);
 	w = getWorld();
 	//processAudioFile("../resources/SchoolBoyLoop.wav");
 	//setCameraSize(mainCam, 1);

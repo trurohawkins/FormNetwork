@@ -23,8 +23,8 @@ void main()
 {
 if(aOffset.z == 1) {
 mat4 tm = tMat;
-tm[3][0] = aOffset.x + camPos.x;
-tm[3][1] = aOffset.y + camPos.y;
+tm[3][0] = tMat[3][0] + aOffset.x + camPos.x;
+tm[3][1] = tMat[3][1] + aOffset.y + camPos.y;
 mat4 sm = sMat;
 sm[0][0] = sm[0][0];
 sm[1][1] = sm[1][1];
