@@ -1,10 +1,10 @@
 #ifndef WORLD
 #define WORLD
 
-#define WX 30
-#define WY 30
 
 #define TYPE Form
+#include "specs.h"
+
 typedef struct World
 {
 	Cell map[WX][WY]; 
@@ -17,7 +17,7 @@ typedef struct World
 extern World* theWorld;
 extern linkedList *check;
 
-void makeWorld(int x, int y);
+void initWorld();
 World *getWorld();
 void deleteWorld();
 void addToTerrain(Form *f);

@@ -5,35 +5,11 @@ World* theWorld = &world;
 linkedList *check = 0;
 linkedList *outOfBounds = 0;
 
-void makeWorld(int x, int y) {	
-	/*
-	int size = 0;
-	size += sizeof(World);
-	World *newWorld = (World*)calloc(1, sizeof(World));
-	size += sizeof(Cell**) * x;
-	Cell ***mudBall = (Cell***) calloc( x, sizeof(Cell**));
-
-	for (int i = 0; i < x ; i += 1) {
-		mudBall[i] = (Cell**) calloc(y , sizeof(Cell*));
-		size += sizeof(Cell) * y;
-		for (int j = 0; j < y; j++) {
-			mudBall[i][j] = makeCell(i,j);
-			size += sizeof(Cell);
-		}
-	}
-	printf("new world size is maybe %i\n", size);
-	newWorld->map = mudBall;
-	newWorld->x = x;
-	newWorld->y = y;
-	newWorld->terrain = makeList();
-	theWorld = newWorld;
-	*/
+void initWorld() {
 	world.x = WX;
 	world.y = WY;
 	makeInert();
 	addToList(&outOfBounds, inert);
-	//outOfBounds = calloc(1, sizeof(Form*));
-	//outOfBounds[0] = inert;
 }
 
 World *getWorld() {
@@ -815,11 +791,13 @@ void writeWorld(char *file) {
 	//loadWorld(file);
 }
 
+
+// must be refactored for static sized world
 bool loadWorld(char *file) {
 	FILE *fptr = fopen(file, "rb");
 	if (fptr != NULL) {
 		int *size = readBinaryInt(fptr, 2);
-		makeWorld(size[0], size[1]);
+		//makeWorld(size[0], size[1]);
 		int *cellCount = (int*)calloc(sizeof(int), 1);
 		//for (int i = 0; i < count; i++) {
 		while (fread(cellCount, sizeof(int), 1, fptr) > 0) {

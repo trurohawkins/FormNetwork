@@ -40,6 +40,9 @@ void initFormGlfw() {
 	setCamera(defCam);
 	free(defCam);
 	makePlayerManager();
+	initWorld();
+	initWorldView();
+	initWorldDrawing();
 	//bgColor = {0, 0 ,0, 0};
 	for (int i = 0; i < 4; i++) {
 		bgColor[i] = 0;
@@ -91,12 +94,6 @@ void setBackgroundColor(float r, float g, float b, float a) {
 	bgColor[1] = g;
 	bgColor[2] = b;
 	bgColor[3] = a;
-}
-
-void createWorld(int worldX, int worldY, int frameX, int frameY) {
-	makeWorld(worldX, worldY);
-	initWorldView(frameX, frameY);
-	initWorldDrawing();
 }
 
 void setAnim(Form *f, Anim *a) {
@@ -166,12 +163,11 @@ void exitGame() {
 }
 
 TileSet *newTileSet(char *sheet, int rows, int cols, int id) {
-	World *w = getWorld();
 	WorldView *wv = getDefaultView();
 	Anim *newSheet = makeAnimSheet(sheet, 1, rows, cols);
-	GLuint dv = makeSpriteVao(1,1);
-	animAddVao(newSheet, dv);
-	TileSet *ts = makeTileSet(newSheet, wv->frameX, wv->frameY, w->x, w->y, wv->objSX, wv->objSY);
+	GLuint sv = makeSpriteVao(1,1);
+	animAddVao(newSheet, sv);
+	TileSet *ts = makeTileSet(newSheet, wv->frameX, wv->frameY, wv->objSX, wv->objSY);
 	ts->typeID = id;
 	ts->tileSprites = &tileCell;
 	return ts;

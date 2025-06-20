@@ -1,142 +1,234 @@
 #include "Tile.h"
 
+static TileSet tileSets[TILES];
+static TileSet tileSet;
+TileSet *tile = &tileSet;
+
 float *translations;
 int dim;
-linkedList *TileSets;
 int tileCount = 0;
 GLuint tileVAO = 0;
 
 void initTileSets() {
 	//printf("initializing tile seets\n");
-	TileSets = makeList();
+	//TileSets = makeList();
 	tileVAO = makeSpriteVao(1, 1);
 }
 
+TileSet *getTiles() {
+	return tileSets;
+}
+/*
 void freeTileSets() {
 	deleteList(&TileSets, freeTileSet);
 }
-
-TileSet *makeTileSet(Anim *a, int xd, int yd, int mx, int my, float tileSizeX, float tileSizeY) {
+*/
+TileSet *makeTileSet(Anim *a, int xd, int yd, float tileSizeX, float tileSizeY) {
 	//printf("\n new tileset\n");
-	TileSet *ts = (TileSet*)calloc(sizeof(TileSet), 1);
+	if (tileCount >= TILES) {
+		printf("you have %i tilesets already, increase in specs.h if you wnt more\n", tileCount);
+		return &tileSets[TILES-1];
+	}
+	TileSet *ts = &tileSets[tileCount];//(TileSet*)calloc(sizeof(TileSet), 1);
+	tileCount++;
 	ts->set = a;
 	ts->typeID = -1;
 	ts->renderOrder = 0;
 	ts->multi = 1;
+	ts->size[0] = tileSizeX;
+	ts->size[1] = tileSizeY;
+	ts->dimension[0] = xd;
+	ts->dimension[1] = yd;
 	GLuint tileShader = getSP(2);
 	glUseProgram(tileShader);
 	//printf("diemnsions recieved %i, %i\n", xd, yd);
-	ts->trans = makeDrawScreen(xd, yd, mx, my, tileSizeX, tileSizeY, 3, 3, false, 0);
-	ts->color = makeDrawScreen(xd, yd, mx, my, tileSizeX, tileSizeY, 1, 4, true, 1);
-	ts->rot = makeDrawScreen(xd, yd, mx, my, tileSizeX, tileSizeY, 4, 4, true, 0);
-	ts->texture = makeDrawScreen(xd, yd, mx, my, tileSizeX, tileSizeY, 5, 2, true, 0);
-	printf("\n\n");
-	addTileSet(ts);
+	initializeData(ts);	
 	return ts;
 }
 
 void freeTileSet(void *ts) {
 	TileSet *t = ts;
-	freeDrawScreen(t->color);
-	freeDrawScreen(t->trans);
-	freeDrawScreen(t->rot);
-	freeDrawScreen(t->texture);
 	freeAnim(t->set);
 	free(t);
 }
 
 void setTileVBO(TileSet *ts) {
-	setScreenVBO(ts->trans);
-	setScreenVBO(ts->rot);
-	setScreenVBO(ts->color);
-	setScreenVBO(ts->texture);
+	setScreenVBO(&ts->trans);
+	setScreenVBO(&ts->rot);
+	setScreenVBO(&ts->color);
+	setScreenVBO(&ts->texture);
 }
-
+/*
 int addTileSet(TileSet *t) {
 	addToList(&TileSets, t);
 	return tileCount++;
 }
-
+*/
 TileSet *getTile(int index) {
+	if (index < tileCount && index > -1) {
+		return &tileSets[index];
+	} else {
+		return NULL;
+	}
+	/*
 	TileSet *ts = (TileSet*)indexList(&TileSets, index);
 	if (ts == NULL) {
 		printf("no good NULL tilesset\n");
 	}
 	return ts;
+	*/
 }
 
 int getTileCount() {
 	return tileCount;
 }
 
-DrawScreen *makeDrawScreen(int dimensionX ,int dimensionY, int maxDimensionX ,int maxDimensionY, float tileSizeX, float tileSizeY, int location, int stride, bool base, float defaultVal) {
-	DrawScreen *ds = (DrawScreen*)calloc(sizeof(DrawScreen), 1);
-	ds->maxX = maxDimensionX;
-	ds->maxY = maxDimensionY;
-	ds->sizeX = tileSizeX;
-	ds->sizeY = tileSizeY;
-	//printf("maxDs: %i, %i * %i\n", maxDimensionX, maxDimensionY, stride);
-	ds->data = (float*)calloc(sizeof(float), (maxDimensionX) * (maxDimensionY) * stride);
-	//printf("drawScreen is %i big\n", (sizeof(float) * maxDimensionX * maxDimensionY * stride) + sizeof(DrawScreen));
-	for (int i = 0; i < maxDimensionX * maxDimensionY * stride; i++) {
-		ds->data[i] = defaultVal;
-	}
-	ds->stride = stride;
+void fillDrawScreen(DrawScreen *ds, int location, int stride) {
 	ds->location = location;
+	ds->stride = stride;
 
-	sizeDrawScreen(ds, dimensionX, dimensionY, base);
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	return ds;
+	//sizeDrawScreen(ds, base);
+	//glBindBuffer(GL_ARRAY_BUFFER, 0);
+	//return ds;
 }
 
 void freeDrawScreen(DrawScreen *ds) {
-	free(ds->data);
 	free(ds);
 }
 
-void sizeDrawScreen(DrawScreen *ds, int newSizeX, int newSizeY, bool base) {
-	if (newSizeX > 0 && newSizeY > 0) {// && newSizeX <= ds->maxX && newSizeY <= ds->maxY) {
-		//printf("SIZING DRAWSCREN %i, %i\n", newSizeX, newSizeY);
-		//printf("%f\n", ds->data[0]);
-		ds->dimensionX = newSizeX;
-		ds->dimensionY = newSizeY;
-		initializeData(ds, base);
-		glGenBuffers(1, &(ds->vbo));
-		bindData(ds);
-		setScreenVBO(ds);
-	}
-
+//porbably outdated, depends how this goes
+void sizeDrawScreen(TileSet *ts, DrawScreen *ds, bool base) {
+	//initializeData(ts, ds, base);
+	glGenBuffers(1, &(ds->vbo));
+	bindData(ts);
+	setScreenVBO(ds);
 }
 
-void bindData(DrawScreen *ds) {
+void bindTrans(TileSet *t) {
+	int stride = t->trans.stride;
+	glBindBuffer(GL_ARRAY_BUFFER, t->trans.vbo);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * ((t->dimension[0]) * (t->dimension[1]) * stride), &(t->tData[0]), GL_STATIC_DRAW);
+}
+
+void bindRot(TileSet *t) {
+	int stride = t->rot.stride;
+	glBindBuffer(GL_ARRAY_BUFFER, t->rot.vbo);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * ((t->dimension[0]) * (t->dimension[1]) * stride), &(t->rData[0]), GL_STATIC_DRAW);
+}
+
+void bindColor(TileSet *t) {
+	int stride = t->color.stride;
+	glBindBuffer(GL_ARRAY_BUFFER, t->color.vbo);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * ((t->dimension[0]) * (t->dimension[1]) * stride), &(t->cData[0]), GL_STATIC_DRAW);
+}
+
+void bindTexture(TileSet *t) {
+	int stride = t->texture.stride;
+	glBindBuffer(GL_ARRAY_BUFFER, t->texture.vbo);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * ((t->dimension[0]) * (t->dimension[1]) * stride), &(t->xData[0]), GL_STATIC_DRAW);
+}
+
+void bindData(TileSet *t) {
+	bindTrans(t);
+	bindRot(t);
+	bindColor(t);
+	bindTexture(t);
+}
+
+/*
+void bindData(TileSet *t, DrawScreen *ds) {
 	glBindBuffer(GL_ARRAY_BUFFER, ds->vbo);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * ((ds->dimensionX) * (ds->dimensionY) * ds->stride), &((ds->data)[0]), GL_STATIC_DRAW);
+	float *data = *ds->data;
+	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * ((t->dimension[0]) * (t->dimension[1]) * ds->stride), &(data[0]), GL_STATIC_DRAW);
 }
+*/
 
-void initializeData(DrawScreen *ds, bool base) {
+void initializeData(TileSet *ts) {
+	fillDrawScreen(&ts->trans, 3, 3);
+	for (int i = 0; i < WX * WY * 3; i++) {
+		ts->tData[i] = 0;
+	}
+	int index = 0;
+	double startX = -1 + (ts->size[0] * 0.5);
+	double startY = -1 + (ts->size[1] * 0.5);		
+	for (int y = 0; y < ts->dimension[1]; y++) {
+		for (int x = 0; x < ts->dimension[0]; x++) {
+			ts->tData[index++]	= startX + (ts->size[0] * x);
+			ts->tData[index++]	= startY + (ts->size[1] * y);
+			//1 visible 0 not
+			ts->tData[index++] = 1;	
+		}
+	}
+	glGenBuffers(1, &(ts->trans.vbo));
+	bindTrans(ts);
+	setScreenVBO(&ts->trans);
+	//sizeDrawScreen(ts, &ts->trans, false);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+	for (int i = 0; i < WX * WY * 4; i++) {
+		ts->rData[i] = 0;
+		ts->cData[i] = 1;
+		if (i < WX * WY * 2) {
+			ts->xData[i] = 0;
+		}
+	}
+	index = 0;
+	for (int y = -ts->dimension[1]; y < ts->dimension[1]; y+=2) { 
+		for (int x = -ts->dimension[0]; x < ts->dimension[0]; x+=2) {
+				ts->rData[index] = 1;	
+				ts->cData[index] = 1;	
+				ts->xData[index] = 1;	
+				index++;
+		}
+	}
+	fillDrawScreen(&ts->rot, 4, 4);
+	glGenBuffers(1, &(ts->rot.vbo));
+	bindRot(ts);
+	setScreenVBO(&ts->rot);
+	//sizeDrawScreen(ts, &ts->rot, true);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+	fillDrawScreen(&ts->color, 1, 4);
+	glGenBuffers(1, &(ts->color.vbo));
+	bindColor(ts);
+	setScreenVBO(&ts->color);
+	//sizeDrawScreen(ts, &ts->color, true);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+	fillDrawScreen(&ts->texture, 5, 2);
+	glGenBuffers(1, &(ts->texture.vbo));
+	bindTexture(ts);
+	setScreenVBO(&ts->texture);
+	//sizeDrawScreen(ts, &ts->texture, true);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+}
+//probably outdated, depends how this goes
+/*
+void initializeData(TileSet *t, DrawScreen *ds, bool base) {
 	int index = 0;
 	if (base) {
-		for (int y = -ds->dimensionY; y < ds->dimensionY; y+=2) { 
-			for (int x = -ds->dimensionX; x < ds->dimensionX; x+=2) {
-					(ds->data)[index++] = 1;	
+		for (int y = -t->dimension[1]; y < t->dimension[1]; y+=2) { 
+			for (int x = -t->dimension[0]; x < t->dimension[0]; x+=2) {
+					data[index++] = 1;	
 			}
 		}
 	} else {
-		double startX = -1 + (ds->sizeX * 0.5);
-		double startY = -1 + (ds->sizeY * 0.5);		
-		for (int y = 0; y < ds->dimensionY; y++) {
-			for (int x = 0; x < ds->dimensionX; x++) {
-				(ds->data)[index++]	= startX + (ds->sizeX * x);
-				(ds->data)[index++]	= startY + (ds->sizeY * y);
+		double startX = -1 + (t->size[0] * 0.5);
+		double startY = -1 + (t->size[1] * 0.5);		
+		for (int y = 0; y < t->dimension[1]; y++) {
+			for (int x = 0; x < t->dimension[0]; x++) {
+				data[index++]	= startX + (t->size[0] * x);
+				data[index++]	= startY + (t->size[1] * y);
 				for (int i = 0; i < ds->stride-2; i++) {
-					(ds->data)[index++] = 1;	
+					data[index++] = 1;	
 				}
 
 			}
 		}
 	}
 }
-
+*/
 void setScreenVBO(DrawScreen *ds) {
 	glEnableVertexAttribArray(ds->location);
 	glBindBuffer(GL_ARRAY_BUFFER, ds->vbo);
@@ -189,110 +281,131 @@ void drawTileSet(TileSet *ts, float objSX, float objSY, float frameX, float fram
 		0.0, 0.0, 0.0, 1.0
 	};
 	setUpTiles(ts->set, mat, objSX/ts->multi, objSY/ts->multi);
-	bindData(ts->trans);
-	bindData(ts->rot);
-	bindData(ts->color);
-	bindData(ts->texture);
+	bindData(ts);
 	glDrawElementsInstanced(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0, (ceil(frameX*ts->multi)) * ceil(frameY*ts->multi));
 }
 
 
 void resizeTileSet(TileSet *t, int newSizeX, int newSizeY) {
-	sizeDrawScreen(t->trans, newSizeX, newSizeY, false);
-	sizeDrawScreen(t->rot, newSizeX, newSizeY, true);
-	sizeDrawScreen(t->color, newSizeX, newSizeY, true);
-	sizeDrawScreen(t->texture, newSizeX, newSizeY, true);
+	t->dimension[0] = newSizeX;
+	t->dimension[1] = newSizeY;
+	initializeData(t);
+	/*
+	sizeDrawScreen(t, &t->trans, false);
+	sizeDrawScreen(t, &t->rot, true);
+	sizeDrawScreen(t, &t->color, true);
+	sizeDrawScreen(t, &t->texture, true);
+	*/
 }
 
 void setTileSize(TileSet *t, float sizeX, float sizeY) {
-	t->trans->sizeX = sizeX;
-	t->trans->sizeY = sizeY;
-	t->rot->sizeX = sizeX;
-	t->rot->sizeY = sizeY;
-	t->color->sizeX = sizeX;
-	t->color->sizeY = sizeY;
-	t->texture->sizeX = sizeX;
-	t->texture->sizeY = sizeY;
+	t->size[0] = sizeX;
+	t->size[1] = sizeY;
 }
 
 //edits final piece of data at moment
 //because the x and y shouldn't change unless its a rotation screen, in which all 4 values change
 //POS -  mod 1: edits visible
-//TEX - mod 2- X val mod 1 - Y val
+void editTrans(TileSet *t, int x, int y, float val) {
+	int stride = t->trans.stride;
+	t->tData[((y) * (t->dimension[0]) * stride) + (stride-1) + (x * stride)] = val;
+
+}
 //ROT - mod 4 - 1 - x y z w
-void editData(DrawScreen *ds, int x, int y, float val, int mod) {
-	ds->data[((y) * (ds->dimensionX) * ds->stride) + (ds->stride-mod) + (x * ds->stride)] = val;
+void editRot(TileSet *t, int x, int y, float val, int mod) {
+	int stride = t->rot.stride;
+	t->rData[((y) * (t->dimension[0]) * stride) + (stride-mod) + (x * stride)] = val;
 }
 
-float getData(DrawScreen *ds, int x, int y, int mod) {
-	int index = (y * (ds->dimensionX) * ds->stride) + (ds->stride-mod) + (x * ds->stride); 
-	if (index >= 0 && index < (ds->dimensionX) * (ds->dimensionY) * ds->stride) {
-		return ds->data[index];
+//COLOR mod 4-1 rgba
+void editColor(TileSet *t, int x, int y, float val, int mod) {
+	int stride = t->color.stride;
+	t->cData[((y) * (t->dimension[0]) * stride) + (stride-mod) + (x * stride)] = val;
+}
+
+//TEX - mod 2- X val mod 1 - Y val
+void editTexture(TileSet *t, int x, int y, float val, int mod) {
+	int stride = t->texture.stride;
+	t->xData[((y) * (t->dimension[0]) * stride) + (stride-mod) + (x * stride)] = val;
+}
+
+/*
+void editData(TileSet *t, DrawScreen *ds, int x, int y, float val, int mod) {
+	float *data = *ds->data;
+	data[((y) * (t->dimension[0]) * ds->stride) + (ds->stride-mod) + (x * ds->stride)] = val;
+}
+
+float getData(TileSet *t, DrawScreen *ds, int x, int y, int mod) {
+	int index = (y * (t->dimension[0]) * ds->stride) + (ds->stride-mod) + (x * ds->stride); 
+	if (index >= 0 && index < (t->dimension[0]) * (t->dimension[1]) * ds->stride) {
+		return *(ds->data)[index];
 	} else {
 		return -190;
 	}
 }
+*/
 
-int *getXY(DrawScreen *ds, int index) {
-	int y = index / ((ds->dimensionX) * ds->stride);
-	int x = (index - (y * (ds->dimensionX) * ds->stride)) / ds->stride;
+/*
+int *getXY(TileSet *t, DrawScreen *ds, int index) {
+	int y = index / ((t->dimension[0]) * ds->stride);
+	int x = (index - (y * (t->dimension[0]) * ds->stride)) / ds->stride;
 	//printf("index %i Produced %i, %i\n", index, x, y);
 	int *pair = (int*)calloc(sizeof(int), 2);
 	pair[0] = x;
 	pair[1] = y;
 	return pair;
 }
+*/
 
-void clearData(DrawScreen *ds, bool base) {
+void clearTrans(TileSet *t) {
 	int index = 0;
-	for (int y = -ds->dimensionY; y < ds->dimensionY; y+=2) { 
-		for (int x = -ds->dimensionX; x < ds->dimensionX; x+=2) {
-			if (!base) {
-				index+=2;
-				for (int i = 0; i < ds->stride-2; i++) {
-					ds->data[index++] = 0;	
-				}
-			} else {
-				for (int i = 0; i < ds->stride; i++) {
-					ds->data[index++] = 0;	
-				}
+	for (int y = -t->dimension[1]; y < t->dimension[1]; y+=2) { 
+		for (int x = -t->dimension[0]; x < t->dimension[0]; x+=2) {
+			index+=2;
+			for (int i = 0; i < t->trans.stride-2; i++) {
+				t->tData[index++] = 0;	
 			}
 		}
 	}
-	bindData(ds);
+	bindTrans(t);
 }
 
-void setRots(DrawScreen *ds, float rad) {
+
+/*
+void setData(TileSet *t, DrawScreen *ds, float value) {
 	int index = 0;
-	for (int y = -ds->dimensionY; y < ds->dimensionY; y+=2) { 
-		for (int x = -ds->dimensionX; x < ds->dimensionX; x+=2) {
-			ds->data[index++] = cos(rad);	
-			ds->data[index++] = -sin(rad);	
-			ds->data[index++] = sin(rad);	
-			ds->data[index++] = cos(rad);	
+	float *data = *ds->data;
+	for (int y = -t->dimension[1]; y < t->dimension[1]; y+=2) { 
+		for (int x = -t->dimension[0]; x < t->dimension[0]; x+=2) {
+			data[index++] = value;	
+			data[index++] = value;	
+			data[index++] = value;	
+			data[index++] = value;	
 		}
 	}
-	bindData(ds);
+	//do more specfic rather than binding them all
+	bindData(t);
 }
+*/
 
-void setData(DrawScreen *ds, float value) {
+void setRots(TileSet *t, float rad) {
 	int index = 0;
-	for (int y = -ds->dimensionY; y < ds->dimensionY; y+=2) { 
-		for (int x = -ds->dimensionX; x < ds->dimensionX; x+=2) {
-			ds->data[index++] = value;	
-			ds->data[index++] = value;	
-			ds->data[index++] = value;	
-			ds->data[index++] = value;	
+	for (int y = -t->dimension[1]; y < t->dimension[1]; y+=2) { 
+		for (int x = -t->dimension[0]; x < t->dimension[0]; x+=2) {
+			t->rData[index++] = cos(rad);	
+			t->rData[index++] = -sin(rad);	
+			t->rData[index++] = sin(rad);	
+			t->rData[index++] = cos(rad);	
 		}
 	}
-	bindData(ds);
+	bindRot(t);
 }
 
-void setRot(DrawScreen *ds, int x, int y, float rad) {
-	editData(ds, x, y, cos(rad), 4);
-	editData(ds, x, y, -sin(rad), 3);
-	editData(ds, x, y, sin(rad), 2);
-	editData(ds, x, y, cos(rad), 1);	
+void setRot(TileSet *t, int x, int y, float rad) {
+	editRot(t, x, y, cos(rad), 4);
+	editRot(t, x, y, -sin(rad), 3);
+	editRot(t, x, y, sin(rad), 2);
+	editRot(t, x, y, cos(rad), 1);	
 }
 
 float dirToRad(int d) {
@@ -311,10 +424,11 @@ GLuint getTileVAO() {
 	return tileVAO;
 }
 
-void printData(DrawScreen *ds) {
-	for (int y = ds->dimensionY-1; y >= 0; y--) {
-		for (int x = 0; x < ds->dimensionX; x++) {
-			if (getData(ds, x, y, 2) == 1) {
+/*
+void printData(TileSet *t, DrawScreen *ds) {
+	for (int y = t->dimension[1]-1; y >= 0; y--) {
+		for (int x = 0; x < t->dimension[0]; x++) {
+			if (getData(t, ds, x, y, 2) == 1) {
 				printf(" 1 ");
 			} else {
 				printf(" 0 ");
@@ -324,6 +438,11 @@ void printData(DrawScreen *ds) {
 	}
 	printf("\n");
 	return;
+}
+*/
+
+void printDrawScreen(DrawScreen *ds) {
+	printf("drawScreen: stride: %i, vbo: %i, location: %i\n", ds->stride, ds->vbo, ds->location);
 }
 
 void setTileSetID(TileSet *ts, int id) {

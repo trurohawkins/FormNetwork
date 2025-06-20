@@ -78,7 +78,7 @@ int initializeGLFW(int windowX, int windowY) {
 }
 
 void endGlfw() {
-	freeTileSets();
+	//freeTileSets();
 	glfwDestroyWindow(window);
 	glfwTerminate();
 }

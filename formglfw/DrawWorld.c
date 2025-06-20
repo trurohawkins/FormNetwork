@@ -76,14 +76,13 @@ void drawWorld(World *w) {
 									if (!isInSlist(tileList, t)) {
 										tileSeen++;
 										sortedAdd(&tileList, t, t->renderOrder);
-										clearData(t->trans, false);
+										clearTrans(t);
 										//clearData(t->texture, true);
-										setRots(t->rot, 0);
+										setRots(t, 0);
 										//setData(t->color, 1);
 									} else {
 										//free(ts);
 									}
-									//printf("tile %i, %i\n", x, y);
 									if (t->tileSprites) {
 										//tileCell(t, remainder, xp, yp);
 										t->tileSprites(t, f, xp, yp);
@@ -94,12 +93,12 @@ void drawWorld(World *w) {
 								float *m = getStat(f, "moisture");
 								if (m != NULL) {
 									float moistMulti = 1 - min(*m, 0.9);// min(1 - ( (f->stat) - 0.1), 1);
-									editData(t->color, x, y, moistMulti, 4);
-									editData(t->color, x, y, moistMulti, 3);
-									editData(t->color, x, y, moistMulti, 2);
-									editData(t->color, x, y, 1, 1);
+									editColor(t, x, y, moistMulti, 4);
+									editColor(t, x, y, moistMulti, 3);
+									editColor(t, x, y, moistMulti, 2);
+									editColor(t, x, y, 1, 1);
 								}
-								editData(t->trans, x * t->multi, y * t->multi, 1, 1);
+								editTrans(t, x * t->multi, y * t->multi, 1);
 								//printf(" %i ", 1);
 								//editTranslations(x, y, 0);
 							} else {
@@ -187,8 +186,8 @@ void tileCell(TileSet *t, void *f, int x, int y) {
 	float *tile = getStat(f, "tile");
 	float remainder = *tile - *tile;
 	int **d = getDirs();
-	DrawScreen *ds = t->texture;
-	DrawScreen *rot = t->rot;
+	DrawScreen *tex = &t->texture;
+	DrawScreen *rot = &t->rot;
 	World *w = getWorld();
 	Screen *s = getWindow();
 	int *ids = getFormID(x, y);
@@ -287,9 +286,9 @@ void tileCell(TileSet *t, void *f, int x, int y) {
 
 		float texVal = (t->set->spriteNum-1 - mostOpen) * (t->set->frameY)+1; 
 		float texValX = (int)(round(remainder * (t->set->length[0] - 1))) * t->set->frameX;
-		editData(ds, x - (int)curView->buffX, y - (int)curView->buffY, texVal, 1);
-		editData(ds, x -(int)curView->buffX, y - (int)curView->buffY, texValX, 2);
-		setRot(rot, x - (int)curView->buffX, y - (int)curView->buffY, dirToRad(startSide));
+		editTexture(t, x - (int)curView->buffX, y - (int)curView->buffY, texVal, 1);
+		editTexture(t, x -(int)curView->buffX, y - (int)curView->buffY, texValX, 2);
+		setRot(t, x - (int)curView->buffX, y - (int)curView->buffY, dirToRad(startSide));
 	}
 }
 

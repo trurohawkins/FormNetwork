@@ -10,7 +10,6 @@
 #include "DrawWorld.h"
 
 void initFormGlfw();
-void createWorld(int worldX, int worldY, int frameX, int frameY);
 void FormLoop(void (game)(void));
 void stopLoop();
 void togglePause();

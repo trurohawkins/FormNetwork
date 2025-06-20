@@ -19,14 +19,14 @@ WorldView *makeWorldView(int scale) {
 	return wv;
 }
 
-void initWorldView(int x, int y) {
+void initWorldView() {
 	defaultView = makeWorldView(100);
 	/*
 	defaultView->defaultFrameX = defaultView->frameX = x;	
 	defaultView->defaultFrameY = defaultView->frameY = y;
 	*/
-	defaultView->frameDest = defaultView->frame = (int)(sqrt(x * y));
-	setFrame(defaultView, x);
+	defaultView->frameDest = defaultView->frame = (int)(sqrt(WX * WY));
+	setFrame(defaultView, WX);
 }
 
 void freeWorldView() {
@@ -81,7 +81,7 @@ void setFrame(WorldView *wv, float frame) {
 		wv->cam->x = -xRem * wv->objSX;
 	}
 	
-	float frameY = ceil(frame  * s->yRatio) - 1;
+	float frameY = ceil(frame  * s->yRatio);
 	int centerBuffY = 0;
 	if ((int)frameY % 2 == 0) {
 		centerBuffY = 0.5 * wv->scalePower;

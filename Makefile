@@ -1,26 +1,28 @@
-GAME = PoopGuy
-CC = gcc -c -g -I/usr/include/freetype2 
+GAME = Test
+LIB = ./
+
+CC = gcc -c -g -I/usr/include/freetype2 -I.
 LC = gcc -c -g 
 WC = x86_64-w64-mingw32-gcc -c -g
 RELEASELIBS = -l:libglfw3.a -l:libdl.a -l:libpthread.a -l:libfreetype.a -l:libcglm.a -lm -l:libsndfile.a -l:libportaudio.a -ljack -lasound -logg -lvorbisenc -lvorbis -lopus -lFLAC -lmpg123 -lmp3lame
 DEVLIBS = -lglfw -lGL -lm -ldl -lfreetype -lcglm -lsndfile -lportaudio
 GLW = -lglfw3 -lopengl32 -lgdi32 -lfreetype -lsndfile -lportaudio
-GF = formglfw/
-FD = form/
-AD = actor/
-ACD = $(AD)acts/
-GD = graphics/
-ID = $(GD)input/
-SHD = $(GD)shaders/
-TD = $(GD)text/
-HD = helper/
-AU = audio/
+GF = $(LIB)formglfw/
+FD = $(LIB)form/
+AD = $(LIB)actor/
+ACD = $(LIB)$(AD)acts/
+GD = $(LIB)graphics/
+ID = $(LIB)$(GD)input/
+SHD = $(LIB)$(GD)shaders/
+TD = $(LIB)$(GD)text/
+HD = $(LIB)helper/
+AU = $(LIB)audio/
 
-$(GAME)/$GAME): $(GAME)/main.c libFormGlfw.a glad.o FormNetwork.h
-	gcc -g -o  $(GAME)/$(GAME) $(GAME)/main.c glad.o libFormGlfw.a  $(DEVLIBS)
+$(GAME): main.c libFormGlfw.a glad.o FormNetwork.h specs.h
+	gcc -g -o  $(GAME) main.c glad.o libFormGlfw.a  $(DEVLIBS)
 
 FormNetwork.h: formglfw/FormGlfw.h libFormGlfw.a
-	gcc -E -I/usr/include/freetype2 $(GF)FormGlfw.h > FormNetwork.h
+	gcc -E -I/usr/include/freetype2 -I. $(GF)FormGlfw.h > FormNetwork.h
 
 standalone: $(GAME)/main.c libFormGlfw.a glad.o FormNetwork.h
 	gcc -o $(GAME)/$(GAME) $(GAME)/main.c glad.o libFormGlfw.a $(RELEASELIBS) 
@@ -83,7 +85,7 @@ helper.o: $(HD)helper.c $(HD)helper.h $(HD)list.c $(HD)list.h $(HD)binaryWriter.
 	$(CC) $(HD)helper.c
 
 clean:
-	rm -f $(GAME)/$(GAME)
+	rm -f $(GAME)
 	rm -f *.o
 	rm -f vgcore*
 
@@ -91,5 +93,5 @@ fclean:
 	rm -f *.o 
 	rm -f *.a
 	rm -f vgcore*
-	rm -f $(GAME)/$(GAME)
+	rm -f $(GAME)
 	rm -f FormNetwork.h
