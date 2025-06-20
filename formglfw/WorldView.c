@@ -75,7 +75,7 @@ void setFrame(WorldView *wv, float frame) {
 		wv->cam->x = -xRem * wv->objSX;
 	}
 	
-	float frameY = ceil(frame  * s->yRatio) - 1;
+	float frameY = ceil(frame  * s->yRatio);
 	int centerBuffY = 0;
 	if ((int)frameY % 2 == 0) {
 		centerBuffY = 0.5 * wv->scalePower;

@@ -33,6 +33,8 @@ void setCamera(Camera  *cam) {
 		glUseProgram(shader);
 		GLuint camera = glGetUniformLocation(shader, "Cam");
 		glUniformMatrix4fv(camera, 1, GL_TRUE, identity);
+		GLuint camPos = glGetUniformLocation(shader, "camPos");
+		glUniform3f(camPos, cam->x, cam->y, 0);
 	}
 }
 /*

@@ -155,7 +155,7 @@ void setUpTiles(Anim *a, float *sMatrix, double xSize, double ySize) {
 	mat[7] = 0;
 	// for some reason gets rid of tile distortion lines when resizing screen
 	xSize += 0.00001;
-	ySize += 0.00001;
+	ySize += 0.00001;//not anymore?
 	mat[0] = xSize * a->ratio[0] * a->scale[0] * convertInvert(a->invert[0]);//a->flip[0];
 	mat[5] = ySize * a->ratio[1] * a->scale[1] * convertInvert(a->invert[1]);//a->flip[1];
 	glUniformMatrix4fv(spriteScaleTile, 1, GL_TRUE, mat);
