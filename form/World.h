@@ -47,14 +47,7 @@ Form *removeForm(Form *f);
 Form *removeFormPos(Form *f, int x, int y);
 
 void freeWorld();
-Form *makeDirt(int);
-int saveDirt(Form *d);
-Form *makeStone(int);
 int saveForm(Form *f);
-void dirtFloor(int height);
-void makeSquare(int x, int y, int z);
-void makeStoneSquare(int x, int y, int z);
-void makeCircle(int x, int y, int r);
 void writeWorld(char *file);
 bool loadWorld(char *file);
 bool clearCheck();

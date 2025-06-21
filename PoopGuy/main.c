@@ -1,6 +1,7 @@
 //#include "../formglfw/FormGlfw.h"
 #include "../FormNetwork.h"
 #include <stdbool.h>
+#include "dirt.c"
 #include "acts/actList.c"
 #include "poopPlayer.c"
 #include "Eco.c"
