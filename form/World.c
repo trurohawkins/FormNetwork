@@ -667,6 +667,25 @@ bool checkFormID(int x, int y, int id) {
 	return check;
 }
 
+Form *checkStat(int x, int y, char *stat) {
+	Form *f = NULL;
+	if (x >= 0 && y >= 0 && x < theWorld->x && y < theWorld->y) {
+		Cell *c = theWorld->map[x][y];
+		if (c) {
+			linkedList *cur = c->within;
+			while (cur) {
+				float *s = getStat(cur->data, stat);
+				if (s) {
+					f = cur->data;
+					break;
+				}
+				cur = cur->next;
+			}
+		}
+	}
+	return f;
+}
+
 void freeWorld() {
 	clearCheck();
 	deleteActorList();

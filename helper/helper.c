@@ -140,6 +140,14 @@ int randRange(int min, int max) {
 	return (rand() % amnt) + min;
 }
 
+int coinFlip(int a, int b) {
+	if (randPercent() < 0.5) {
+		return a;
+	} else {
+		return b;
+	}
+}
+
 float distance(float x1, float y1, float x2, float y2) {
 	float d = sqrt(pow(x2 - x1, 2) + pow(y2 - y1, 2));
 	return d;

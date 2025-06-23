@@ -32,6 +32,7 @@ linkedList *checkCol(Form *f, int x, int y, bool solid);
 void checkColAddList(linkedList **list, Form *f, int x, int y, bool solid);
 int* getFormID(int x, int y);
 bool checkFormID(int x, int y, int id);
+Form *checkStat(int x, int y, char *stat);
 
 bool checkPosCol(Form *f, int x, int y);
 bool checkColSide(Form *f, float xp, float yp, int xd, int yd);

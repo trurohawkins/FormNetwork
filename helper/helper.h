@@ -23,6 +23,7 @@ int convertInvert(bool inv);
 float randPercent();
 int randomInt(int upper);
 int randRange(int mmin, int max);
+int coinFlip(int a, int b);
 int clamp(int, int, int);
 double clampF(double, double, double);
 float max(float a, float b);
