@@ -79,7 +79,6 @@ void drawWorld(World *w) {
 										clearData(t->trans, false);
 										//clearData(t->texture, true);
 										setRots(t->rot, 0);
-										t->data = f;
 										//setData(t->color, 1);
 									} else {
 										//free(ts);
