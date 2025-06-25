@@ -58,9 +58,9 @@ void FormLoop(void (game)(void)) {
 			glClearColor(bgColor[0], bgColor[1], bgColor[2], bgColor[3]);
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 			game();
+			glfwSwapBuffers(screen->window);
 		} // maybe we want to include the next 2 lines, should test with sound
 		cleanUpPlayedAudio();
-		glfwSwapBuffers(screen->window);
 		frameCount++;
 		int curTime = time(NULL);
 		if (curTime - initialTime >= 1) {

@@ -25,7 +25,7 @@ void addToCell(Cell* c, Form *f) {
 		}
 	} else {
 		printf("%i < %i\n", c->count, (maxCellCount - 1));
-		printf("tried to add NULL form to Cell ");
+		printf("tried to add NULL form to Cell or too many in cell");
 		printCell(c);
 	}
 }
