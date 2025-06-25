@@ -79,6 +79,7 @@ void drawWorld(World *w) {
 										clearData(t->trans, false);
 										//clearData(t->texture, true);
 										setRots(t->rot, 0);
+										t->data = f;
 										//setData(t->color, 1);
 									} else {
 										//free(ts);
@@ -99,7 +100,11 @@ void drawWorld(World *w) {
 									editData(t->color, x, y, moistMulti, 2);
 									editData(t->color, x, y, 1, 1);
 								}
-								editData(t->trans, x * t->multi, y * t->multi, 1, 1);
+								for (int i = 0; i < t->multi; i++) {
+									for (int j = 0; j < t->multi; j++) {
+										editData(t->trans, (x * t->multi) + i, (y * t->multi) + j, 1, 1);
+									}
+								}
 								//printf(" %i ", 1);
 								//editTranslations(x, y, 0);
 							} else {
@@ -138,7 +143,11 @@ void drawWorld(World *w) {
 		glBindVertexArray(getTileVAO());
 		SortedList *cur = tileList;
 		while (cur) {
-			drawTileSet(cur->data, curView->objSX, curView->objSY, curView->frameX, curView->frameY);
+			TileSet *tiles = cur->data;
+			if (tiles->setTiles) {
+				tiles->setTiles(tiles);
+			}
+			drawTileSet(tiles, curView->objSX, curView->objSY, curView->frameX, curView->frameY);
 			cur = cur->next;
 		}
 		//free(tileSets);

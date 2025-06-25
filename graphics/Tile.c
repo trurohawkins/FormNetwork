@@ -222,6 +222,7 @@ void editData(DrawScreen *ds, int x, int y, float val, int mod) {
 }
 
 float getData(DrawScreen *ds, int x, int y, int mod) {
+	//printf("%i, %i\n", ds->dimensionX, ds->stride);
 	int index = (y * (ds->dimensionX) * ds->stride) + (ds->stride-mod) + (x * ds->stride); 
 	if (index >= 0 && index < (ds->dimensionX) * (ds->dimensionY) * ds->stride) {
 		return ds->data[index];

@@ -19,6 +19,7 @@ int *getDir8(int dir);
 int *getDir4(int dir);
 int d8Tod4(int);
 int xyToDir4(int *xy);
+int xyToDir8(int x, int y);
 int convertInvert(bool inv);
 float randPercent();
 int randomInt(int upper);

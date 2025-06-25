@@ -25,6 +25,10 @@ typedef struct TileSet {
 	DrawScreen *texture;
 	int renderOrder;
 	void (*tileSprites)(struct TileSet*, void*, int, int);
+	// replace tileSprites with setTile, or not, searching through tilesets can be intense
+	// and currently thewrong Form might be set as data
+	void (*setTiles)(struct TileSet*);
+	void *data;
 	int multi;//this can be used for making a tile set with higher resolution
 } TileSet;
 

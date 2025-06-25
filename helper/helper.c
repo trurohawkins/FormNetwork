@@ -91,14 +91,16 @@ int *getDir8(int dir) {
 }
 
 int d8Tod4(int dir) {
-	if (dir % 2 == 1) {
-		if (dir == 1 || dir == 3) {
-			dir = 2;
-		} else if (dir == 5 || dir == 7) {
-			dir = 6;
+	if (dir > -1 && dir < 8) {
+		if (dir % 2 == 1) {
+			if (dir == 1 || dir == 3) {
+				dir = 2;
+			} else if (dir == 5 || dir == 7) {
+				dir = 6;
+			}
 		}
+		dir /= 2;
 	}
-	dir /= 2;
 	return dir;
 }
 
@@ -109,6 +111,16 @@ int xyToDir4(int *xy) {
 		}
 	}
 	printf("(%i, %i), did not mmatch a cardinal direction\n", xy[0], xy[1]);
+	return -1;
+}
+
+int xyToDir8(int x, int y) {
+	for (int i = 0; i < 8; i++) {
+		if (x == dir8[i][0] && y == dir8[i][1]) {
+			return i;
+		}
+	}
+	return -1;
 }
 
 
