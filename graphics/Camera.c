@@ -21,20 +21,20 @@ void setCameraSize(Camera *cam, float z) {
 }
 
 void setCamera(Camera  *cam) {
-	//printf("setting camera to %f, %f\n", cam->x, cam->y);
+	printf("setting camera to %f, %f, %f\n", cam->x, cam->y, cam->z);
 	float identity[16] = {
-	cam->z, 0, 0, cam->x,
-	0, cam->z, 0, cam->y,
+	cam->z, 0, 0, 0,
+	0, cam->z, 0, 0,
 	0, 0, 1, 0,
-	0, 0, 0, 1
+	cam->x, cam->y, 0, 1
 	};
 	for (int i = 0; i < 3; i++) {
 		GLuint shader = getSP(i);
 		glUseProgram(shader);
 		GLuint camera = glGetUniformLocation(shader, "Cam");
-		glUniformMatrix4fv(camera, 1, GL_TRUE, identity);
-		GLuint camPos = glGetUniformLocation(shader, "camPos");
-		glUniform3f(camPos, cam->x, cam->y, 0);
+		glUniformMatrix4fv(camera, 1, GL_FALSE, identity);
+		//GLuint camPos = glGetUniformLocation(shader, "camPos");
+		//glUniform3f(camPos, cam->x, cam->y, 0);
 	}
 }
 /*

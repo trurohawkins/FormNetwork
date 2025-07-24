@@ -23,8 +23,8 @@ void main()
 {
 if(aOffset.z == 1) {
 mat4 tm = tMat;
-tm[3][0] = tMat[3][0] + aOffset.x + camPos.x;
-tm[3][1] = tMat[3][1] + aOffset.y + camPos.y;
+tm[3][0] = tMat[3][0] + aOffset.x;
+tm[3][1] = tMat[3][1] + aOffset.y;
 mat4 sm = sMat;
 sm[0][0] = sm[0][0];
 sm[1][1] = sm[1][1];
@@ -33,7 +33,7 @@ rm[0][0] = rotations.x;
 rm[1][0] = rotations.y;
 rm[0][1] = rotations.z;
 rm[1][1] = rotations.w;
-gl_Position = tm * sm * rm * vec4(aPos, 1.0);
+gl_Position = Cam * tm * sm * rm * vec4(aPos, 1.0);
 mat3 tc = tcTrans;
 tc[2][0] = texOffset.x;
 tc[2][1] = texOffset.y;
