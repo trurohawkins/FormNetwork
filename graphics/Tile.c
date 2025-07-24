@@ -138,7 +138,7 @@ void setScreenVBO(DrawScreen *ds) {
 	glEnableVertexAttribArray(ds->location);
 	glBindBuffer(GL_ARRAY_BUFFER, ds->vbo);
 	glVertexAttribPointer(ds->location, ds->stride, GL_FLOAT, GL_FALSE, ds->stride * sizeof(float), (void*)0);
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	//glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glVertexAttribDivisor(ds->location, 1);
 }
 

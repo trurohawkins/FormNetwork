@@ -33,12 +33,17 @@ rm[0][0] = rotations.x;
 rm[1][0] = rotations.y;
 rm[0][1] = rotations.z;
 rm[1][1] = rotations.w;
-gl_Position = Cam * tm * sm * rm * vec4(aPos, 1.0);
+vec4 pos = vec4(aPos, 1.0);
+pos = rm * pos;
+pos = sm * pos;
+pos = tm * pos;
+gl_Position = pos;
 mat3 tc = tcTrans;
 tc[2][0] = texOffset.x;
 tc[2][1] = texOffset.y;
 vec3 Tex =  tc * tcScale * vec3(aTexCoord, 1.0);
 TexCoord = vec2(Tex.x, Tex.y);
 ourColor = aColor;
+} else {
 }
 }
