@@ -24,6 +24,7 @@ TileSet *makeTileSet(Anim *a, int xd, int yd, int mx, int my, float tileSizeX, f
 	ts->multi = 1;
 	GLuint tileShader = getSP(2);
 	glUseProgram(tileShader);
+	glBindVertexArray(getTileVAO());
 	//printf("diemnsions recieved %i, %i\n", xd, yd);
 	ts->trans = makeDrawScreen(xd, yd, mx, my, tileSizeX, tileSizeY, 3, 3, false, 0);
 	ts->color = makeDrawScreen(xd, yd, mx, my, tileSizeX, tileSizeY, 1, 4, true, 1);
@@ -31,41 +32,6 @@ TileSet *makeTileSet(Anim *a, int xd, int yd, int mx, int my, float tileSizeX, f
 	ts->texture = makeDrawScreen(xd, yd, mx, my, tileSizeX, tileSizeY, 5, 2, true, 0);
 	addTileSet(ts);
 	return ts;
-}
-
-void freeTileSet(void *ts) {
-	TileSet *t = ts;
-	freeDrawScreen(t->color);
-	freeDrawScreen(t->trans);
-	freeDrawScreen(t->rot);
-	freeDrawScreen(t->texture);
-	freeAnim(t->set);
-	free(t);
-}
-
-void setTileVBO(TileSet *ts) {
-	glBindVertexArray(getTileVAO());
-	setScreenVBO(ts->trans);
-	setScreenVBO(ts->rot);
-	setScreenVBO(ts->color);
-	setScreenVBO(ts->texture);
-}
-
-int addTileSet(TileSet *t) {
-	addToList(&TileSets, t);
-	return tileCount++;
-}
-
-TileSet *getTile(int index) {
-	TileSet *ts = (TileSet*)indexList(&TileSets, index);
-	if (ts == NULL) {
-		printf("no good NULL tilesset\n");
-	}
-	return ts;
-}
-
-int getTileCount() {
-	return tileCount;
 }
 
 DrawScreen *makeDrawScreen(int dimensionX ,int dimensionY, int maxDimensionX ,int maxDimensionY, float tileSizeX, float tileSizeY, int location, int stride, bool base, float defaultVal) {
@@ -87,11 +53,6 @@ DrawScreen *makeDrawScreen(int dimensionX ,int dimensionY, int maxDimensionX ,in
 	return ds;
 }
 
-void freeDrawScreen(DrawScreen *ds) {
-	free(ds->data);
-	free(ds);
-}
-
 void sizeDrawScreen(DrawScreen *ds, int newSizeX, int newSizeY, bool base) {
 	if (newSizeX > 0 && newSizeY > 0) {// && newSizeX <= ds->maxX && newSizeY <= ds->maxY) {
 		//printf("SIZING DRAWSCREN %i, %i\n", newSizeX, newSizeY);
@@ -109,6 +70,28 @@ void sizeDrawScreen(DrawScreen *ds, int newSizeX, int newSizeY, bool base) {
 void bindData(DrawScreen *ds) {
 	glBindBuffer(GL_ARRAY_BUFFER, ds->vbo);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * ((ds->dimensionX) * (ds->dimensionY) * ds->stride), &((ds->data)[0]), GL_STATIC_DRAW);
+}
+
+void setTileVBO(TileSet *ts) {
+	glBindVertexArray(getTileVAO());
+	setScreenVBO(ts->trans);
+	setScreenVBO(ts->rot);
+	setScreenVBO(ts->color);
+	setScreenVBO(ts->texture);
+}
+
+void setScreenVBO(DrawScreen *ds) {
+	glEnableVertexAttribArray(ds->location);
+	glBindBuffer(GL_ARRAY_BUFFER, ds->vbo);
+	glVertexAttribPointer(ds->location, ds->stride, GL_FLOAT, GL_FALSE, ds->stride * sizeof(float), (void*)0);
+	//glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glVertexAttribDivisor(ds->location, 1);
+}
+
+
+void freeDrawScreen(DrawScreen *ds) {
+	free(ds->data);
+	free(ds);
 }
 
 void initializeData(DrawScreen *ds, bool base) {
@@ -133,14 +116,6 @@ void initializeData(DrawScreen *ds, bool base) {
 			}
 		}
 	}
-}
-
-void setScreenVBO(DrawScreen *ds) {
-	glEnableVertexAttribArray(ds->location);
-	glBindBuffer(GL_ARRAY_BUFFER, ds->vbo);
-	glVertexAttribPointer(ds->location, ds->stride, GL_FLOAT, GL_FALSE, ds->stride * sizeof(float), (void*)0);
-	//glBindBuffer(GL_ARRAY_BUFFER, 0);
-	glVertexAttribDivisor(ds->location, 1);
 }
 
 void setUpTiles(Anim *a, float *sMatrix, double xSize, double ySize) {
@@ -325,6 +300,24 @@ void printData(DrawScreen *ds) {
 	return;
 }
 
+int addTileSet(TileSet *t) {
+	addToList(&TileSets, t);
+	return tileCount++;
+}
+
+TileSet *getTile(int index) {
+	TileSet *ts = (TileSet*)indexList(&TileSets, index);
+	if (ts == NULL) {
+		printf("no good NULL tilesset\n");
+	}
+	return ts;
+}
+
+int getTileCount() {
+	return tileCount;
+}
+
+
 void setTileSetID(TileSet *ts, int id) {
 	ts->typeID = id;
 }
@@ -333,4 +326,15 @@ void tileProgram() {
 	glUseProgram(getSP(2));
 	glBindVertexArray(getTileVAO());
 }
+
+void freeTileSet(void *ts) {
+	TileSet *t = ts;
+	freeDrawScreen(t->color);
+	freeDrawScreen(t->trans);
+	freeDrawScreen(t->rot);
+	freeDrawScreen(t->texture);
+	freeAnim(t->set);
+	free(t);
+}
+
 
