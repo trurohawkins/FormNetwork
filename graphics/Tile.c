@@ -44,6 +44,7 @@ void freeTileSet(void *ts) {
 }
 
 void setTileVBO(TileSet *ts) {
+	glBindVertexArray(getTileVAO());
 	setScreenVBO(ts->trans);
 	setScreenVBO(ts->rot);
 	setScreenVBO(ts->color);
