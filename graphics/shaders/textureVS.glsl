@@ -45,5 +45,6 @@ vec3 Tex =  tc * tcScale * vec3(aTexCoord, 1.0);
 TexCoord = vec2(Tex.x, Tex.y);
 ourColor = aColor;
 } else {
+	gl_Position = vec4(0, 0, 0, 1);
 }
 }
