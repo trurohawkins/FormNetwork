@@ -22,14 +22,18 @@ TileSet *makeTileSet(Anim *a, int xd, int yd, int mx, int my, float tileSizeX, f
 	ts->typeID = -1;
 	ts->renderOrder = 0;
 	ts->multi = 1;
-	GLuint tileShader = getSP(2);
-	glUseProgram(tileShader);
-	glBindVertexArray(getTileVAO());
+
 	//printf("diemnsions recieved %i, %i\n", xd, yd);
 	ts->trans = makeDrawScreen(xd, yd, mx, my, tileSizeX, tileSizeY, 3, 3, false, 0);
 	ts->color = makeDrawScreen(xd, yd, mx, my, tileSizeX, tileSizeY, 1, 4, true, 1);
 	ts->rot = makeDrawScreen(xd, yd, mx, my, tileSizeX, tileSizeY, 4, 4, true, 0);
 	ts->texture = makeDrawScreen(xd, yd, mx, my, tileSizeX, tileSizeY, 5, 2, true, 0);
+
+	glUseProgram(getSP(2));
+	glBindVertexArray(getTileVAO());
+	setTileVBO(ts);
+	glBindVertexArray(0);
+
 	addTileSet(ts);
 	return ts;
 }
@@ -42,6 +46,7 @@ DrawScreen *makeDrawScreen(int dimensionX ,int dimensionY, int maxDimensionX ,in
 	ds->sizeY = tileSizeY;
 	//printf("maxDs: %i, %i * %i\n", maxDimensionX, maxDimensionY, stride);
 	ds->data = (float*)calloc(sizeof(float), (maxDimensionX) * (maxDimensionY) * stride);
+
 	for (int i = 0; i < maxDimensionX * maxDimensionY * stride; i++) {
 		ds->data[i] = defaultVal;
 	}
@@ -49,7 +54,7 @@ DrawScreen *makeDrawScreen(int dimensionX ,int dimensionY, int maxDimensionX ,in
 	ds->location = location;
 
 	sizeDrawScreen(ds, dimensionX, dimensionY, base);
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	//glBindBuffer(GL_ARRAY_BUFFER, 0);
 	return ds;
 }
 
@@ -60,16 +65,21 @@ void sizeDrawScreen(DrawScreen *ds, int newSizeX, int newSizeY, bool base) {
 		ds->dimensionX = newSizeX;
 		ds->dimensionY = newSizeY;
 		initializeData(ds, base);
+
 		glGenBuffers(1, &(ds->vbo));
-		bindData(ds);
+		glBindBuffer(GL_ARRAY_BUFFER, ds->vbo);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(float) * ((ds->dimensionX) * (ds->dimensionY) * ds->stride), &((ds->data)[0]), GL_STATIC_DRAW);
+		glBindVertexArray(getTileVAO());
 		setScreenVBO(ds);
+		glBindVertexArray(0);
 	}
 
 }
 
 void bindData(DrawScreen *ds) {
 	glBindBuffer(GL_ARRAY_BUFFER, ds->vbo);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * ((ds->dimensionX) * (ds->dimensionY) * ds->stride), &((ds->data)[0]), GL_STATIC_DRAW);
+  glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(float) * ((ds->dimensionX) * (ds->dimensionY) * ds->stride), &((ds->data)[0]));
+	//glBufferData(GL_ARRAY_BUFFER, sizeof(float) * ((ds->dimensionX) * (ds->dimensionY) * ds->stride), &((ds->data)[0]), GL_STATIC_DRAW);
 }
 
 void setTileVBO(TileSet *ts) {
@@ -78,6 +88,7 @@ void setTileVBO(TileSet *ts) {
 	setScreenVBO(ts->rot);
 	setScreenVBO(ts->color);
 	setScreenVBO(ts->texture);
+	glBindVertexArray(0);
 }
 
 void setScreenVBO(DrawScreen *ds) {
@@ -155,6 +166,9 @@ void setUpTiles(Anim *a, float *sMatrix, double xSize, double ySize) {
 
 void drawTileSet(TileSet *ts, float objSX, float objSY, float frameX, float frameY) {
 	setTileVBO(ts);
+	glUseProgram(getSP(2));
+	glBindVertexArray(getTileVAO());
+
 	float mat[] = {
 		1.0, 0.0, 0.0, 0.0,
 		0.0, 1.0, 0.0, 0.0,
@@ -167,6 +181,7 @@ void drawTileSet(TileSet *ts, float objSX, float objSY, float frameX, float fram
 	bindData(ts->color);
 	bindData(ts->texture);
 	glDrawElementsInstanced(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0, (ceil(frameX*ts->multi)) * ceil(frameY*ts->multi));
+	glBindVertexArray(0);
 }
 
 
