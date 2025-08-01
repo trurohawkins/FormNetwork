@@ -7,7 +7,7 @@ intList *makeIntList(int data) {
 void addToIntList(intList **head, int item) {
 	if ((*head) == 0) {
 		(*head) = makeIntList(item);
-		(*head)->data = item;
+		//(*head)->data = item;
 	} else {
 		intList *tmp = *head;
 		while(tmp->next != 0) {
@@ -15,6 +15,28 @@ void addToIntList(intList **head, int item) {
 		}
 		tmp->next = makeIntList(item);
 	}
+}
+
+bool addToIntListSingle(intList **head, int item) {
+	if ((*head) == 0) {
+		(*head) = makeIntList(item);
+		//(*head)->data = item;
+	} else {
+		intList *chk = *head;
+		while (chk) {
+			if (chk->data == item) {
+				return false;
+			} else {
+				if (chk->next == 0) {
+					break;
+				} else {
+					chk = chk->next;
+				}
+			}
+		}
+		chk->next = makeIntList(item);
+	}
+	return true;
 }
 
 int removeFromIntList(intList **head, int item) {
@@ -68,6 +90,15 @@ void checkAndRemoveInt(intList **head, bool (*chk)(int)) {
 	}
 }
 
+int countList(intList *head) {
+	int count = 0;
+	intList *tmp = head;
+	while (tmp) {
+		count++;
+		tmp = tmp->next;
+	}
+	return count;
+}
 
 void freeIntList(intList **head) {
 	intList *cur = *head;

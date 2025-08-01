@@ -63,7 +63,6 @@ void deleteTerrain() {
 	linkedList *t = theWorld->terrain;
 	linkedList *next;
 	while (t != NULL) {
-		printf("deleting\n");
 		next = t->next;
 		if (t->data != NULL) {
 			deleteForm((Form*)t->data);
