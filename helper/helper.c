@@ -3,6 +3,7 @@
 //#include "file.c"
 int **dirs;
 int **dir8;
+int zero[2] = {0, 0};
 float *angles;
 
 void initDirections() {
@@ -16,6 +17,7 @@ void initDirections() {
 		dir8[i] = (int*)calloc(2, sizeof(int));
 	}
 	angles = (float*)calloc(8, sizeof(float));
+
 	dirs[0][0] = 0;
 	dirs[0][1] = 1;
 	dirs[1][0] = -1;
@@ -80,14 +82,14 @@ int *getDir4(int dir) {
 	if (dir > -1 && dir < 4) {
 		return dirs[dir];
 	}
-	return dirs[0];
+	return zero;
 }
 
 int *getDir8(int dir) {
 		if (dir > -1 && dir < 8) {
 			return dir8[dir];
 		}
-		return dir8[0];
+		return zero;
 }
 
 int d8Tod4(int dir) {
@@ -236,6 +238,9 @@ float lerp(float a, float b, float t) {
 	return a * (1.0 - t) + (b * t);
 }
 
+float slerp(float a, float b, float t) {
+	return a + (b - a) * sin(t * M_PI / 2);
+}
 
 char *fileToString(char *txt)
 {
