@@ -97,7 +97,6 @@ Form *makePoopPlayer(int pNum) {
 		addControl(p, "K0U", poop);
 		addControl(p, "K0M", jumpStart);
 	}
-	/* need to find way to differentiate between controllers and keyboards
 	makeJoyButtControl(p, ';', up);
 	makeJoyButtControl(p, '>', left);
 	makeJoyButtControl(p, '=', down);
@@ -109,7 +108,6 @@ Form *makePoopPlayer(int pNum) {
 	makeJoyAxeControl(p, '4', toggleEat);
 	makeJoyAxeControl(p, '0', xMove);
 	makeJoyAxeControl(p, '1', yMove);
-	*/
 	poopers[curPoopers++] = pooper;
 	return pooper->me->body;
 }
@@ -198,11 +196,11 @@ void right(void *pg, float val) {
 }
 
 void xMove(void *pg, float val) {
-	printf("%f\n", val);
+	//printf("%f\n", val);
 	if (val > 0) {
 		right(pg, 1);
 	}  else if (val < 0) {
-		printf("moving left\n");
+		//printf("moving left\n");
 		left(pg, 1);
 	} else {
 		right(pg, 0);

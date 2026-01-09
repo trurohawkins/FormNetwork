@@ -1,5 +1,5 @@
 #include "Input.h"
-
+//joysticks are really gamepads(I got terminology wrong)
 linkedList *joystickList = 0;
 
 void initJoyList() {
@@ -8,12 +8,14 @@ void initJoyList() {
 			const char *name = glfwGetJoystickName(i);
 			printf("joy stick connected %i: %s\n", i, name);
 			printf("GUID: %s\n", glfwGetJoystickGUID(i));
-			if (glfwJoystickIsGamepad(i)) {
-				printf("  is a gamepad\n");
-			} else if (glfwJoystickPresent(i)) {
-				printf("  is a joystick\n");
+			if (glfwJoystickPresent(i)) {
+				if (glfwJoystickIsGamepad(i)) {
+					printf("  is a gamepad\n");
+					addJoystick(i);
+				} else {
+					printf(" just a joystick\n");
+				}
 			}
-			addJoystick(i);
 		}
 	}
 	readJoysticks();
@@ -88,7 +90,6 @@ void checkControllerInput() {
 			Joypad *jp = (Joypad *)head->data;
 			int jid = jp->jid;
 			if (glfwGetGamepadState(jid, &state)) {
-				///printf("we got a gamepad\n");
 				for (int i = 0; i < 15; i++) {
 					if (state.buttons[i]) {
 						if (state.buttons[i] == GLFW_PRESS && jp->buttState[i] == false) {
