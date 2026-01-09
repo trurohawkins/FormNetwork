@@ -23,6 +23,22 @@ void initFormGlfw() {
 	int windowX = 960;
 	int windowY = 640;
 	initializeGLFW(windowX, windowY);
+	/*
+	FILE* f = fopen("gamecontrollerdb.txt", "rb");
+	fseek(f, 0, SEEK_END);
+	long size = ftell(f);
+	rewind(f);
+
+	char* data = malloc(size + 1);
+	fread(data, 1, size, f);
+	data[size] = '\0';
+	fclose(f);
+
+	int added = glfwUpdateGamepadMappings(data);
+	printf("added mappings: %i\n", added);
+	free(data);
+	*/
+	glfwUpdateGamepadMappings(gamecontrollerdb);
 	glfwSetJoystickCallback(joystickCallback);
 	initJoyList();
 	initText();
@@ -35,7 +51,6 @@ void initFormGlfw() {
 	initTileSets();
 	Screen *s = getWindow();
 	glfwWindowSizeCallback(s->window, s->width, s->height);
-	glfwUpdateGamepadMappings(gamecontrollerdb);
 	Camera *defCam = makeCamera();
 	setCamera(defCam);
 	free(defCam);

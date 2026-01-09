@@ -7,6 +7,7 @@ void initJoyList() {
 		if (glfwJoystickPresent(i)) {
 			const char *name = glfwGetJoystickName(i);
 			printf("joy stick connected %i: %s\n", i, name);
+			printf("GUID: %s\n", glfwGetJoystickGUID(i));
 			if (glfwJoystickIsGamepad(i)) {
 				printf("  is a gamepad\n");
 			} else if (glfwJoystickPresent(i)) {
