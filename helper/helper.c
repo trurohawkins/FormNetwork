@@ -5,6 +5,7 @@ int **dirs;
 int **dir8;
 int zero[2] = {0, 0};
 float *angles;
+const float epsilon = 1e-6f;
 
 void initDirections() {
 	printf("initilaizing dirs");
@@ -213,12 +214,12 @@ int sign(int num) {
 }
 
 int signF(float num) {
-	if (num > 0) {
-		return 1;
-	} else if (num < 0) {
-		return -1;
-	} else {
+	if (fabsf(num) < epsilon) {
 		return 0;
+	} else if (num > 0.0f) {
+		return 1;
+	} else {
+		return -1;
 	}
 }
 
@@ -231,7 +232,7 @@ int abs(int num) {
 }
 
 bool equal(float a, float b) {
-	return fabs(a - b) < 1e-6;
+	return fabs(a - b) < epsilon;
 }
 
 float lerp(float a, float b, float t) {
