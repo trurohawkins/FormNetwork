@@ -8,8 +8,8 @@
 typedef struct Sound {
 	char *file;
 	float *buff;
-	int reads;
-	int len;
+	long totalFrames;
+	long readFrames;
 	bool loop;
 	int volume;
 } Sound;

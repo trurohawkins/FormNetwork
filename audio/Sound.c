@@ -66,67 +66,49 @@ static int paLibsndfileCb(const void *inputBuffer, void *outputBuffer,
 		PaStreamCallbackFlags statusFlags,
 		void *userData) {
 	float *out = (float*)outputBuffer;
-	long readcount = 0;
-	memset(out, 0x00, framesPerBuffer);
+	memset(out, 0, framesPerBuffer * 2 * sizeof(float));
 	int f = framesPerBuffer * 2;
-	int first = 0;
 	AudioManager *a = userData;
 	linkedList *cur = a->mix;
-	linkedList *pre = 0;
+
+	int first = 0;
+	long readcount = 0;
 	while (cur) {
 		Sound *s = cur->data;
 		if (s) {
-			float volume = a->volumes[s->volume];
-			if (s->reads >= s->len) {
-				if (s->loop) {
-					s->reads = 0;
-				} else {
+			long remaining = s->totalFrames - s->readFrames;
+			if (remaining <= 0) {
+				s->readFrames = 0;
+				if (!s->loop) {
 					cur->data = 0;
+					cur = cur->next;
 					continue;
 				}
 			}
+			long framesToMix = remaining < framesPerBuffer ? remaining : framesPerBuffer;
+			long sampleOffset = s->readFrames * 2;
+			float volume = a->volumes[s->volume];
+			/*
 			if (first == 0) {
-				memcpy(out, s->buff + f * s->reads, f * sizeof(float));
+				memcpy(out, s->buff + f * s->readFrames, f * sizeof(float));
 				for (int i = 0; i < f; i++) {
 					out[i] *= volume;
 				}
 				first = 1;
 			} else {
 				for (int i = 0; i < f; i++) {
-					out[i] += (s->buff[s->reads * f + i] * volume);
+					out[i] += (s->buff[s->readFrames* f + i] * volume);
 				}
 			}
-			s->reads++;
+			*/
+			for (long i = 0; i < framesToMix * 2; i++) {
+				out[i] += s->buff[sampleOffset + i] * volume;
+			}
+			s->readFrames += framesPerBuffer;
 		}
-		pre = cur;
 		cur = cur->next;
 	}
-	/*	
-			for (int i = 0; i < m->max; i++) {
-			Sound *s = m->sounds[i];
-			if (s) {
-			if (s->reads >= s->len) {
-			printf("song %i complete\n", i);
-			if (s->loop) {
-			s->reads = 0;
-			} else {
-			m->sounds[i] = 0;
-			m->num--;
-			continue;
-			}
-			}
-			if (first == 0) {
-			memcpy(out, s->buff + f * s->reads, f * sizeof(float));
-			first = 1;
-			} else {
-			for (int j = 0; j < f; j++) {
-			out[j] += s->buff[s->reads * f + j];
-			}
-			}
-			s->reads++;
-			}
-			}
-	 */
+
 	return paContinue;
 }
 
@@ -157,11 +139,12 @@ Sound *processAudioFile(char *file) {
 	s->file = calloc(fileLen + 1, sizeof(char));
 	memcpy(s->file, file, fileLen);
 	s->file[fileLen] = '\0';
-	s->reads = 0;
+	s->readFrames = 0;
 	s->buff = calloc(size, sizeof(float));
 	s->volume = 0;//aMan->volumes;
 	sf_read_float(infile, s->buff, size);
-	s->len = size / (FPB * 2);
+	//s->len = size / (FPB * 2);
+	s->totalFrames = size / 2;
 	sf_close(infile);
 	addToList(&aMan->sounds, s);
 	return s;
