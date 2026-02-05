@@ -91,6 +91,7 @@ void drawWorld(World *w) {
 								} else {
 									//free(ts);
 								}
+								/* put into poopguy
 								float *m = getStat(f, "moisture");
 								if (m != NULL) {
 									float moistMulti = 1 - min(*m, 0.9);// min(1 - ( (f->stat) - 0.1), 1);
@@ -99,6 +100,7 @@ void drawWorld(World *w) {
 									editData(t->color, x, y, moistMulti, 2);
 									editData(t->color, x, y, 1, 1);
 								}
+								*/
 								for (int i = 0; i < t->multi; i++) {
 									for (int j = 0; j < t->multi; j++) {
 										editData(t->trans, (x * t->multi) + i, (y * t->multi) + j, 1, 1);
@@ -367,7 +369,8 @@ void drawWorldDebug(World *w) {
 						if (f != NULL) {
 							mat[7] = (startY + curView->objSY) + (y * curView->objSY);	
 							glUniformMatrix4fv(tMat, 1, GL_TRUE, mat);
-							float *m = getStat(f, "moisture");
+							//put into poopguy
+							float *m = 0;//getStat(f, "moisture");
 							if (m != NULL) {
 								float fCol[] = {0,0,0};//(float*)calloc(3, sizeof(float));
 								float moistMulti = 1 - min(*m, 0.9);// min(1 - ( (f->stat) - 0.1), 1);

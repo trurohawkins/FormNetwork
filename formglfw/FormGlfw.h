@@ -21,6 +21,8 @@ void changeSprites(Form *f, int index);
 void setOffsets(Form *f, float x, float y);
 void setInverts(Form *f, int axis, bool flipped);
 void setRotos(Form *f, int roto);
+float deltaTime();
+
 void exitGame();
 
 TileSet *newTileSet(char *sheet, int rows, int cols, int id);

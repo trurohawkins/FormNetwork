@@ -21,6 +21,7 @@ void addStat(Form *f, char *k, float val) {
 
 float *getStat(Form *f, char *stat) {
 	if (f != NULL) {
+		//printf("getting stat %s\n", stat);
 		linkedList *cur = (linkedList*)(f->stats);
 		while(cur != NULL) {
 			if (cur->data != NULL) {

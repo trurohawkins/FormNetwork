@@ -164,6 +164,13 @@ void setRotos(Form *f, int roto) {
 	}
 }
 
+float deltaTime() {
+	static double lastFrame = 0;
+	double currentFrame = glfwGetTime();
+	float elapsed = (currentFrame - lastFrame);// * 1000.0;
+	lastFrame = currentFrame;
+	return elapsed;
+}
 
 void exitGame() {
 	printf("exiting\n");

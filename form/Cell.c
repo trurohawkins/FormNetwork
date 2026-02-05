@@ -210,6 +210,7 @@ void freeCell(Cell *c) {
 			Form **forms = getCellContents(c);
 			int count = c->count;
 			for (int i = 0; i < count; i++) {
+				//maybe should be more complicated, use Form->deleteFunction
 				if (!forms[i]->terrain) {
 					removeForm(forms[i]);
 					deleteForm(forms[i]);
