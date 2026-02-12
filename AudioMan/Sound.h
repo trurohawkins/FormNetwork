@@ -1,6 +1,5 @@
 #include <portaudio.h>
 #include <sndfile.h>
-#include "../helper/helper.h"
 
 //Frames PerBuffer
 #define FPB 4096

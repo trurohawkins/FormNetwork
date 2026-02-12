@@ -1,6 +1,13 @@
+#include "Joystick.h"
+#include "../Anim.h"//so we have access to UI mouse fnctions,
 #include "Input.h"
 #include "Joystick.c"
+#include "../../glfw.h"
 linkedList *curInput;
+
+void takeKeys(GLFWwindow *window, int key, int scancode, int action, int mods);
+void takeMouseButt(GLFWwindow *window, int button, int action, int mods);
+void takeScroll(GLFWwindow *window, double xoffset, double yoffset);
 
 void initInput() {
 	curInput = makeList();
@@ -24,7 +31,7 @@ void freeInp(void *i) {
 	free(im);
 }
 
-linkedList *getCurInput() {
+void *getCurInput() {
 	return curInput;
 }
 

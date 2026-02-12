@@ -1,3 +1,5 @@
+#include "sortedList.h"
+
 SortedList *makeSlist(void *data, int val) {
 	SortedList *slist = calloc(1, sizeof(SortedList));
 	slist->data = data;

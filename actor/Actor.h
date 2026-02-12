@@ -20,6 +20,6 @@ void deleteActor(void *actor);
 // destroy called by other functions to let us know wee need to destroy this Actor and or Form, and run nay other code
 void destroyActor(Actor *a);
 
-#include "ActorList.h"
+//#include "ActorList.h"
 //#include "PoopGuy.h"
 #endif

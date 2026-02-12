@@ -1,13 +1,44 @@
 #ifndef ANIM
 #define ANIM
-#include "glfwMain.h"
-//#include <stdio.h>
-//#include <GL/glew.h>
-//#include <GLFW/glfw3.h>
-//#include <GL/gl.h>
 #include <stdbool.h>
-#include "../helper/helper.h"
-#include "TextureManager.h"
+typedef struct textureSource {
+	char *name;
+	unsigned int *tex;
+	float *colors;
+	int numTex;
+	int width;
+	int height;
+	int channels;
+} textureSource;
+
+typedef struct colorLayer {
+	unsigned char color[4];
+	unsigned char* data;
+} colorLayer;
+
+typedef struct colorLayerInfo {
+	int num;
+	colorLayer *layers;
+} colorLayerInfo;
+
+void makeTextureManager();
+void addTexture(textureSource *ts);
+void deleteTextureManager();
+unsigned int genTexture(unsigned char *data, int wid, int hei);
+textureSource *makeTexture(char *img, bool single);
+textureSource *makeTextureFromImages(char **imgs, int num, bool whiteGen);
+textureSource *makeWhiteLayerTextureFiles(char *img);
+void makeLayerTexture(textureSource *ts, unsigned char *data, int numColors);
+void writeLayerTextureToFile(textureSource *ts, unsigned char *data, char *paletteName);
+void genLayerTexture(textureSource *ts, colorLayerInfo *layers);
+int countColors(textureSource *ts, unsigned char* data);
+colorLayerInfo *separateImgByColor(textureSource *ts, unsigned char *data, int numColors);
+textureSource *findTexture(char *img);
+textureSource *getTexture(char **name, int num, bool whiteGen);
+void freeTextureSource(textureSource *ts);
+void freeColorLayerInfo(colorLayerInfo *layers);
+void writeTextureToFile(textureSource *ts, colorLayerInfo *layers);
+void writePalette(textureSource *ts, char *name);
 
 typedef struct Anim {
 	int drawOrder;
@@ -34,19 +65,11 @@ typedef struct Anim {
 	void (*animEnd)(struct Anim*);
 } Anim;
 
-#include "AnimOrder.h"
-#include "AnimList.h"
-#include "Tile.h"
-#include "UI.h"
-
 Anim *makeAnim(char **sheet, int spriteNum, bool generated, int rows, int col);
 char **makeSheet(char *baseFile, int numColors);
 Anim *makeAnimSheet(char *baseFile, int numColors, int rows, int col);
 unsigned int makeSpriteTexture(char *sheet, int rows, int col);
-void getUniformValue(GLuint texShader, char *name, GLuint *dest);
-void setTexTrans(GLuint tt);
-void setTexScale(GLuint ts);
-void setTexColor(GLuint tc);
+
 void initTexInts();
 float rotoToRadian(int d);
 void freeAnim(Anim *a);
@@ -59,7 +82,8 @@ void setRoto(Anim *a, int degree);
 void setInvert(Anim *a, int axis, bool flipped);
 void setDrawOrder(Anim *a, int o);
 void addSprite(Anim *a, int index, int len);
-void animAddVao(Anim *a, GLuint vao);
+//GLuint
+void animAddVao(Anim *a, unsigned int vao);
 //void animGenVao(Anim *a);
 void animate(Anim *a);
 void changeSprite(Anim *a, int index);

@@ -1,3 +1,5 @@
+#include "list.h"
+
 linkedList *makeList() {
 	linkedList *nl = (linkedList*) calloc(1, sizeof(linkedList));
 	nl->data = 0;
@@ -385,3 +387,6 @@ void *popList(linkedList **head) {
 	free(oh);
 	return data;
 }
+
+#include "sortedList.c"
+#include "intList.c"

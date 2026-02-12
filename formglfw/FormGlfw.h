@@ -1,9 +1,11 @@
 #ifndef FORMGLFW
 #define FORMGLFW
-#include "../form/Form.h"
-#include "../helper/helper.h"
-#include "../graphics/glfwMain.h"
-#include "../audio/Sound.h"
+#include "../FormNetwork.h"
+#include "../Form.h"
+#include "../helper.h"
+#include "../glfw.h"
+#include "../AudioMan.h"
+
 #include "Player.h"
 #include "WorldView.h"
 #include "god.h"

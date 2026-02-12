@@ -1,6 +1,16 @@
+#include "../glfwMain.h"
+//#include <stdio.h>
+//#include <GL/glew.h>//loader of functions for backwards compatibility**
+//#include <GLFW/glfw3.h>
+//#include <GL/gl.h>
+#include "../../helper.h"
 #include "Input.h"
+#include "../text/Text.h"
+#include "../UI.h"
 //joysticks are really gamepads(I got terminology wrong)
 linkedList *joystickList = 0;
+
+void removeJoypad(linkedList **cur, int jid);
 
 void initJoyList() {
 	for (int i = 0; i < 16; i++) {

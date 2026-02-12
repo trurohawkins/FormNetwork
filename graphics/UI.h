@@ -1,8 +1,6 @@
 #ifndef USERINTERFACE
 #define USERINTERFACE
 
-#include "text/Text.h"
-
 typedef struct UI {
 	float xp;
 	float yp;

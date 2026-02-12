@@ -1,3 +1,4 @@
+#include "../../glfw.h"
 #include "Shaders.h"
 
 GLuint makeShaderProgramFile(char *vs, char *fs) {

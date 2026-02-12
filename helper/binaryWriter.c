@@ -1,3 +1,5 @@
+#include "binaryWriter.h"
+
 bool writeBinaryInt(char *file, int *val, int num) {
 	FILE *fptr = fopen(file, "ab");
 	if (fptr != NULL) {

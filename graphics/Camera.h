@@ -1,6 +1,5 @@
 #ifndef CAMERA
 #define CAMERA
-#include "glfwMain.h"
 
 typedef struct Camera {
 	float x;

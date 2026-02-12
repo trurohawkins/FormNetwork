@@ -1,6 +1,5 @@
 #ifndef LIB
 #define LIB
-#include "../helper/helper.h"
 typedef struct Form {
 	int id;
 	float pos[2];
@@ -59,10 +58,4 @@ bool canCollide(Form *a, Form *b);
 void setRoto(Form *f, int degree);
 void setInvert(Form *f, int axis, bool flipped);
 */
-#include "../actor/Action.h"
-#include "../actor/Actor.h"
-#include "Cell.h"
-#include "World.h"
-#include "Value.h"
-#include "FormSpawner.h"
 #endif

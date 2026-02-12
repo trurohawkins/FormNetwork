@@ -4,7 +4,6 @@
 #include "WorldView.c"
 #include "DrawWorld.c"
 #include "../controllerDB.c"
-
 bool doGL = true;
 
 int frameX = 50;

@@ -43,8 +43,5 @@ bool compareColor(void *c1, void *c2);
 int decPlace(int d);
 float intToFrac(int i, int pow);
 
-#include "list.h"
-#include "intList.h"
-#include "sortedList.h"
-#include "binaryWriter.h"
+void testFunc();
 #endif

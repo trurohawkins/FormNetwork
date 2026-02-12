@@ -1,5 +1,7 @@
 #ifndef TEXTRENDER
 #define TEXTRENDER
+#include <ft2build.h>
+#include <cglm/cglm.h>
 #include <stdbool.h>
 typedef struct textCharacter {
 	unsigned int TextureID;//ID handle of the glyph texture
@@ -24,10 +26,6 @@ typedef struct Text {
 	float yOffset;
 	float *color;
 } Text;
-#include "../glfwMain.h"
-#include "TextInput.h"
-#include <ft2build.h>
-#include <cglm/cglm.h>
 
 #include FT_FREETYPE_H
 
@@ -35,7 +33,8 @@ textCharacter *makeTextCharacter(unsigned int texture, int xs, int ys, int xb, i
 void initText();
 void renderText(char *string, float x, float y, float scale);
 void setTextDrawColor(float *col);
-void setTextOrtho(Screen *screen);
+//screen is of type Screen
+void setTextOrtho(void *screen);
 void drawText(Text *t, float x, float y);
 Text *makeText(char *str, float scale, bool centered, float r, float g, float b, float a);
 void setTextText(Text *t, char *str);

@@ -1,3 +1,5 @@
+#include "intList.h"
+
 intList *makeIntList(int data) {
 	intList *il = calloc(1, sizeof(intList));
 	il->next = 0;

@@ -1,4 +1,12 @@
+#include "../helper.h"
 #include "Form.h"
+#include "../actor/Action.h"
+#include "../actor/Actor.h"
+#include "../actor/ActorList.h"
+#include "Cell.h"
+#include "World.h"
+#include "Value.h"
+#include "FormSpawner.h"
 Form *inert;
 Form *makeForm(float r, float g, float b, float wid, float len) {
 	Form *newForm = (Form *)calloc(1, sizeof(Form));

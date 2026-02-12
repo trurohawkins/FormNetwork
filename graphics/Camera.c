@@ -1,3 +1,4 @@
+#include "../glfw.h"
 #include "Camera.h"
 
 Camera* makeCamera() {

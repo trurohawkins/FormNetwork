@@ -1,3 +1,5 @@
+#include "text/Text.h"
+
 linkedList *BG;
 linkedList *FG;
 linkedList *pauseScreen;

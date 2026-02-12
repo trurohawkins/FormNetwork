@@ -1,4 +1,17 @@
+#include "../glfw.h"
+//#include <stdio.h>
+//#include <GL/glew.h>
+//#include <GLFW/glfw3.h>
+//#include <GL/gl.h>
+#include "../helper.h"
+#include "TextureManager.h"
 #include "Anim.h"
+
+#include "AnimOrder.h"
+#include "AnimList.h"
+#include "Tile.h"
+#include "UI.h"
+
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
 #define STB_IMAGE_WRITE_IMPLEMENTATION
@@ -343,6 +356,11 @@ void setInvert(Anim *a, int axis, bool flipped) {
 void setDrawOrder(Anim *a, int o) {
 	a->drawOrder = o;
 }
+
+void getUniformValue(GLuint texShader, char *name, GLuint *dest);
+void setTexTrans(GLuint tt);
+void setTexScale(GLuint ts);
+void setTexColor(GLuint tc);
 
 
 void getUniformValue(GLuint texShader, char *name, GLuint *dest) {

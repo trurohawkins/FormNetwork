@@ -1,3 +1,5 @@
+#include "../../glfw.h"
+#include "TextInput.h"
 #include "Text.h"
 textCharacter **alphabet;
 unsigned int VAO,VBO;
@@ -138,7 +140,8 @@ void setTextDrawColor(float *col) {
 }
 
 //called for resizing operations
-void setTextOrtho(Screen *screen) {//float screenScale) {//float left, float right, float bottom, float top, float near, float far) {
+void setTextOrtho(void *scr) {//float screenScale) {//float left, float right, float bottom, float top, float near, float far) {
+	Screen *screen = scr;
 	GLuint textShader = getSP(3);
 	glUseProgram(textShader);
 	//Screen *screen = getWindow();

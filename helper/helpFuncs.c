@@ -1,4 +1,4 @@
-#include "helper.h"
+#include "helpFuncs.h"
 
 //#include "file.c"
 int **dirs;
@@ -325,8 +325,7 @@ float intToFrac(int i, int pow) {
 	return (float)res / pow;
 }
 
-#include "list.c"
-#include "intList.c"
-#include "sortedList.c"
-#include "binaryWriter.c"
+void testFunc() {
+	printf("caca poo poo poo\n");
+}
 

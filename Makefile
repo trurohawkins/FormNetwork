@@ -4,6 +4,9 @@ LC = gcc -c -g
 WC = x86_64-w64-mingw32-gcc -c -g
 RELEASELIBS = -l:libglfw3.a -l:libdl.a -l:libpthread.a -l:libfreetype.a -l:libcglm.a -lm -l:libsndfile.a -l:libportaudio.a -ljack -lasound -logg -lvorbisenc -lvorbis -lopus -lFLAC -lmpg123 -lmp3lame
 DEVLIBS = -lglfw -lGL -lm -ldl -lfreetype -lcglm -lsndfile -lportaudio
+
+MYLIBS = libFormGlfw.a libAudioMan.a libHelper.a
+
 GLW = -lglfw3 -lopengl32 -lgdi32 -lfreetype -lsndfile -lportaudio
 GF = formglfw/
 FD = form/
@@ -14,19 +17,19 @@ ID = $(GD)input/
 SHD = $(GD)shaders/
 TD = $(GD)text/
 HD = helper/
-AU = audio/
+AU = AudioMan/
 
-$(GAME)/$GAME): $(GAME)/main.c libFormGlfw.a glad.o FormNetwork.h
-	gcc -g -o  $(GAME)/$(GAME) $(GAME)/main.c glad.o libFormGlfw.a  $(DEVLIBS)
+$(GAME)/$GAME): $(GAME)/main.c helper.h AudioMan.h glfw.h Form.h $(MYLIBS) glad.o 
+	gcc -g -I/usr/include/freetype2 -o  $(GAME)/$(GAME) $(GAME)/main.c glad.o $(MYLIBS)  $(DEVLIBS)
 
-FormNetwork.h: formglfw/FormGlfw.h libFormGlfw.a
+FormNetwork.hOLD: formglfw/FormGlfw.h libFormGlfw.a 
 	gcc -E -I/usr/include/freetype2 $(GF)FormGlfw.h > FormNetwork.h
 
-standalone: $(GAME)/main.c libFormGlfw.a glad.o FormNetwork.h
-	gcc -o $(GAME)/$(GAME) $(GAME)/main.c glad.o libFormGlfw.a $(RELEASELIBS) 
+standalone: $(GAME)/main.c $(MYLIBS) glad.o FormNetwork.h
+	gcc  -I/usr/include/freetype2 -o $(GAME)/$(GAME) $(GAME)/main.c glad.o $(MYLIBS) $(RELEASELIBS) 
 
-windows: setWindows $(GAME)/main.c libFormGlfw.a glad.o FormNetwork.h
-	x86_64-w64-mingw32-gcc -o $(GAME)/$(GAME) $(GAME)/main.c -static glad.o libFormGlfw.a $(GLW)
+windows: setWindows $(GAME)/main.c $(MYLIBS) glad.o FormNetwork.h
+	x86_64-w64-mingw32-gcc  -I/usr/include/freetype2 -o $(GAME)/$(GAME) $(GAME)/main.c -static glad.o $(MYLIBS) $(GLW)
 
 setWindows:
 	$(eval CC := $(WC))
@@ -34,23 +37,29 @@ setWindows:
 main.o: main.c
 	$(CC) -Wextra -Wall main.c -lcglm
 
-libFormGlfw.a: FormGlfw.o Form.o helper.o glfwMain.o Shaders.o Input.o Anim.o Text.o Camera.o Sound.o
-	ar rs libFormGlfw.a FormGlfw.o Form.o helper.o glfwMain.o Shaders.o Input.o Anim.o Text.o Camera.o Sound.o
+libFormGlfw.a: FormGlfw.o Form.o glfwMain.o Shaders.o Input.o Anim.o Text.o Camera.o
+	ar rs libFormGlfw.a FormGlfw.o Form.o glfwMain.o Shaders.o Input.o Anim.o Text.o Camera.o
 
 FormGlfw.o: $(GF)FormGlfw.c $(GF)FormGlfw.h $(GF)Player.c $(GF)Player.h  $(GF)PlayerManager.h $(GF)PlayerManager.c  $(GF)DrawWorld.c $(GF)DrawWorld.h $(GF)WorldView.c $(GF)WorldView.h $(GF)god.h $(GF)god.c
 	$(CC) -I/usr/include/freetype2 $(GF)FormGlfw.c
 
-libform.a: Form.o helper.o
+libForm.a: Form.o helper.o Form.h
 	ar rs libform.a Form.o helper.o
+
+Form.h: Form.o helper.h
+	@echo "Generating portable Form header"
+	@cat helper.h $(FD)Form.h $(FD)Cell.h $(FD)World.h $(FD)Value.h $(FD)FormSpawner.h $(AD)Action.h $(AD)Actor.h $(AD)ActorList.h   >> Form.h
 
 Form.o:  $(FD)Form.c $(FD)Form.h $(FD)World.c $(FD)World.h $(AD)Action.c $(AD)Action.h $(AD)Actor.c $(AD)Actor.h   $(AD)ActorList.h $(AD)ActorList.c $(FD)Value.h $(FD)Value.c $(FD)Cell.c $(FD)Cell.h
 	$(CC) $(FD)Form.c 
 
-Sound.o: $(AU)Sound.h $(AU)Sound.c
-	$(CC) $(AU)Sound.c
 
-libglfw.a: glfwMain.o Shaders.o Input.o Anim.o Text.o Camera.o
+libglfw.a: glfwMain.o Shaders.o Input.o Anim.o Text.o Camera.o glfw.h
 	ar rs libglfw.a glfwMain.o Shaders.o Input.o Anim.o Text.o Camera.o
+
+glfw.h: helper.h
+	@echo "Generating portable GLFW library"
+	@cat helper.h  $(GD)khrplatform.h $(GD)glad.h  $(GD)glfwMain.h $(SHD)Shaders.h $(ID)Input.h $(ID)Joystick.h $(TD)Text.h $(TD)TextInput.h $(GD)TextureManager.h $(GD)Anim.h $(GD)AnimOrder.h $(GD)AnimList.h $(GD)Tile.h $(GD)UI.h $(GD)Camera.h >> glfw.h
 
 glfwMain.o: $(GD)glfwMain.c $(GD)glfwMain.h $(SHD)glslLib.c 
 	$(CC) $(GD)glfwMain.c
@@ -79,8 +88,32 @@ Camera.o: $(GD)Camera.c $(GD)Camera.h
 glad.o: $(GD)glad.c $(GD)glad.h $(GD)khrplatform.h
 	$(CC) $(GD)glad.c -ldl
 
-helper.o: $(HD)helper.c $(HD)helper.h $(HD)list.c $(HD)list.h $(HD)binaryWriter.h $(HD)binaryWriter.c $(HD)sortedList.h $(HD)sortedList.c
-	$(CC) $(HD)helper.c
+libAudioMan.a: Sound.o AudioMan.h
+	ar rs libAudioMan.a Sound.o
+
+AudioMan.h: Sound.o helper.h
+	@echo "Generating portable sound headers"
+	@cat helper.h $(AU)Sound.h  >> AudioMan.h
+
+Sound.o: $(AU)Sound.h $(AU)Sound.c
+	$(CC) $(AU)Sound.c
+
+libHelper.a: helpFuncs.o binaryWriter.o list.o helper.h
+	ar rs libHelper.a helpFuncs.o binaryWriter.o list.o
+
+helper.h: helpFuncs.o
+	@echo "Generating portable helper.h"
+	@echo "#pragma once" > helper.h
+	@cat $(HD)helpFuncs.h $(HD)list.h $(HD)intList.h $(HD)sortedList.h $(HD)binaryWriter.h >> helper.h
+
+helpFuncs.o: $(HD)helpFuncs.c $(HD)helpFuncs.h
+	$(CC) $(HD)helpFuncs.c
+
+binaryWriter.o: $(HD)binaryWriter.h $(HD)binaryWriter.c
+	$(CC) $(HD)binaryWriter.c
+
+list.o:$(HD)list.c $(HD)list.h  $(HD)sortedList.h $(HD)sortedList.c
+	$(CC) $(HD)list.c
 
 clean:
 	rm -f $(GAME)/$(GAME)
@@ -91,5 +124,8 @@ fclean:
 	rm -f *.o 
 	rm -f *.a
 	rm -f vgcore*
+	rm -f helper.h
+	rm -f AudioMan.h
+	rm -f glfw.h
+	rm -f Form.h
 	rm -f $(GAME)/$(GAME)
-	rm -f FormNetwork.h

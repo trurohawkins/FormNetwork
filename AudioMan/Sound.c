@@ -1,3 +1,4 @@
+#include "../helper.h"
 #include "Sound.h"
 
 AudioManager *aMan = 0;

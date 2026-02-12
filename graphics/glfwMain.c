@@ -1,3 +1,11 @@
+#include "khrplatform.h"
+#include "glad.h"
+#include "shaders/Shaders.h"
+#include "input/Input.h"
+#include "text/Text.h"
+#include "Anim.h"
+#include "Tile.h"
+#include "Camera.h"
 #include "glfwMain.h"
 #include "shaders/glslLib.c"
 
