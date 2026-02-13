@@ -8,9 +8,17 @@ typedef struct Sound {
 	char *file;
 	float *buff;
 	long totalFrames;
+
 	long readFrames;
 	bool loop;
 	int volume;
+	bool active;
+
+	//timing scheduling
+	long long nextTriggerFrame;
+	long long intervalFrames;
+	long long bufferOffset;
+	bool scheduled;
 } Sound;
 
 typedef struct AudioManager {
@@ -20,6 +28,10 @@ typedef struct AudioManager {
 	int vGroups;
 	linkedList *sounds;
 	PaStream *stream;
+
+	long long currentFrame;
+	double sampleRate;
+	double bpm;
 } AudioManager;
 
 extern AudioManager *aMan;
@@ -37,6 +49,7 @@ Sound *processAudioFile(char *file);
 void changeVolGroup(Sound *s, int group);
 void playAudio(Sound *s);
 void stopAudio(Sound *s);
+void scheduleAudio(Sound *s, double frequency);
 int addVolGroup();
 void freeSound(void *snd);
 void freeAudioManager();

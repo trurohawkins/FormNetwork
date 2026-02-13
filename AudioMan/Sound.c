@@ -4,11 +4,6 @@
 AudioManager *aMan = 0;
 
 int initAudio() {
-	PaStreamParameters outputParameters;
-	PaError err = Pa_Initialize();
-	if (err != paNoError) {
-		goto exit;
-	}
 	aMan = calloc(1, sizeof(AudioManager));
 	aMan->sounds = makeList();
 	aMan->volumes = calloc(1, sizeof(float));
@@ -16,6 +11,12 @@ int initAudio() {
 	aMan->vGroups = 1;
 	//aMan->stream = calloc(1, sizeof(PaStream));
 	aMan->mix = makeList();
+
+	PaStreamParameters outputParameters;
+	PaError err = Pa_Initialize();
+	if (err != paNoError) {
+		goto exit;
+	}
 	outputParameters.device = Pa_GetDefaultOutputDevice(); /* default output device */
 
 	if (outputParameters.device == paNoDevice) {
@@ -27,12 +28,13 @@ int initAudio() {
 	outputParameters.sampleFormat = paFloat32; /* 32 bit floating point output */
 	outputParameters.suggestedLatency = Pa_GetDeviceInfo(outputParameters.device)->defaultLowOutputLatency;
 	outputParameters.hostApiSpecificStreamInfo = NULL;
+	double sampleRate = 44100.0;
 
 	err = Pa_OpenStream(
 			&aMan->stream,
 			NULL, /* no input */
 			&outputParameters,
-			44100,
+			sampleRate,
 			FPB,
 			paClipOff,      /* we won't output out of range samples so don't bother clipping them */
 			paLibsndfileCb,
@@ -48,6 +50,9 @@ int initAudio() {
 	if (err != paNoError) {
 		goto exit;
 	}
+	const PaStreamInfo *info = Pa_GetStreamInfo(aMan->stream);
+	aMan->sampleRate = info->sampleRate;
+	aMan->bpm = 120.0;
 	return err;
 
 exit:
@@ -68,20 +73,56 @@ static int paLibsndfileCb(const void *inputBuffer, void *outputBuffer,
 		void *userData) {
 	float *out = (float*)outputBuffer;
 	memset(out, 0, framesPerBuffer * 2 * sizeof(float));
-	int f = framesPerBuffer * 2;
 	AudioManager *a = userData;
-	linkedList *cur = a->mix;
+	long long bufferStart = aMan->currentFrame;
+	long long bufferEnd = bufferStart + framesPerBuffer;
 
-	int first = 0;
-	long readcount = 0;
+	// check total songs for schedule
+	/*
+	linkedList *cur = a->sounds;
 	while (cur) {
 		Sound *s = cur->data;
-		if (s) {
+		if (s && s->scheduled) {
+			if (!s->active && bufferEnd >= s->nextTriggerFrame) {
+				s->readFrames = 0;
+				s->active = true;
+				addToList(&aMan->mix, s);
+
+				s->nextTriggerFrame += s->intervalFrames;
+			}
+		}
+		cur = cur->next;
+	}
+	*/
+	// mix of current songs
+	linkedList *cur = a->mix;
+
+	while (cur) {
+		Sound *s = cur->data;
+		if (!s) {
+			cur = cur->next;
+			continue;
+		}
+
+		if (s->scheduled && !s->active) {
+			//if (bufferEnd >= s->nextTriggerFrame) {
+			if (s->nextTriggerFrame >= bufferStart && s->nextTriggerFrame < bufferEnd) {
+				s->readFrames = 0;
+				s->active = true;
+				s->bufferOffset = s->nextTriggerFrame - bufferStart;
+				s->nextTriggerFrame += s->intervalFrames;
+			}
+		}
+
+
+		// mixing
+		if (s->active) {
 			long remaining = s->totalFrames - s->readFrames;
 			if (remaining <= 0) {
 				s->readFrames = 0;
-				if (!s->loop) {
-					cur->data = 0;
+				if (!s->loop && !s->scheduled) {
+					s->active = false;
+					//cur->data = 0;
 					cur = cur->next;
 					continue;
 				}
@@ -89,26 +130,33 @@ static int paLibsndfileCb(const void *inputBuffer, void *outputBuffer,
 			long framesToMix = remaining < framesPerBuffer ? remaining : framesPerBuffer;
 			long sampleOffset = s->readFrames * 2;
 			float volume = a->volumes[s->volume];
-			/*
-			if (first == 0) {
-				memcpy(out, s->buff + f * s->readFrames, f * sizeof(float));
-				for (int i = 0; i < f; i++) {
-					out[i] *= volume;
-				}
-				first = 1;
-			} else {
-				for (int i = 0; i < f; i++) {
-					out[i] += (s->buff[s->readFrames* f + i] * volume);
+
+			long mixStart = 0;
+			if (s->scheduled) {
+				mixStart = s->bufferOffset;
+				s->bufferOffset = 0;
+			}
+
+			for (long i = mixStart*2; i < framesToMix * 2; i++) {
+				long buffIndex = sampleOffset + i - mixStart*2;
+				if (buffIndex < s->totalFrames * 2) {
+					out[i] += s->buff[buffIndex] * volume;
 				}
 			}
-			*/
-			for (long i = 0; i < framesToMix * 2; i++) {
-				out[i] += s->buff[sampleOffset + i] * volume;
-			}
-			s->readFrames += framesPerBuffer;
+			s->readFrames += framesToMix;
 		}
 		cur = cur->next;
 	}
+
+	for (long i = 0; i < framesPerBuffer * 2; i++) {
+		if (out[i] > 1.0f) {
+			out[i] = 1.0f;
+		} else if (out[i] < -1.0f) {
+			out[i] = -1.0f;
+		}
+	}
+
+	aMan->currentFrame += framesPerBuffer;
 
 	return paContinue;
 }
@@ -158,7 +206,8 @@ void cleanUpPlayedAudio() {
 	linkedList *cur = aMan->mix;
 	linkedList *pre = 0;
 	while (cur) {
-		if (!cur->data) {
+		Sound *s = cur->data;
+		if (s && !s->active && !s->scheduled) {
 			linkedList *tmp = cur;
 			if (!pre) {
 				aMan->mix = cur->next;
@@ -202,6 +251,7 @@ void changeVolGroup(Sound *s, int group) {
 }
 
 void playAudio(Sound *s) {
+	s->active = true;
 	addToList(&aMan->mix, s);
 	if (aMan->mixCount == 0) {
 		Pa_StartStream(aMan->stream);
@@ -222,6 +272,15 @@ void stopAudio(Sound *s) {
 			Pa_StopStream(aMan->stream);
 		}
 	}
+}
+
+void scheduleAudio(Sound *s, double frequency) {
+	s->scheduled = true;
+	s->intervalFrames = (long long)(aMan->sampleRate * frequency / aMan->bpm);
+	s->nextTriggerFrame = 0;
+	s->active = false;
+	s->bufferOffset = 0;
+	playAudio(s);
 }
 
 
