@@ -99,12 +99,15 @@ Sound.o: $(AU)Sound.c $(AU)Sound.h $(AU)Bank.c
 	$(CC) $(AU)Sound.c
 
 libHelper.a: helpFuncs.o atomicQueue.o binaryWriter.o list.o helper.h
+	@echo "making helper library"
 	ar rs libHelper.a helpFuncs.o binaryWriter.o list.o atomicQueue.o
+	cp libHelper.a $(AU)
 
 helper.h: helpFuncs.o
 	@echo "Generating portable helper.h"
 	@echo "#pragma once" > helper.h
 	@cat $(HD)helpFuncs.h $(HD)list.h $(HD)intList.h $(HD)sortedList.h $(HD)binaryWriter.h $(HD)atomicQueue.h >> helper.h
+	cp helper.h $(AU)
 
 helpFuncs.o: $(HD)helpFuncs.c $(HD)helpFuncs.h
 	$(CC) $(HD)helpFuncs.c
