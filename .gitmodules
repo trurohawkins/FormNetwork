@@ -1,0 +1,3 @@
+[submodule "AudioMan"]
+	path = AudioMan
+	url = https://github.com/trurohawkins/AudioMan.git
