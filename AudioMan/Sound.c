@@ -2,15 +2,18 @@
 #include "Sound.h"
 
 AudioManager *aMan = 0;
+AtomicQueue audioQueue;
+bool streaming = false;
+
+#include "Bank.c"
+
 
 int initAudio() {
 	aMan = calloc(1, sizeof(AudioManager));
-	aMan->sounds = makeList();
+	//aMan->sounds = makeList();
 	aMan->volumes = calloc(1, sizeof(float));
 	aMan->volumes[0] = 1;
 	aMan->vGroups = 1;
-	//aMan->stream = calloc(1, sizeof(PaStream));
-	aMan->mix = makeList();
 
 	PaStreamParameters outputParameters;
 	PaError err = Pa_Initialize();
@@ -53,6 +56,7 @@ int initAudio() {
 	const PaStreamInfo *info = Pa_GetStreamInfo(aMan->stream);
 	aMan->sampleRate = info->sampleRate;
 	aMan->bpm = 120.0;
+	sounds = calloc(1, sizeof(SoundBank));
 	return err;
 
 exit:
@@ -66,6 +70,13 @@ exit:
 
 }
 
+Voice getVoice(Sound *s) {
+	Voice v;
+	v.sound = s;
+	v.readFrames = 0;
+	return v;
+}
+
 static int paLibsndfileCb(const void *inputBuffer, void *outputBuffer,
 		unsigned long framesPerBuffer,
 		const PaStreamCallbackTimeInfo* timeInfo,
@@ -77,75 +88,67 @@ static int paLibsndfileCb(const void *inputBuffer, void *outputBuffer,
 	long long bufferStart = aMan->currentFrame;
 	long long bufferEnd = bufferStart + framesPerBuffer;
 
-	// check total songs for schedule
-	/*
-	linkedList *cur = a->sounds;
-	while (cur) {
-		Sound *s = cur->data;
-		if (s && s->scheduled) {
-			if (!s->active && bufferEnd >= s->nextTriggerFrame) {
-				s->readFrames = 0;
-				s->active = true;
-				addToList(&aMan->mix, s);
-
-				s->nextTriggerFrame += s->intervalFrames;
+	checkAudioCommands();
+	for (int i = 0; i < sounds->soundNum; i++) {
+		Sound *s = &sounds->bank[i];
+		if (s) {
+			if (s->scheduled) {
+				if (s->nextTriggerFrame >= bufferStart) {
+					int mixSpot = 0;
+					while (s->nextTriggerFrame < bufferEnd) {
+						Voice *vo = NULL;//findFreeMixSpot();
+						for (;mixSpot < VOICE_MAX; mixSpot++) {
+							if (aMan->mix[mixSpot].sound == NULL) {
+								vo = &aMan->mix[mixSpot];
+								break;
+							}
+						}
+						if (vo) {
+							vo->sound = s;
+							vo->readFrames = 0;
+							vo->bufferOffset = s->nextTriggerFrame - bufferStart;
+							s->nextTriggerFrame += s->intervalFrames;
+						}
+					}
+				}
 			}
 		}
-		cur = cur->next;
 	}
-	*/
-	// mix of current songs
-	linkedList *cur = a->mix;
 
-	while (cur) {
-		Sound *s = cur->data;
+	// mix of current songs
+	for (int i = 0; i < VOICE_MAX; i++) {
+		Voice *vo = &aMan->mix[i];
+		Sound *s = vo->sound;
 		if (!s) {
-			cur = cur->next;
 			continue;
 		}
-
-		if (s->scheduled && !s->active) {
-			//if (bufferEnd >= s->nextTriggerFrame) {
-			if (s->nextTriggerFrame >= bufferStart && s->nextTriggerFrame < bufferEnd) {
-				s->readFrames = 0;
-				s->active = true;
-				s->bufferOffset = s->nextTriggerFrame - bufferStart;
-				s->nextTriggerFrame += s->intervalFrames;
-			}
-		}
-
-
 		// mixing
-		if (s->active) {
-			long remaining = s->totalFrames - s->readFrames;
-			if (remaining <= 0) {
-				s->readFrames = 0;
-				if (!s->loop && !s->scheduled) {
-					s->active = false;
-					//cur->data = 0;
-					cur = cur->next;
-					continue;
-				}
+		long remaining = s->totalFrames - vo->readFrames;
+		if (remaining <= 0) {
+			if (!vo->sound->loop) {
+				vo->sound = NULL;
+				continue;
+			} else {
+				vo->readFrames = 0;
 			}
-			long framesToMix = remaining < framesPerBuffer ? remaining : framesPerBuffer;
-			long sampleOffset = s->readFrames * 2;
-			float volume = a->volumes[s->volume];
-
-			long mixStart = 0;
-			if (s->scheduled) {
-				mixStart = s->bufferOffset;
-				s->bufferOffset = 0;
-			}
-
-			for (long i = mixStart*2; i < framesToMix * 2; i++) {
-				long buffIndex = sampleOffset + i - mixStart*2;
-				if (buffIndex < s->totalFrames * 2) {
-					out[i] += s->buff[buffIndex] * volume;
-				}
-			}
-			s->readFrames += framesToMix;
 		}
-		cur = cur->next;
+		long framesToMix = remaining < framesPerBuffer ? remaining : framesPerBuffer;
+		long sampleOffset = vo->readFrames * 2;
+		float volume = a->volumes[s->volume];
+
+		long mixStart = 0;
+		if (s->scheduled) {
+			mixStart = vo->bufferOffset;
+			vo->bufferOffset = 0;
+		}
+
+		for (long i = mixStart*2; i < framesToMix * 2; i++) {
+			long buffIndex = sampleOffset + i - mixStart*2;
+			if (buffIndex < s->totalFrames * 2) {
+				out[i] += s->buff[buffIndex] * volume;
+			}
+		}
+		vo->readFrames += framesToMix;
 	}
 
 	for (long i = 0; i < framesPerBuffer * 2; i++) {
@@ -161,68 +164,46 @@ static int paLibsndfileCb(const void *inputBuffer, void *outputBuffer,
 	return paContinue;
 }
 
-Sound *processAudioFile(char *file) {
-	linkedList *cur = aMan->sounds;
-	int fileLen = strlen(file);
-	while (cur) {
-		Sound *s = cur->data;
-		if (s) {
-			if (memcmp(s->file, file, fileLen) == 0) {
-				printf("already have the sound\n");
-				return s;
+void checkAudioCommands() {
+	AudioCommand ac;
+	while (aqPop(&audioQueue, &ac, sizeof(AudioCommand))) {
+		if (ac.cmd == 0) {
+			for (int i = 0; i < VOICE_MAX; i++) {
+				if (aMan->mix[i].sound == NULL) {
+					Sound *s = &sounds->bank[ac.sound];
+					if (ac.data != 0) {
+						s->scheduled = true;
+						s->loop = false;
+						s->intervalFrames = (long long)((ac.data / (aMan->bpm/60.0)) * aMan->sampleRate);
+						s->nextTriggerFrame = 0;//aMan->currentFrame + s->intervalFrames;
+					} else {
+						aMan->mix[i].sound = s;
+						aMan->mix[i].readFrames = 0;
+					}
+					break;
+				}
+			}
+		} else if (ac.cmd == 1) {
+			Sound *s = &sounds->bank[ac.sound];
+			for (int i = 0; i < VOICE_MAX; i++) {
+				if (aMan->mix[i].sound != NULL) {
+					if (strcmp(s->file, aMan->mix[i].sound->file) == 0) {
+						aMan->mix[i].sound = NULL;
+					}
+				}
 			}
 		}
-		cur = cur->next;
 	}
-	SNDFILE *infile = 0;
-	SF_INFO sfinfo ;
-	if (!(infile = sf_open(file, SFM_READ, &sfinfo))) {
-		printf ("Not able to open input file %s.\n", file) ;
-		sf_perror (NULL) ;
-		return  0 ;
-	}
-	long read = 0;
-	long size = sf_seek(infile, 0, SEEK_END);
-	sf_seek(infile, 0, SEEK_SET);
-	Sound *s = calloc(1, sizeof(Sound));
-	s->file = calloc(fileLen + 1, sizeof(char));
-	memcpy(s->file, file, fileLen);
-	s->file[fileLen] = '\0';
-	s->readFrames = 0;
-	s->buff = calloc(size, sizeof(float));
-	s->volume = 0;//aMan->volumes;
-	sf_read_float(infile, s->buff, size);
-	//s->len = size / (FPB * 2);
-	s->totalFrames = size / 2;
-	sf_close(infile);
-	addToList(&aMan->sounds, s);
-	return s;
 }
 
-void cleanUpPlayedAudio() {
-	if (!aMan) {
-		return;
-	}
-	linkedList *cur = aMan->mix;
-	linkedList *pre = 0;
-	while (cur) {
-		Sound *s = cur->data;
-		if (s && !s->active && !s->scheduled) {
-			linkedList *tmp = cur;
-			if (!pre) {
-				aMan->mix = cur->next;
-			} else {
-				pre->next = cur->next;
-			}
-			cur = cur->next;
-			free(tmp);
-			aMan->mixCount--;
-			continue;
+Voice *findFreeMixSpot() {
+	for (int i = 0; i < VOICE_MAX; i++) {
+		if (aMan->mix[i].sound == NULL) {
+			return &aMan->mix[i];
 		}
-		pre = cur;
-		cur = cur->next;
 	}
 }
+
 
 void changeVolume(int group, float vol) {
 	if (group < aMan->vGroups) {
@@ -250,47 +231,6 @@ void changeVolGroup(Sound *s, int group) {
 	s->volume = group;
 }
 
-void playAudio(Sound *s) {
-	s->active = true;
-	addToList(&aMan->mix, s);
-	if (aMan->mixCount == 0) {
-		Pa_StartStream(aMan->stream);
-	}
-	aMan->mixCount++;
-	/*
-		 aMan->m->sounds[aMan->m->num] = s;
-		 aMan->m->num++;
-	 */
-}
-
-void stopAudio(Sound *s) {
-	//printf("stopping audio %s\n", s->file);
-	if (removeFromList(&aMan->mix, s)) {
-		//printf("stop successful\n");
-		aMan->mixCount--;
-		if (aMan->mixCount == 0) {
-			Pa_StopStream(aMan->stream);
-		}
-	}
-}
-
-void scheduleAudio(Sound *s, double frequency) {
-	s->scheduled = true;
-	s->intervalFrames = (long long)(aMan->sampleRate * frequency / aMan->bpm);
-	s->nextTriggerFrame = 0;
-	s->active = false;
-	s->bufferOffset = 0;
-	playAudio(s);
-}
-
-
-void freeSound(void *snd) {
-	Sound *s = snd;
-	free(s->file);
-	free(s->buff);
-	free(s);
-}
-
 void endAudio() {
 	freeAudioManager();
 	Pa_Terminate();
@@ -303,9 +243,10 @@ void freeAudioManager() {
 			Pa_CloseStream(aMan->stream);
 		}
 		free(aMan->volumes);
-		freeListSaveObj(&aMan->mix);
-		deleteList(&aMan->sounds, freeSound);
+		//freeListSaveObj(&aMan->mix);
+		//deleteList(&aMan->sounds, freeSound);
 		//free(aMan->stream);
 		free(aMan);
+		freeSoundBank();
 	}
 }

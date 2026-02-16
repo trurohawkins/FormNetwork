@@ -74,7 +74,6 @@ void FormLoop(void (game)(void)) {
 			game();
 			glfwSwapBuffers(screen->window);
 		} // maybe we want to include the next 2 lines, should test with sound
-		cleanUpPlayedAudio();
 		frameCount++;
 		int curTime = time(NULL);
 		if (curTime - initialTime >= 1) {

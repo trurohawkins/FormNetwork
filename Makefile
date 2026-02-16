@@ -95,19 +95,22 @@ AudioMan.h: Sound.o helper.h
 	@echo "Generating portable sound headers"
 	@cat helper.h $(AU)Sound.h  >> AudioMan.h
 
-Sound.o: $(AU)Sound.h $(AU)Sound.c
+Sound.o: $(AU)Sound.c $(AU)Sound.h $(AU)Bank.c
 	$(CC) $(AU)Sound.c
 
-libHelper.a: helpFuncs.o binaryWriter.o list.o helper.h
-	ar rs libHelper.a helpFuncs.o binaryWriter.o list.o
+libHelper.a: helpFuncs.o atomicQueue.o binaryWriter.o list.o helper.h
+	ar rs libHelper.a helpFuncs.o binaryWriter.o list.o atomicQueue.o
 
 helper.h: helpFuncs.o
 	@echo "Generating portable helper.h"
 	@echo "#pragma once" > helper.h
-	@cat $(HD)helpFuncs.h $(HD)list.h $(HD)intList.h $(HD)sortedList.h $(HD)binaryWriter.h >> helper.h
+	@cat $(HD)helpFuncs.h $(HD)list.h $(HD)intList.h $(HD)sortedList.h $(HD)binaryWriter.h $(HD)atomicQueue.h >> helper.h
 
 helpFuncs.o: $(HD)helpFuncs.c $(HD)helpFuncs.h
 	$(CC) $(HD)helpFuncs.c
+
+atomicQueue.o: $(HD)atomicQueue.c $(HD)atomicQueue.h
+	$(CC) $(HD)atomicQueue.c
 
 binaryWriter.o: $(HD)binaryWriter.h $(HD)binaryWriter.c
 	$(CC) $(HD)binaryWriter.c
